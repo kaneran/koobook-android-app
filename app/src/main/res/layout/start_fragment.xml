@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Got material design background from https://365webresources.com/android-google-material-design-freebies/4/ -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,6 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:layout_weight="0.4"
             >
 
             <ImageView
@@ -35,6 +37,40 @@
                 />
 
         </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="0.6"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+        <Button
+
+            android:id="@+id/sign_up_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:textColor="@color/white"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:background="@drawable/sign_up_button"
+            android:layout_marginBottom="10dp"
+            />
+
+        <Button
+
+            android:id="@+id/login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textColor="@color/navyBlue"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:background="@drawable/login_button"
+
+            />
+
+
+    </LinearLayout>
 
 
 
