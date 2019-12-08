@@ -50,12 +50,12 @@
             android:id="@+id/sign_up_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign up"
-            android:textColor="@color/white"
-            android:fontFamily="@font/helvetic_neuva_condensed"
-            android:background="@drawable/sign_up_button"
             android:layout_marginBottom="10dp"
-            />
+            android:background="@drawable/sign_up_button"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:onClick="signUpButtonClicked"
+            android:text="Sign up"
+            android:textColor="@color/white" />
 
         <Button
 
