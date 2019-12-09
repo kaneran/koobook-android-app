@@ -13,14 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_weight="0.4"
+        android:layout_weight="0.8"
         >
 
         <ImageView
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
             android:layout_gravity="center"
             android:adjustViewBounds="false"
             android:src="@drawable/koobook_logo" />
@@ -41,15 +41,118 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_weight="0.6"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_weight="0.3"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp">
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/white"
+            android:textSize="14dp"/>
 
+        <TextView
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="First name"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/white"
+            android:textSize="14dp"/>
 
+        <EditText
+            android:id="@+id/firstNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/white"
+            android:inputType="textPersonName"
+             />
+
+        <TextView
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/white"
+            android:textSize="14dp"/>
+
+        <EditText
+            android:id="@+id/emaileEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:backgroundTint="@color/white"
+            android:inputType="textPersonName"
+            android:textColor="@color/white"
+            />
+
+        <TextView
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/white"
+            android:textSize="14dp"/>
+
+        <EditText
+            android:id="@+id/PasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:backgroundTint="@color/white"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            />
+
+        <TextView
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Password"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/white"
+            android:textSize="14dp"/>
+
+        <EditText
+            android:id="@+id/confirmPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:backgroundTint="@color/white"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:id="@+id/sign_up_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/sign_up_button"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:onClick="signUpButtonClicked"
+            android:text="Sign up"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/loginLinkText"
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Login"
+            android:textSize="14dp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:fontFamily="@font/arial_regular"
+            />
     </LinearLayout>
-
 
 
 </LinearLayout>
