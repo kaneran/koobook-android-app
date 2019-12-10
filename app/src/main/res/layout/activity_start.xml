@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Got material design background from https://365webresources.com/android-google-material-design-freebies/4/ -->
+<!-- Got material design background from https://besthqwallpapers.com/abstract/dark-blue-lines-4k-material-design-creative-geometric-shapes-99919 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/start_background"
+    android:background="@drawable/start_background_v2"
     >
 
 
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:textColor="@color/navyBlue"
+            android:textColor="@color/pinkRed"
             android:fontFamily="@font/helvetic_neuva_condensed"
             android:background="@drawable/login_button"
 

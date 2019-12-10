@@ -3,6 +3,9 @@ package com.example.koobookandroidapp;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
+import User.User;
+import User.UserDao;
+
 @Database(entities = {User.class, Audit.class, Status.class, Book.class, BookGenre.class, Genre.class, BookAuthor.class, Author.class, Color.class, Review.class, Rating.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();

@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/start_background"
+    android:background="@drawable/start_background_v2"
     >
 
 
@@ -72,6 +72,15 @@
             android:textColor="@color/white"
             android:inputType="textPersonName"
              />
+        <TextView
+            android:id="@+id/firstNameRequired"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/this_field_is_required"
+            android:fontFamily="@font/arial_regular"
+            android:textColor="@color/pinkRed"
+            android:textSize="14dp"
+            android:visibility="invisible"/>
 
         <TextView
             android:paddingTop="20dp"
@@ -143,15 +152,15 @@
 
         <TextView
             android:id="@+id/loginLinkText"
-            android:paddingTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/Login"
-            android:textSize="14dp"
-            android:textColor="@color/white"
-            android:gravity="center"
             android:fontFamily="@font/arial_regular"
-            />
+            android:gravity="bottom|center"
+            android:paddingTop="10dp"
+            android:text="@string/login"
+            android:textColor="@color/white"
+
+            android:textSize="14dp" />
     </LinearLayout>
 
 

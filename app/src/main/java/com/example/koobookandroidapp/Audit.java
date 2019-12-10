@@ -6,6 +6,8 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import User.User;
+
 @Entity(foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "user_userId", onDelete = ForeignKey.CASCADE),
         @ForeignKey(entity = Book.class, parentColumns = "bookId", childColumns = "book_bookId", onDelete = ForeignKey.CASCADE)})
 public class Audit {
