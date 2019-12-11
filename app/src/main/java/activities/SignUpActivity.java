@@ -14,14 +14,14 @@ import java.util.HashMap;
 import controllers.UserController;
 
 public class SignUpActivity extends AppCompatActivity {
-    TextView firstNameRequiredTextView;
-    TextView emailRequiredTextView;
-    TextView passwordRequiredTextView;
-    TextView passwordDoesNotMatchTextView;
-    EditText firstNameEditText;
-    EditText emailEditText;
-    EditText passwordEditText;
-    EditText confirmPasswordEditText;
+    TextView textView_firstName_error_msg;
+    TextView textView_email_error_msg;
+    TextView textView_password_error_msg;
+    TextView textView_passwords_error_msg;
+    EditText editText_firstName;
+    EditText editText_email;
+    EditText editText_password;
+    EditText editText_confirmPassword;
     ArrayList<EditText> passwords;
     HashMap<EditText,TextView> map;
 
@@ -31,38 +31,38 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         map = new HashMap<>();
-        firstNameRequiredTextView = findViewById(R.id.firstNameRequiredTextView);
-        firstNameEditText = findViewById(R.id.firstNameEditText);
-        map.put(firstNameEditText, firstNameRequiredTextView);
+        textView_firstName_error_msg = findViewById(R.id.textview_firstname_error_msg);
+        editText_firstName = findViewById(R.id.edittext_firstname);
+        map.put(editText_firstName, textView_firstName_error_msg);
 
 
-        emailRequiredTextView = findViewById(R.id.emailRequiredTextView);
-        emailEditText = findViewById(R.id.emailEditText);
-        map.put(emailEditText, emailRequiredTextView);
+        textView_email_error_msg = findViewById(R.id.textview_email_error_msg);
+        editText_email = findViewById(R.id.edittext_email);
+        map.put(editText_email, textView_email_error_msg);
 
-        passwordRequiredTextView = findViewById(R.id.passwordsRequiredTextView);
-        passwordEditText = findViewById(R.id.passwordEditText);
-        map.put(passwordEditText, passwordRequiredTextView);
+        textView_password_error_msg = findViewById(R.id.textview_password_error_msg);
+        editText_password = findViewById(R.id.edittext_password);
+        map.put(editText_password, textView_password_error_msg);
 
 
-        confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
-        passwordDoesNotMatchTextView = findViewById(R.id.passwordsDoesNotMatchTextView);
+        editText_confirmPassword = findViewById(R.id.edittext_confirmpassword);
+        textView_passwords_error_msg = findViewById(R.id.textview_passwords_error_msg);
 
         //I added the "Password does not match text view to the hashmap because I plan to access it
         // and modify the string dpeending on whether the user entered mismatching passwords
         // or didn't enter anything at all."
-        map.put(confirmPasswordEditText, passwordDoesNotMatchTextView);
+        map.put(editText_confirmPassword, textView_passwords_error_msg);
 
 
         passwords = new ArrayList<>();
-        passwords.add(passwordEditText);
-        passwords.add(confirmPasswordEditText);
+        passwords.add(editText_password);
+        passwords.add(editText_confirmPassword);
     }
 
     public void signUpButtonClicked(View v){
 
         UserController userController = new UserController();
-        userController.checkIfUserEnteredInformationInAllFields(map, passwordDoesNotMatchTextView);
-        userController.checkIfPasswordsMatch(passwords, passwordDoesNotMatchTextView);
+        userController.checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg);
+        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
     }
 }

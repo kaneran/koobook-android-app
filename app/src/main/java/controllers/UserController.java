@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserController {
-    TextView firstNamerequiredTextView;
-    EditText firstNameEditText;
-    EditText passwordEditText;
-    EditText confirmedPasswordEditText;
+    EditText editText_password;
+    EditText editText_confirmedPassword;
 
 
     public void checkIfUserEnteredInformationInAllFields(HashMap<EditText,TextView> map, TextView passwordDoesNotMatchTextView){
@@ -50,13 +48,13 @@ public class UserController {
             return false;
         } else{
 
-            passwordEditText = passwords.get(0);
-            confirmedPasswordEditText = passwords.get(1);
-            if(!passwordEditText.getText().toString().matches(confirmedPasswordEditText.getText().toString())){
+            editText_password = passwords.get(0);
+            editText_confirmedPassword = passwords.get(1);
+            if(!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())){
                 passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
                 passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
-                colorController.setBackgroundTint(confirmedPasswordEditText,"#D81B60");
-                colorController.setBackgroundTint(passwordEditText,"#D81B60");
+                colorController.setBackgroundTint(editText_confirmedPassword,"#D81B60");
+                colorController.setBackgroundTint(editText_password,"#D81B60");
                 return false;
             } else{
                 BlowfishController blowfishController = new BlowfishController();

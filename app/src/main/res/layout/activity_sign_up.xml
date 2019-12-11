@@ -41,7 +41,7 @@
             android:textSize="14dp"/>
 
         <EditText
-            android:id="@+id/firstNameEditText"
+            android:id="@+id/edittext_firstname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -51,7 +51,7 @@
 
             />
         <TextView
-            android:id="@+id/firstNameRequiredTextView"
+            android:id="@+id/textview_firstname_error_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/this_field_is_required"
@@ -70,7 +70,7 @@
             android:textSize="14dp"/>
 
         <EditText
-            android:id="@+id/emailEditText"
+            android:id="@+id/edittext_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -80,7 +80,7 @@
             />
 
         <TextView
-            android:id="@+id/emailRequiredTextView"
+            android:id="@+id/textview_email_error_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/this_field_is_required"
@@ -99,7 +99,7 @@
             android:textSize="14dp"/>
 
         <EditText
-            android:id="@+id/passwordEditText"
+            android:id="@+id/edittext_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -109,7 +109,7 @@
             />
 
         <TextView
-            android:id="@+id/passwordsRequiredTextView"
+            android:id="@+id/textview_password_error_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/this_field_is_required"
@@ -129,7 +129,7 @@
             android:textSize="14dp"/>
 
         <EditText
-            android:id="@+id/confirmPasswordEditText"
+            android:id="@+id/edittext_confirmpassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -139,7 +139,7 @@
             />
 
         <TextView
-            android:id="@+id/passwordsDoesNotMatchTextView"
+            android:id="@+id/textview_passwords_error_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/passwords_does_not_match"
