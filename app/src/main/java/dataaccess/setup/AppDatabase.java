@@ -3,22 +3,22 @@ package dataaccess.setup;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-import dataaccess.AuditBookDao;
-import dataaccess.AuditDao;
-import dataaccess.AuditStatusDao;
-import dataaccess.AuthorDao;
-import dataaccess.BookAuthorDao;
-import dataaccess.BookColorDao;
-import dataaccess.BookDao;
-import dataaccess.BookGenreDao;
-import dataaccess.BookRatingDao;
-import dataaccess.BookReviewDao;
-import dataaccess.ColorDao;
-import dataaccess.GenreDao;
-import dataaccess.RatingDao;
-import dataaccess.ReviewDao;
-import dataaccess.StatusDao;
-import dataaccess.UserAuditDao;
+import dataaccess.room.AuditBookDao;
+import dataaccess.room.AuditDao;
+import dataaccess.room.AuditStatusDao;
+import dataaccess.room.AuthorDao;
+import dataaccess.room.BookAuthorDao;
+import dataaccess.room.BookColorDao;
+import dataaccess.room.BookDao;
+import dataaccess.room.BookGenreDao;
+import dataaccess.room.BookRatingDao;
+import dataaccess.room.BookReviewDao;
+import dataaccess.room.ColorDao;
+import dataaccess.room.GenreDao;
+import dataaccess.room.RatingDao;
+import dataaccess.room.ReviewDao;
+import dataaccess.room.StatusDao;
+import dataaccess.room.UserAuditDao;
 import entities.Audit;
 import entities.Author;
 import entities.Book;
@@ -30,7 +30,7 @@ import entities.Rating;
 import entities.Review;
 import entities.Status;
 import entities.User;
-import dataaccess.UserDao;
+import dataaccess.room.UserDao;
 
 @Database(entities = {User.class, Audit.class, Status.class, Book.class, BookGenre.class, Genre.class, BookAuthor.class, Author.class, Color.class, Review.class, Rating.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

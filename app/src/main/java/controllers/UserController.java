@@ -11,6 +11,8 @@ import org.bouncycastle.crypto.CryptoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import dataaccess.sqlserver.SqlServerDatabase;
+
 public class UserController {
     EditText editText_password;
     EditText editText_confirmedPassword;
@@ -61,8 +63,8 @@ public class UserController {
             } else{
                 BlowfishController blowfishController = new BlowfishController();
                 String key = blowfishController.generateKey();
-                String cipherText = blowfishController.encrypt(editText_password.getText().toString(),key);
-                blowfishController.decrypt(cipherText,key);
+                String encryptedPassword = blowfishController.encrypt(editText_password.getText().toString(),key);
+                SqlServerDatabase ssd = new SqlServerDatabase();
 
                 return true;
             }

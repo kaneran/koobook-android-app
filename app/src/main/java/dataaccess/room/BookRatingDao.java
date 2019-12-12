@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.room;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;

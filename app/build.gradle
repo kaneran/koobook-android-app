@@ -31,4 +31,5 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0-rc1"
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation files('libs/bcprov-ext-debug-jdk15on-164.jar')
+    implementation('net.sourceforge.jtds:jtds:1.3.1')
 }
