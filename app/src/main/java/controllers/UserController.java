@@ -6,6 +6,8 @@ import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
+import org.bouncycastle.crypto.CryptoException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -59,6 +61,8 @@ public class UserController {
             } else{
                 BlowfishController blowfishController = new BlowfishController();
                 String key = blowfishController.generateKey();
+                String cipherText = blowfishController.encrypt(editText_password.getText().toString(),key);
+                blowfishController.decrypt(cipherText,key);
 
                 return true;
             }
@@ -66,4 +70,6 @@ public class UserController {
         }
 
     }
+
+
 }

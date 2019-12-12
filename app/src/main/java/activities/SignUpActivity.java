@@ -24,6 +24,7 @@ public class SignUpActivity extends AppCompatActivity {
     EditText editText_confirmPassword;
     ArrayList<EditText> passwords;
     HashMap<EditText,TextView> map;
+    Boolean doPasswordsMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         UserController userController = new UserController();
         userController.checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg);
-        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
+        doPasswordsMatch= userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
+
     }
 }
