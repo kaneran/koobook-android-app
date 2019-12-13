@@ -9,14 +9,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SqlServerDatabase {
-    public Boolean insertUserAccount(String email, String firstName, String encryptedPassword) {
+    public Boolean insertUserAccount(String firstName, String email, String encryptedPassword) {
         Connection conn = connectToSqlServerDb();
         try {
             Statement statement = conn.createStatement();
-            statement.executeQuery("insert into [dbo].[User] (FirstName,Email,EncryptedPassword) values ('" + firstName + "','" + email + "','" + encryptedPassword + "');");
+            int rs = statement.executeUpdate("insert into [dbo].[User] (FirstName,Email,EncryptedPassword) values ('" + firstName + "','" + email + "','" + encryptedPassword + "');");
             return true;
         } catch (SQLException e) {
-
+            String exception = e.getMessage();
 
         }
         return false;
@@ -27,7 +27,7 @@ public class SqlServerDatabase {
         Connection conn = connectToSqlServerDb();
         try {
             Statement statement = conn.createStatement();
-            statement.executeQuery("insert into [dbo].[Blowfish] (BlowfishKey,User_UserId) values ('"+encrpytionKey+"',\n" +
+            int rs = statement.executeUpdate("insert into [dbo].[Blowfish] (BlowfishKey,User_UserId) values ('"+encrpytionKey+"',\n" +
                     "(select [dbo].[User].UserId from [dbo].[User] where [dbo].[User].Email = '"+email+"')\n" +
                     ");");
             return true;

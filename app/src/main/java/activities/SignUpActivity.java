@@ -11,11 +11,11 @@ import com.example.koobookandroidapp.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import controllers.UserController;
-import dataaccess.room.RoomDatabaseAccess;
 import dataaccess.setup.AppDatabase;
-import dataaccess.sqlserver.SqlServerDatabase;
+import entities.User;
 
 public class SignUpActivity extends AppCompatActivity {
     TextView textView_firstName_error_msg;
@@ -39,19 +39,18 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        RoomDatabaseAccess rda = new RoomDatabaseAccess();
-        rda.setDb(db);
 
         map = new HashMap<>();
 
-        textView_email_error_msg = findViewById(R.id.textview_email_error_msg);
-        editText_email = findViewById(R.id.edittext_email);
-        map.put(editText_email, textView_email_error_msg);
 
 
         textView_firstName_error_msg = findViewById(R.id.textview_firstname_error_msg);
         editText_firstName = findViewById(R.id.edittext_firstname);
         map.put(editText_firstName, textView_firstName_error_msg);
+
+        textView_email_error_msg = findViewById(R.id.textview_email_error_msg);
+        editText_email = findViewById(R.id.edittext_email);
+        map.put(editText_email, textView_email_error_msg);
 
 
         textView_password_error_msg = findViewById(R.id.textview_password_error_msg);
@@ -63,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
         textView_passwords_error_msg = findViewById(R.id.textview_passwords_error_msg);
 
         //I added the "Password does not match text view to the hashmap because I plan to access it
-        // and modify the string dpeending on whether the user entered mismatching passwords
+        // and modify the string depending on whether the user entered mismatching passwords
         // or didn't enter anything at all."
         map.put(editText_confirmPassword, textView_passwords_error_msg);
 
@@ -79,5 +78,10 @@ public class SignUpActivity extends AppCompatActivity {
         UserController userController = new UserController();
         userController.checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg);
         doPasswordsMatch= userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
+        HashMap<Integer,String> userDetails = userController.getUserDetails();
+        boolean accountCreated = userController.createUserAccount(userDetails);
+
+        db.userDao().insertUserAccont(new User(0,userDetails.get(1), userDetails.get(0)));
+        List<User> usr = db.userDao().test("Kane");
         }
     }

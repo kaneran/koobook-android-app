@@ -9,7 +9,6 @@ import com.example.koobookandroidapp.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import dataaccess.room.RoomDatabaseAccess;
 import dataaccess.setup.AppDatabase;
 import dataaccess.sqlserver.SqlServerDatabase;
 import entities.User;
@@ -78,8 +77,7 @@ public class UserController {
 
                 //Given the password matches and all the other fields were populated with value,
                 //a user will be created using the user's details
-                ArrayList<String> userDetails = getUserDetails();
-                boolean accountCreated = createUserAccount(userDetails);
+
                 return true;
             }
 
@@ -87,30 +85,36 @@ public class UserController {
 
     }
 
-    //Uses the existing hashmap to only extract the users details and returns it as a array list
-    public ArrayList<String> getUserDetails() {
-        ArrayList<String> userDetails = new ArrayList<String>();
+    //Uses the existing hashmap to only extract the users details and returns it as a hashmap where the key will be the index
+    //to maintain the order of the details to be used later.
+    public HashMap<Integer, String> getUserDetails() {
+        HashMap<Integer,String> userDetailsHashMap = new HashMap<>();
         for (EditText editText : map.keySet()) {
-            String userDetail = editText.getText().toString();
-            userDetails.add(userDetail);
+            switch (editText.getId()){
+                case R.id.edittext_firstname:
+                    userDetailsHashMap.put(0,editText.getText().toString());
+
+                case R.id.edittext_email:
+                    userDetailsHashMap.put(1,editText.getText().toString());
+
+                case R.id.edittext_password:
+                    userDetailsHashMap.put(2,editText.getText().toString());
+
+            }
+
         }
-        return userDetails;
+        return userDetailsHashMap;
     }
 
     //Collects all required fields and stores in SQL server database and room database
-    public boolean createUserAccount(ArrayList<String> userDetails) {
+    public boolean createUserAccount(HashMap<Integer,String> userDetails) {
         try {
             BlowfishController blowfishController = new BlowfishController();
             String key = blowfishController.generateKey();
             String encryptedPassword = blowfishController.encrypt(editText_password.getText().toString(), key);
             SqlServerDatabase ssd = new SqlServerDatabase();
             ssd.insertUserAccount(userDetails.get(0), userDetails.get(1), encryptedPassword);
-            ssd.insertBlowfishKey(key, userDetails.get(0));
-
-            //Access the room database object and use access the DAO method for inserting user account
-            RoomDatabaseAccess rda = new RoomDatabaseAccess();
-            db = rda.getDb();
-            db.userDao().insertUserAccont(new User(0,userDetails.get(0), userDetails.get(1)));
+            ssd.insertBlowfishKey(key, userDetails.get(1));
             return true;
         } catch(Exception e){
             return false;
