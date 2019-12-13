@@ -15,6 +15,7 @@ import java.util.HashMap;
 import controllers.UserController;
 import dataaccess.room.RoomDatabaseAccess;
 import dataaccess.setup.AppDatabase;
+import dataaccess.sqlserver.SqlServerDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
     TextView textView_firstName_error_msg;
@@ -35,6 +36,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
 
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         RoomDatabaseAccess rda = new RoomDatabaseAccess();

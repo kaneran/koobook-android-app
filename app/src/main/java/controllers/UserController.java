@@ -6,11 +6,8 @@ import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
-import org.bouncycastle.crypto.CryptoException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import dataaccess.room.RoomDatabaseAccess;
 import dataaccess.setup.AppDatabase;
@@ -82,7 +79,7 @@ public class UserController {
                 //Given the password matches and all the other fields were populated with value,
                 //a user will be created using the user's details
                 ArrayList<String> userDetails = getUserDetails();
-                createuserAccount(userDetails);
+                boolean accountCreated = createUserAccount(userDetails);
                 return true;
             }
 
@@ -101,7 +98,7 @@ public class UserController {
     }
 
     //Collects all required fields and stores in SQL server database and room database
-    public boolean createuserAccount(ArrayList<String> userDetails) {
+    public boolean createUserAccount(ArrayList<String> userDetails) {
         try {
             BlowfishController blowfishController = new BlowfishController();
             String key = blowfishController.generateKey();
