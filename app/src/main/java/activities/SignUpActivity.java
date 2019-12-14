@@ -77,10 +77,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         UserController userController = new UserController();
         userController.checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg);
-        doPasswordsMatch= userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
+        userController.validateUserDetails(map);
+        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
         HashMap<Integer,String> userDetails = userController.getUserDetails();
         boolean accountCreated = userController.createUserAccount(userDetails);
-
         db.userDao().insertUserAccont(new User(0,userDetails.get(1), userDetails.get(0)));
         List<User> usr = db.userDao().test("Kane");
         }
