@@ -33,6 +33,10 @@ public class SignUpActivity extends AppCompatActivity {
     Boolean doPasswordsMatch;
     AppDatabase db;
     HashMap<Integer,String> userDetails;
+    boolean firstNameValidated;
+    boolean emailValidated;
+    boolean passwordValidated;
+    boolean confirmPasswordValidated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +79,16 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    //After clicking the sign up, it checks on whether each text field contains a valid value. If the validation checks pass
+    // then the process of storing the data in the databases can proceed.
     public void signUpButtonClicked(View v){
 
         UserController userController = new UserController();
-        boolean firstNameValidated = userController.validateFirstName(editText_firstName,textView_firstName_error_msg);
-        boolean emailValidated = userController.validateEmail(editText_email,textView_email_error_msg);
-        boolean passwordValidated = userController.validatePassword(editText_password,textView_password_error_msg);
-        boolean confirmPasswordValidated = userController.validatePassword(editText_confirmPassword, textView_passwords_error_msg);
-        //boolean signUpDetailsValidated = userController.validateSignUpDetails(map,passwords,textView_passwords_error_msg);
+         firstNameValidated = userController.validateFirstName(editText_firstName,textView_firstName_error_msg);
+         emailValidated = userController.validateEmail(editText_email,textView_email_error_msg);
+         passwordValidated = userController.validatePassword(editText_password,textView_password_error_msg);
+         confirmPasswordValidated = userController.validatePassword(editText_confirmPassword, textView_passwords_error_msg);
+
         if(firstNameValidated && emailValidated && passwordValidated && confirmPasswordValidated ==true){
             userDetails = userController.getUserDetails();
             boolean accountCreated = userController.createUserAccount(userDetails);
