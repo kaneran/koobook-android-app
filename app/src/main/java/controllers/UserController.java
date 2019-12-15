@@ -132,27 +132,36 @@ public class UserController {
     //if the counter is equal to the number of text fields then this implies
     //that all fileds have been validated.
     public boolean validateUserDetails(HashMap<EditText, TextView> map) {
+
         int validationPassedCounter = 0;
         for (EditText editText : map.keySet()) {
             switch (editText.getId()) {
                 case R.id.edittext_email:
-                    if (validateEmail(editText, map) == true) {
+                    if (validateEmail(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else break;
+                    } else {
+
+                    }
                 case R.id.edittext_firstname:
-                    if (validateFirstName(editText, map) == true) {
+                    if (validateFirstName(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else break;
+                    } else{
+
+                    }
 
                 case R.id.edittext_password:
-                    if (validatePassword(editText, map) == true) {
+                    if (validatePassword(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else break;
+                    } else{
+
+                    }
 
                 case R.id.edittext_confirmpassword:
-                    if (validatePassword(editText, map) == true) {
+                    if (validatePassword(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else break;
+                    } else{
+
+                    }
             }
 
         }
@@ -160,9 +169,8 @@ public class UserController {
     }
 
     //Checks if emails does not contain any spacing and has the characters that are usually in emails
-    public boolean validateEmail(EditText editText_email, HashMap<EditText, TextView> map) {
+    public boolean validateEmail(EditText editText_email, TextView textView_email_errorMsg) {
         String email = editText_email.getText().toString();
-        TextView textView_email_errorMsg = map.get(editText_email);
         ColorController colorController = new ColorController();
         if (email.contains(" ") || !email.contains("@") || !email.contains(".")) {
             colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
@@ -183,11 +191,10 @@ public class UserController {
 
     //Source- https://stackoverflow.com/questions/43292673/java-how-to-check-if-a-string-contains-a-digit this was used for
     //the first condition in the if statement which checks if the string has any digits.
-    public boolean validateFirstName(EditText editText_firstName, HashMap<EditText, TextView> map) {
+    public boolean validateFirstName(EditText editText_firstName, TextView textView_firstName_errorMsg) {
         String firstName = editText_firstName.getText().toString();
-        TextView textView_firstName_errorMsg = map.get(editText_firstName);
         ColorController colorController = new ColorController();
-        if (firstName.matches(".*\\d+.*")) {
+        if (firstName.contains(".*\\d+.*")) {
             colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for first name and set its text value
@@ -206,9 +213,8 @@ public class UserController {
     }
 
     //First checks if password contains any spacing and then checks if it contains digits
-    public boolean validatePassword(EditText editText_password, HashMap<EditText, TextView> map) {
+    public boolean validatePassword(EditText editText_password, TextView textView_password_errorMsg) {
         String password = editText_password.getText().toString();
-        TextView textView_password_errorMsg = map.get(editText_password);
         ColorController colorController = new ColorController();
         if (password.contains(" ")) {
             colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
@@ -218,7 +224,7 @@ public class UserController {
             textView_password_errorMsg.setText("Password invalid");
             textView_password_errorMsg.setVisibility(View.VISIBLE);
             return false;
-        } else if (!password.matches(".*\\d+.*")) {
+        } else if (!password.contains(".*\\d+.*")) {
             colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for password and set its text value
@@ -235,7 +241,7 @@ public class UserController {
     //Checks to see if all validation checks return true before proceeding with storing the user details in the databases
     public boolean validateSignUpDetails(HashMap<EditText,TextView> map, ArrayList<EditText> passwords, TextView textView_passwords_error_msg){
 
-        if(!validateUserDetails(map)|| !checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) || !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
+        if(!checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) || !validateUserDetails(map)|| !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
             return false;
         } else{
             return true;

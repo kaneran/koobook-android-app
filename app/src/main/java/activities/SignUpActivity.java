@@ -34,7 +34,6 @@ public class SignUpActivity extends AppCompatActivity {
     AppDatabase db;
     HashMap<Integer,String> userDetails;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +90,5 @@ public class SignUpActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         }
-
-        }
     }
+}
