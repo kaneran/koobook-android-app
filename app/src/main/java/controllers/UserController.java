@@ -20,16 +20,13 @@ public class UserController {
     EditText editText_confirmedPassword;
     HashMap<EditText, TextView> map;
     AppDatabase db;
-
-    public void setMap(HashMap<EditText, TextView> map) {
-        this.map = map;
-    }
+    boolean passwordsMatch;
 
 
     public boolean checkIfUserEnteredInformationInAllFields(HashMap<EditText, TextView> map, TextView passwordDoesNotMatchTextView) {
         ColorController colorController = new ColorController();
         int nonEmptyFieldsCounter = 0;
-        setMap(map);
+
         for (EditText editText : map.keySet()) {
             TextView fieldRequiredTextView = map.get(editText);
 
@@ -62,37 +59,28 @@ public class UserController {
 
     public boolean checkIfPasswordsMatch(ArrayList<EditText> passwords, TextView passwordDoesNotMatchTextView) {
         ColorController colorController = new ColorController();
-
-        //Before comparing if the passwords match, this checks if both password fields were populated with values
-        if (passwordDoesNotMatchTextView.getText().toString().matches("This field is required")) {
+        editText_password = passwords.get(0);
+        editText_confirmedPassword = passwords.get(1);
+        passwordsMatch = true;
+        //If password does not match then outline both edittext in red and display the error message to say password does not match
+        if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
+            passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
+            passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
+            colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.RED);
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
             return false;
-        } else {
-
-            editText_password = passwords.get(0);
-            editText_confirmedPassword = passwords.get(1);
-
-            //If password does not match then outline both edittext in red and display the error message to say password does not match
-            if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
-                passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
-                passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
-                colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.RED);
-                colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
-                return false;
-            } else {
-
-                //Given the password matches and all the other fields were populated with value,
-                //a user will be created using the user's details
-
-                return true;
-            }
-
-        }
+        } else if (!editText_password.getText().toString().matches("") && !editText_confirmedPassword.getText().toString().matches("")) {
+            passwordDoesNotMatchTextView.setVisibility(View.INVISIBLE);
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
+            colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.WHITE);
+        } return passwordsMatch;
 
     }
 
+
     //Uses the existing hashmap to only extract the users details and returns it as a hashmap where the key will be the index
     //to maintain the order of the details to be used later.
-    public HashMap<Integer, String> getUserDetails() {
+    public HashMap<Integer, String> getUserDetails(HashMap<EditText,TextView> map) {
         HashMap<Integer, String> userDetailsHashMap = new HashMap<>();
         for (EditText editText : map.keySet()) {
             switch (editText.getId()) {
