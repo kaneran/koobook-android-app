@@ -170,22 +170,32 @@ public class UserController {
 
     //Checks if emails does not contain any spacing and has the characters that are usually in emails
     public boolean validateEmail(EditText editText_email, TextView textView_email_errorMsg) {
+        boolean emailedValidated = false;
+        int validationCount = 2;
         String email = editText_email.getText().toString();
         ColorController colorController = new ColorController();
-        if (email.contains(" ") || !email.contains("@") || !email.contains(".")) {
+        if (email.matches("")){
+
+            //If the text view is for "confirmed password" then I must override its string value
+            textView_email_errorMsg.setText(R.string.this_field_is_required);
+            textView_email_errorMsg.setVisibility(View.VISIBLE);
+            colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
+            validationCount--;
+        }
+        else if (!email.contains("@") || !email.contains(".")) {
             colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for email and set its text value
 
             textView_email_errorMsg.setText("Invalid email");
             textView_email_errorMsg.setVisibility(View.VISIBLE);
-            return false;
-        } else {
+            validationCount--;
+        } if(validationCount == 2) {
             textView_email_errorMsg.setText("");
             textView_email_errorMsg.setVisibility(View.INVISIBLE);
             colorController.setBackgroundTint(editText_email, ColorController.Colors.WHITE);
-            return true;
-        }
+            emailedValidated =true;
+        } return emailedValidated;
 
     }
 
@@ -194,21 +204,31 @@ public class UserController {
     public boolean validateFirstName(EditText editText_firstName, TextView textView_firstName_errorMsg) {
         String firstName = editText_firstName.getText().toString();
         ColorController colorController = new ColorController();
-        if (firstName.contains(".*\\d+.*")) {
+        boolean firstNameValidated = false;
+        int validationCount = 2;
+        if (firstName.matches("")){
+
+            //If the text view is for "confirmed password" then I must override its string value
+            textView_firstName_errorMsg.setText(R.string.this_field_is_required);
+            textView_firstName_errorMsg.setVisibility(View.VISIBLE);
+            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
+            validationCount--;
+        }
+
+        if (firstName.matches(".*\\d+.*")) {
             colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for first name and set its text value
 
             textView_firstName_errorMsg.setText("Invalid first name");
             textView_firstName_errorMsg.setVisibility(View.VISIBLE);
-            return false;
+            validationCount--;
 
-
-        } else {
+        } if(validationCount == 2) {
             textView_firstName_errorMsg.setVisibility(View.INVISIBLE);
             colorController.setBackgroundTint(editText_firstName, ColorController.Colors.WHITE);
-            return true;
-        }
+            firstNameValidated=  true;
+        } return firstNameValidated;
 
     }
 
@@ -216,32 +236,34 @@ public class UserController {
     public boolean validatePassword(EditText editText_password, TextView textView_password_errorMsg) {
         String password = editText_password.getText().toString();
         ColorController colorController = new ColorController();
-        if (password.contains(" ")) {
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
+        boolean passwordValidated = false;
+        int validationCount = 2;
+        if (password.matches("")){
 
-            //Access the error msg that coresponds to the edit text for password and set its text value
-
-            textView_password_errorMsg.setText("Password invalid");
+            //If the text view is for "confirmed password" then I must override its string value
+            textView_password_errorMsg.setText(R.string.this_field_is_required);
             textView_password_errorMsg.setVisibility(View.VISIBLE);
-            return false;
-        } else if (!password.contains(".*\\d+.*")) {
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
+            validationCount--;
+        }
+          else if (!password.matches(".*\\d+.*")) {
             colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for password and set its text value
             textView_password_errorMsg.setText("Password must contains at least one number");
             textView_password_errorMsg.setVisibility(View.VISIBLE);
-            return false;
-        } else {
+            validationCount--;
+        } if(validationCount == 2) {
             textView_password_errorMsg.setVisibility(View.INVISIBLE);
             colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
-            return true;
-        }
+            passwordValidated = true;
+        } return passwordValidated;
     }
 
     //Checks to see if all validation checks return true before proceeding with storing the user details in the databases
     public boolean validateSignUpDetails(HashMap<EditText,TextView> map, ArrayList<EditText> passwords, TextView textView_passwords_error_msg){
-
-        if(!checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) || !validateUserDetails(map)|| !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
+        //!checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) ||
+        if(!validateUserDetails(map)|| !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
             return false;
         } else{
             return true;

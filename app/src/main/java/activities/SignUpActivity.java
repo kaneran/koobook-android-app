@@ -78,8 +78,12 @@ public class SignUpActivity extends AppCompatActivity {
     public void signUpButtonClicked(View v){
 
         UserController userController = new UserController();
-        boolean signUpDetailsValidated = userController.validateSignUpDetails(map,passwords,textView_passwords_error_msg);
-        if(signUpDetailsValidated ==true){
+        boolean firstNameValidated = userController.validateFirstName(editText_firstName,textView_firstName_error_msg);
+        boolean emailValidated = userController.validateEmail(editText_email,textView_email_error_msg);
+        boolean passwordValidated = userController.validatePassword(editText_password,textView_password_error_msg);
+        boolean confirmPasswordValidated = userController.validatePassword(editText_confirmPassword, textView_passwords_error_msg);
+        //boolean signUpDetailsValidated = userController.validateSignUpDetails(map,passwords,textView_passwords_error_msg);
+        if(firstNameValidated && emailValidated && passwordValidated && confirmPasswordValidated ==true){
             userDetails = userController.getUserDetails();
             boolean accountCreated = userController.createUserAccount(userDetails);
             if(accountCreated == true){
