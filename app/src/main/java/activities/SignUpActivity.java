@@ -1,11 +1,13 @@
 package activities;
 
 import android.arch.persistence.room.Room;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 
@@ -30,6 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
     HashMap<EditText,TextView> map;
     Boolean doPasswordsMatch;
     AppDatabase db;
+    HashMap<Integer,String> userDetails;
 
 
     @Override
@@ -76,12 +79,18 @@ public class SignUpActivity extends AppCompatActivity {
     public void signUpButtonClicked(View v){
 
         UserController userController = new UserController();
-        userController.checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg);
-        userController.validateUserDetails(map);
-        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
-        HashMap<Integer,String> userDetails = userController.getUserDetails();
-        boolean accountCreated = userController.createUserAccount(userDetails);
-        db.userDao().insertUserAccont(new User(0,userDetails.get(1), userDetails.get(0)));
-        List<User> usr = db.userDao().test("Kane");
+        boolean signUpDetailsValidated = userController.validateSignUpDetails(map,passwords,textView_passwords_error_msg);
+        if(signUpDetailsValidated ==true){
+            userDetails = userController.getUserDetails();
+            boolean accountCreated = userController.createUserAccount(userDetails);
+            if(accountCreated == true){
+                db.userDao().insertUserAccont(new User(0,userDetails.get(1), userDetails.get(0)));
+                Toast.makeText(getApplicationContext(), "You have successfully created an account, you can now proceed to login",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }
+        }
+
         }
     }

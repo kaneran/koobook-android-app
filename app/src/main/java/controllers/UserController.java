@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import dataaccess.setup.AppDatabase;
 import dataaccess.sqlserver.SqlServerDatabase;
+import entities.Color;
 import entities.User;
 
 public class UserController {
@@ -25,34 +26,37 @@ public class UserController {
     }
 
 
-    public void checkIfUserEnteredInformationInAllFields(HashMap<EditText, TextView> map, TextView passwordDoesNotMatchTextView) {
+    public boolean checkIfUserEnteredInformationInAllFields(HashMap<EditText, TextView> map, TextView passwordDoesNotMatchTextView) {
         ColorController colorController = new ColorController();
+        int nonEmptyFieldsCounter = 0;
         setMap(map);
         for (EditText editText : map.keySet()) {
             TextView fieldRequiredTextView = map.get(editText);
 
-            //Checks if the user entrted something in the Edittext element
+            //Checks if the user entered something in the Edittext element
             if (editText.getText().toString().matches("")) {
 
 
                 //If the text view is for "confirmed password" then I must override its string value
                 fieldRequiredTextView.setText(R.string.this_field_is_required);
                 fieldRequiredTextView.setVisibility(View.VISIBLE);
-                colorController.setBackgroundTint(editText, "#D81B60");
+                colorController.setBackgroundTint(editText, ColorController.Colors.RED);
 
             } else {
                 //Hide the error message affiliated with the edittext
-                colorController.setBackgroundTint(editText, "#FFFFFF");
+                colorController.setBackgroundTint(editText, ColorController.Colors.WHITE);
                 fieldRequiredTextView.setVisibility(View.INVISIBLE);
+                nonEmptyFieldsCounter++;
 
                 //Did this to ensure that the overwritten message for the text view was correct
+                //which helps to validate the prechecks in the checkIfPasswordsMatch method
                 if (fieldRequiredTextView.equals(passwordDoesNotMatchTextView)) {
                     fieldRequiredTextView.setText(R.string.passwords_does_not_match);
 
                 }
 
             }
-        }
+        } return nonEmptyFieldsCounter == map.size();
 
     }
 
@@ -71,8 +75,8 @@ public class UserController {
             if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
                 passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
                 passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
-                colorController.setBackgroundTint(editText_confirmedPassword, "#D81B60");
-                colorController.setBackgroundTint(editText_password, "#D81B60");
+                colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.RED);
+                colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
                 return false;
             } else {
 
@@ -152,27 +156,26 @@ public class UserController {
             }
 
         }
-        if (validationPassedCounter == map.size()) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return validationPassedCounter == map.size();
     }
 
     //Checks if emails does not contain any spacing and has the characters that are usually in emails
     public boolean validateEmail(EditText editText_email, HashMap<EditText, TextView> map) {
         String email = editText_email.getText().toString();
+        TextView textView_email_errorMsg = map.get(editText_email);
         ColorController colorController = new ColorController();
         if (email.contains(" ") || !email.contains("@") || !email.contains(".")) {
-            colorController.setBackgroundTint(editText_email, "#D81B60");
+            colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for email and set its text value
-            TextView textView_email_errorMsg = map.get(editText_email);
+
             textView_email_errorMsg.setText("Invalid email");
             textView_email_errorMsg.setVisibility(View.VISIBLE);
             return false;
         } else {
+            textView_email_errorMsg.setText("");
+            textView_email_errorMsg.setVisibility(View.INVISIBLE);
+            colorController.setBackgroundTint(editText_email, ColorController.Colors.WHITE);
             return true;
         }
 
@@ -182,17 +185,21 @@ public class UserController {
     //the first condition in the if statement which checks if the string has any digits.
     public boolean validateFirstName(EditText editText_firstName, HashMap<EditText, TextView> map) {
         String firstName = editText_firstName.getText().toString();
+        TextView textView_firstName_errorMsg = map.get(editText_firstName);
         ColorController colorController = new ColorController();
         if (firstName.matches(".*\\d+.*")) {
-            colorController.setBackgroundTint(editText_firstName, "#D81B60");
+            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for first name and set its text value
-            TextView textView_firstName_errorMsg = map.get(editText_firstName);
+
             textView_firstName_errorMsg.setText("Invalid first name");
             textView_firstName_errorMsg.setVisibility(View.VISIBLE);
             return false;
 
+
         } else {
+            textView_firstName_errorMsg.setVisibility(View.INVISIBLE);
+            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.WHITE);
             return true;
         }
 
@@ -201,24 +208,36 @@ public class UserController {
     //First checks if password contains any spacing and then checks if it contains digits
     public boolean validatePassword(EditText editText_password, HashMap<EditText, TextView> map) {
         String password = editText_password.getText().toString();
+        TextView textView_password_errorMsg = map.get(editText_password);
         ColorController colorController = new ColorController();
         if (password.contains(" ")) {
-            colorController.setBackgroundTint(editText_password, "#D81B60");
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for password and set its text value
-            TextView textView_firstName_errorMsg = map.get(editText_password);
-            textView_firstName_errorMsg.setText("Password invalid");
-            textView_firstName_errorMsg.setVisibility(View.VISIBLE);
+
+            textView_password_errorMsg.setText("Password invalid");
+            textView_password_errorMsg.setVisibility(View.VISIBLE);
             return false;
         } else if (!password.matches(".*\\d+.*")) {
-            colorController.setBackgroundTint(editText_password, "#D81B60");
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
 
             //Access the error msg that coresponds to the edit text for password and set its text value
-            TextView textView_firstName_errorMsg = map.get(editText_password);
-            textView_firstName_errorMsg.setText("Password must contains at least one number");
-            textView_firstName_errorMsg.setVisibility(View.VISIBLE);
+            textView_password_errorMsg.setText("Password must contains at least one number");
+            textView_password_errorMsg.setVisibility(View.VISIBLE);
             return false;
         } else {
+            textView_password_errorMsg.setVisibility(View.INVISIBLE);
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
+            return true;
+        }
+    }
+
+    //Checks to see if all validation checks return true before proceeding with storing the user details in the databases
+    public boolean validateSignUpDetails(HashMap<EditText,TextView> map, ArrayList<EditText> passwords, TextView textView_passwords_error_msg){
+
+        if(!validateUserDetails(map)|| !checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) || !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
+            return false;
+        } else{
             return true;
         }
     }
