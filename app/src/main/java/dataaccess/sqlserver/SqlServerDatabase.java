@@ -13,7 +13,7 @@ public class SqlServerDatabase {
 
 
     public boolean executeUpdateStatement(String query){
-        Connection conn = connectToSqlServerDb();
+        Connection conn = connect();
         try {
             Statement statement = conn.createStatement();
             int rs = statement.executeUpdate(query);
@@ -27,7 +27,7 @@ public class SqlServerDatabase {
     }
 
     public String executeSelectStatement(String query){
-        Connection conn = connectToSqlServerDb();
+        Connection conn = connect();
         try{
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(query);
@@ -40,7 +40,7 @@ public class SqlServerDatabase {
     }
 
 
-    public Connection connectToSqlServerDb() {
+    public Connection connect() {
         Connection conn;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
