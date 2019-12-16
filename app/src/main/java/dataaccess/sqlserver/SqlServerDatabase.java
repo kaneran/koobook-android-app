@@ -5,15 +5,18 @@ import android.util.Log;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SqlServerDatabase {
-    public Boolean insertUserAccount(String firstName, String email, String encryptedPassword) {
+
+
+    public boolean executeUpdateStatement(String query){
         Connection conn = connectToSqlServerDb();
         try {
             Statement statement = conn.createStatement();
-            int rs = statement.executeUpdate("insert into [dbo].[User] (FirstName,Email,EncryptedPassword) values ('" + firstName + "','" + email + "','" + encryptedPassword + "');");
+            int rs = statement.executeUpdate(query);
             return true;
         } catch (SQLException e) {
             String exception = e.getMessage();
@@ -23,22 +26,19 @@ public class SqlServerDatabase {
 
     }
 
-    public Boolean insertBlowfishKey(String encrpytionKey, String email) {
+    public String executeSelectStatement(String query){
         Connection conn = connectToSqlServerDb();
-        try {
+        try{
             Statement statement = conn.createStatement();
-            int rs = statement.executeUpdate("insert into [dbo].[Blowfish] (BlowfishKey,User_UserId) values ('"+encrpytionKey+"',\n" +
-                    "(select [dbo].[User].UserId from [dbo].[User] where [dbo].[User].Email = '"+email+"')\n" +
-                    ");");
-            return true;
-        } catch (Exception e) {
-
+            ResultSet rs = statement.executeQuery(query);
+            return rs.getString(1);
+        }catch(Exception e){
+            return null;
 
         }
-        return false;
-
 
     }
+
 
     public Connection connectToSqlServerDb() {
         Connection conn;

@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Koobook</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login"> <u>Login</u> </string>
     <string name="this_field_is_required">This field is required</string>
     <string name="passwords_does_not_match">Passwords does not match</string>
+    <string name="login_failed_msg">Username or password or both were incorrectly entered or the account does not exist. Please check and try again.</string>
 </resources>

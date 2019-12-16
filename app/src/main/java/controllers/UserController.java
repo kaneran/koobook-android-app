@@ -1,6 +1,5 @@
 package controllers;
 
-import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,8 +11,6 @@ import java.util.HashMap;
 
 import dataaccess.setup.AppDatabase;
 import dataaccess.sqlserver.SqlServerDatabase;
-import entities.Color;
-import entities.User;
 
 public class UserController {
     EditText editText_password;
@@ -106,12 +103,22 @@ public class UserController {
             String key = blowfishController.generateKey();
             String encryptedPassword = blowfishController.encrypt(editText_password.getText().toString(), key);
             SqlServerDatabase ssd = new SqlServerDatabase();
-            ssd.insertUserAccount(userDetails.get(0), userDetails.get(1), encryptedPassword);
-            ssd.insertBlowfishKey(key, userDetails.get(1));
+            insertUserAccountInSqlDatabase(userDetails.get(0), userDetails.get(1), encryptedPassword);
+            blowfishController.insertBlowfishKeyInSqlServerDatabase(key, userDetails.get(1));
             return true;
         } catch (Exception e) {
             return false;
 
+        }
+    }
+
+    public boolean insertUserAccountInSqlDatabase(String firstName, String email, String encryptedPassword){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        try {
+            ssd.executeUpdateStatement("insert into [dbo].[User] (FirstName,Email,EncryptedPassword) values ('" + firstName + "','" + email + "','" + encryptedPassword + "');");
+            return true;
+        }catch(Exception e){
+            return false;
         }
     }
 
@@ -161,60 +168,70 @@ public class UserController {
         boolean emailedValidated = false;
         int validationCount = 2;
         String email = editText_email.getText().toString();
-        ColorController colorController = new ColorController();
-        if (email.matches("")){
+         if (!email.contains("@") || !email.contains(".")) {
+             editMessageProperties(editText_email,textView_email_errorMsg,"Invalid email", ColorController.Colors.RED,true);
+            validationCount--;
+        }  if (checkEditTextFieldNonEmpty(editText_email, textView_email_errorMsg) == false){
 
-            //If the text view is for "confirmed password" then I must override its string value
-            textView_email_errorMsg.setText(R.string.this_field_is_required);
-            textView_email_errorMsg.setVisibility(View.VISIBLE);
-            colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
             validationCount--;
         }
-        else if (!email.contains("@") || !email.contains(".")) {
-            colorController.setBackgroundTint(editText_email, ColorController.Colors.RED);
-
-            //Access the error msg that coresponds to the edit text for email and set its text value
-
-            textView_email_errorMsg.setText("Invalid email");
-            textView_email_errorMsg.setVisibility(View.VISIBLE);
-            validationCount--;
-        } if(validationCount == 2) {
-            textView_email_errorMsg.setText("");
-            textView_email_errorMsg.setVisibility(View.INVISIBLE);
-            colorController.setBackgroundTint(editText_email, ColorController.Colors.WHITE);
+         if(validationCount == 2) {
+             editMessageProperties(editText_email,textView_email_errorMsg,"", ColorController.Colors.WHITE,false);
             emailedValidated =true;
         } return emailedValidated;
 
+    }
+
+    //Method used to edit the prpoperities of a message textview such as visibility and its text value
+    public void editMessageProperties(EditText editText, TextView textView, String message,ColorController.Colors color,boolean isVisible){
+        ColorController colorController = new ColorController();
+
+        //Access the error msg that coresponds to the edit text  and set its text value
+        textView.setText(message);
+        colorController.setBackgroundTint(editText, color);
+        if(isVisible == false){
+            textView.setVisibility(View.INVISIBLE);
+
+        } else{
+            textView.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
+
+    public boolean checkEditTextFieldNonEmpty(EditText editText, TextView textView_errorMsg){
+        String editText_value = editText.getText().toString();
+        ColorController colorController =  new ColorController();
+        if (editText_value.matches("")){
+
+            //If the text view is for "confirmed password" then I must override its string value
+            textView_errorMsg.setText(R.string.this_field_is_required);
+            textView_errorMsg.setVisibility(View.VISIBLE);
+            colorController.setBackgroundTint(editText, ColorController.Colors.RED);
+            return false;
+        } else{
+            return true;
+        }
     }
 
     //Source- https://stackoverflow.com/questions/43292673/java-how-to-check-if-a-string-contains-a-digit this was used for
     //the first condition in the if statement which checks if the string has any digits.
     public boolean validateFirstName(EditText editText_firstName, TextView textView_firstName_errorMsg) {
         String firstName = editText_firstName.getText().toString();
-        ColorController colorController = new ColorController();
         boolean firstNameValidated = false;
         int validationCount = 2;
-        if (firstName.matches("")){
+        if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg) == false){
 
-            //If the text view is for "confirmed password" then I must override its string value
-            textView_firstName_errorMsg.setText(R.string.this_field_is_required);
-            textView_firstName_errorMsg.setVisibility(View.VISIBLE);
-            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
             validationCount--;
         }
 
         if (firstName.matches(".*\\d+.*")) {
-            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.RED);
-
-            //Access the error msg that coresponds to the edit text for first name and set its text value
-
-            textView_firstName_errorMsg.setText("Invalid first name");
-            textView_firstName_errorMsg.setVisibility(View.VISIBLE);
+            editMessageProperties(editText_firstName,textView_firstName_errorMsg,"Invalid first name", ColorController.Colors.RED,true);
             validationCount--;
 
         } if(validationCount == 2) {
-            textView_firstName_errorMsg.setVisibility(View.INVISIBLE);
-            colorController.setBackgroundTint(editText_firstName, ColorController.Colors.WHITE);
+            editMessageProperties(editText_firstName,textView_firstName_errorMsg,"", ColorController.Colors.WHITE,false);
             firstNameValidated=  true;
         } return firstNameValidated;
 
@@ -223,40 +240,46 @@ public class UserController {
     //First checks if password contains any spacing and then checks if it contains digits
     public boolean validatePassword(EditText editText_password, TextView textView_password_errorMsg) {
         String password = editText_password.getText().toString();
-        ColorController colorController = new ColorController();
         boolean passwordValidated = false;
         int validationCount = 2;
-        if (password.matches("")){
-
-            //If the text view is for "confirmed password" then I must override its string value
-            textView_password_errorMsg.setText(R.string.this_field_is_required);
-            textView_password_errorMsg.setVisibility(View.VISIBLE);
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
+        if (checkEditTextFieldNonEmpty(editText_password, textView_password_errorMsg) == false){
             validationCount--;
         }
           else if (!password.matches(".*\\d+.*")) {
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
-
-            //Access the error msg that coresponds to the edit text for password and set its text value
-            textView_password_errorMsg.setText("Password must contains at least one number");
-            textView_password_errorMsg.setVisibility(View.VISIBLE);
+            editMessageProperties(editText_password,textView_password_errorMsg,"Password must contain at least one number", ColorController.Colors.RED,true);
             validationCount--;
         } if(validationCount == 2) {
-            textView_password_errorMsg.setVisibility(View.INVISIBLE);
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
+            editMessageProperties(editText_password,textView_password_errorMsg,"", ColorController.Colors.WHITE,false);
             passwordValidated = true;
         } return passwordValidated;
     }
 
-    //Checks to see if all validation checks return true before proceeding with storing the user details in the databases
-    public boolean validateSignUpDetails(HashMap<EditText,TextView> map, ArrayList<EditText> passwords, TextView textView_passwords_error_msg){
-        //!checkIfUserEnteredInformationInAllFields(map, textView_passwords_error_msg) ||
-        if(!validateUserDetails(map)|| !checkIfPasswordsMatch(passwords, textView_passwords_error_msg)){
-            return false;
+    public void login(EditText editText_email, EditText editText_password, TextView textview_login_failed_msg){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        BlowfishController blowfishController = new BlowfishController();
+        String email = editText_email.getText().toString();
+        String password = editText_password.getText().toString();
+        String userId = getUserIdFromSqlServerDatabase(email);
+        if(userId != null){
+            String blowfishKey = blowfishController.getBlowfishKeyFromSqlServerDatabase(userId);
+            String encryptedPassword = blowfishController.encrypt(password, blowfishKey);
+
         } else{
-            return true;
+            editMessageProperties(editText_email, textview_login_failed_msg,
+                    "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
+                    ColorController.Colors.RED,true);
+
         }
     }
+
+    public String getUserIdFromSqlServerDatabase(String email){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        return ssd.executeSelectStatement("select [dbo].[User].[UserId] from [dbo].[User] where Email='"+email+"';");
+
+
+    }
+
+
 
 
 }

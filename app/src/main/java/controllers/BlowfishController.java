@@ -8,6 +8,8 @@ import org.bouncycastle.util.encoders.Base64;
 
 import java.util.Random;
 
+import dataaccess.sqlserver.SqlServerDatabase;
+
 public class BlowfishController {
 
     public String generateKey() {
@@ -84,6 +86,30 @@ public class BlowfishController {
         return plainText.toString();
 
     }
+
+    public boolean insertBlowfishKeyInSqlServerDatabase(String encrpytionKey, String email){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        try {
+            ssd.executeUpdateStatement("insert into [dbo].[Blowfish] (BlowfishKey,User_UserId) values ('" + encrpytionKey + "',\n" +
+                    "(select [dbo].[User].UserId from [dbo].[User] where [dbo].[User].Email = '" + email + "')\n" +
+                    ");");
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
+
+    public String getBlowfishKeyFromSqlServerDatabase(String userId){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        return ssd.executeSelectStatement("select [dbo].[Blowfish].[BlowfishKey] from [dbo].[Blowfish] where User_UserId="+userId+";");
+
+    }
+
+    public boolean checkIfPasswordExistsInDatabase(String encryptedPassword){
+        return true;
+
+    }
+
 
 
 }
