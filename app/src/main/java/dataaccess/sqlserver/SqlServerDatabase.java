@@ -12,7 +12,7 @@ import java.sql.Statement;
 public class SqlServerDatabase {
 
 
-    public boolean executeUpdateStatement(String query){
+    public boolean executeUpdateStatement(String query) {
         Connection conn = connect();
         try {
             Statement statement = conn.createStatement();
@@ -26,17 +26,32 @@ public class SqlServerDatabase {
 
     }
 
-    public String executeSelectStatement(String query){
+    public String executeSelectStatement(String query, returns returnType) {
         Connection conn = connect();
-        try{
+        String outputValue = null;
+        try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(query);
-            return rs.getString(1);
-        }catch(Exception e){
+            while (rs.next()) {
+
+                if (returnType.equals(returns.String)) {
+                    outputValue =  rs.getString(1);
+                } else {
+                    int value = rs.getInt(1);
+                    outputValue = Integer.toString(value);
+                }
+
+            } return outputValue;
+
+        } catch (Exception e) {
             return null;
 
         }
 
+    }
+
+    public enum returns {
+        Int, String
     }
 
 

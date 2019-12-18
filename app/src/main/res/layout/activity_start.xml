@@ -62,12 +62,12 @@
             android:id="@+id/login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textColor="@color/lightBlue"
-            android:fontFamily="@font/helvetic_neuva_condensed"
             android:background="@drawable/login_button"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:onClick="loginButtonClicked"
+            android:text="Login"
 
-            />
+            android:textColor="@color/lightBlue" />
 
 
     </LinearLayout>

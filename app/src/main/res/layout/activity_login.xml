@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:backgroundTint="@color/white"
-            android:inputType="textEmailAddress"
+            android:inputType="textPassword"
             android:textColor="@color/white"
             android:drawableLeft="@drawable/password_icon"
             />
@@ -85,7 +85,7 @@
             android:background="@drawable/sign_up_button"
             android:fontFamily="@font/helvetic_neuva_condensed"
             android:onClick="loginButtonClicked"
-            android:text="@string/login"
+            android:text="Login"
             android:textColor="@color/white"
             />
 

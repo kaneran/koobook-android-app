@@ -101,7 +101,7 @@ public class BlowfishController {
 
     public String getBlowfishKeyFromSqlServerDatabase(String userId){
         SqlServerDatabase ssd = new SqlServerDatabase();
-        return ssd.executeSelectStatement("select [dbo].[Blowfish].[BlowfishKey] from [dbo].[Blowfish] where User_UserId="+userId+";");
+        return ssd.executeSelectStatement("select [dbo].[Blowfish].[BlowfishKey] from [dbo].[Blowfish] where User_UserId="+userId+";", SqlServerDatabase.returns.String);
 
     }
 

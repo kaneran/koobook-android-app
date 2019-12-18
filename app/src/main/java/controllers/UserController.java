@@ -3,6 +3,7 @@ package controllers;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 
@@ -50,7 +51,8 @@ public class UserController {
                 }
 
             }
-        } return nonEmptyFieldsCounter == map.size();
+        }
+        return nonEmptyFieldsCounter == map.size();
 
     }
 
@@ -70,14 +72,15 @@ public class UserController {
             passwordDoesNotMatchTextView.setVisibility(View.INVISIBLE);
             colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
             colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.WHITE);
-        } return passwordsMatch;
+        }
+        return passwordsMatch;
 
     }
 
 
     //Uses the existing hashmap to only extract the users details and returns it as a hashmap where the key will be the index
     //to maintain the order of the details to be used later.
-    public HashMap<Integer, String> getUserDetails(HashMap<EditText,TextView> map) {
+    public HashMap<Integer, String> getUserDetails(HashMap<EditText, TextView> map) {
         HashMap<Integer, String> userDetailsHashMap = new HashMap<>();
         for (EditText editText : map.keySet()) {
             switch (editText.getId()) {
@@ -112,12 +115,12 @@ public class UserController {
         }
     }
 
-    public boolean insertUserAccountInSqlDatabase(String firstName, String email, String encryptedPassword){
+    public boolean insertUserAccountInSqlDatabase(String firstName, String email, String encryptedPassword) {
         SqlServerDatabase ssd = new SqlServerDatabase();
         try {
             ssd.executeUpdateStatement("insert into [dbo].[User] (FirstName,Email,EncryptedPassword) values ('" + firstName + "','" + email + "','" + encryptedPassword + "');");
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -140,21 +143,21 @@ public class UserController {
                 case R.id.edittext_firstname:
                     if (validateFirstName(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else{
+                    } else {
 
                     }
 
                 case R.id.edittext_password:
                     if (validatePassword(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else{
+                    } else {
 
                     }
 
                 case R.id.edittext_confirmpassword:
                     if (validatePassword(editText, map.get(editText)) == true) {
                         validationPassedCounter++;
-                    } else{
+                    } else {
 
                     }
             }
@@ -168,31 +171,33 @@ public class UserController {
         boolean emailedValidated = false;
         int validationCount = 2;
         String email = editText_email.getText().toString();
-         if (!email.contains("@") || !email.contains(".")) {
-             editMessageProperties(editText_email,textView_email_errorMsg,"Invalid email", ColorController.Colors.RED,true);
+        if (!email.contains("@") || !email.contains(".")) {
+            editMessageProperties(editText_email, textView_email_errorMsg, "Invalid email", ColorController.Colors.RED, true);
             validationCount--;
-        }  if (checkEditTextFieldNonEmpty(editText_email, textView_email_errorMsg) == false){
+        }
+        if (checkEditTextFieldNonEmpty(editText_email, textView_email_errorMsg) == false) {
 
             validationCount--;
         }
-         if(validationCount == 2) {
-             editMessageProperties(editText_email,textView_email_errorMsg,"", ColorController.Colors.WHITE,false);
-            emailedValidated =true;
-        } return emailedValidated;
+        if (validationCount == 2) {
+            editMessageProperties(editText_email, textView_email_errorMsg, "", ColorController.Colors.WHITE, false);
+            emailedValidated = true;
+        }
+        return emailedValidated;
 
     }
 
     //Method used to edit the prpoperities of a message textview such as visibility and its text value
-    public void editMessageProperties(EditText editText, TextView textView, String message,ColorController.Colors color,boolean isVisible){
+    public void editMessageProperties(EditText editText, TextView textView, String message, ColorController.Colors color, boolean isVisible) {
         ColorController colorController = new ColorController();
 
         //Access the error msg that coresponds to the edit text  and set its text value
         textView.setText(message);
         colorController.setBackgroundTint(editText, color);
-        if(isVisible == false){
+        if (isVisible == false) {
             textView.setVisibility(View.INVISIBLE);
 
-        } else{
+        } else {
             textView.setVisibility(View.VISIBLE);
         }
 
@@ -200,17 +205,17 @@ public class UserController {
     }
 
 
-    public boolean checkEditTextFieldNonEmpty(EditText editText, TextView textView_errorMsg){
+    public boolean checkEditTextFieldNonEmpty(EditText editText, TextView textView_errorMsg) {
         String editText_value = editText.getText().toString();
-        ColorController colorController =  new ColorController();
-        if (editText_value.matches("")){
+        ColorController colorController = new ColorController();
+        if (editText_value.matches("")) {
 
             //If the text view is for "confirmed password" then I must override its string value
             textView_errorMsg.setText(R.string.this_field_is_required);
             textView_errorMsg.setVisibility(View.VISIBLE);
             colorController.setBackgroundTint(editText, ColorController.Colors.RED);
             return false;
-        } else{
+        } else {
             return true;
         }
     }
@@ -221,19 +226,21 @@ public class UserController {
         String firstName = editText_firstName.getText().toString();
         boolean firstNameValidated = false;
         int validationCount = 2;
-        if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg) == false){
+        if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg) == false) {
 
             validationCount--;
         }
 
         if (firstName.matches(".*\\d+.*")) {
-            editMessageProperties(editText_firstName,textView_firstName_errorMsg,"Invalid first name", ColorController.Colors.RED,true);
+            editMessageProperties(editText_firstName, textView_firstName_errorMsg, "Invalid first name", ColorController.Colors.RED, true);
             validationCount--;
 
-        } if(validationCount == 2) {
-            editMessageProperties(editText_firstName,textView_firstName_errorMsg,"", ColorController.Colors.WHITE,false);
-            firstNameValidated=  true;
-        } return firstNameValidated;
+        }
+        if (validationCount == 2) {
+            editMessageProperties(editText_firstName, textView_firstName_errorMsg, "", ColorController.Colors.WHITE, false);
+            firstNameValidated = true;
+        }
+        return firstNameValidated;
 
     }
 
@@ -242,44 +249,64 @@ public class UserController {
         String password = editText_password.getText().toString();
         boolean passwordValidated = false;
         int validationCount = 2;
-        if (checkEditTextFieldNonEmpty(editText_password, textView_password_errorMsg) == false){
+        if (checkEditTextFieldNonEmpty(editText_password, textView_password_errorMsg) == false) {
+            validationCount--;
+        } else if (!password.matches(".*\\d+.*")) {
+            editMessageProperties(editText_password, textView_password_errorMsg, "Password must contain at least one number", ColorController.Colors.RED, true);
             validationCount--;
         }
-          else if (!password.matches(".*\\d+.*")) {
-            editMessageProperties(editText_password,textView_password_errorMsg,"Password must contain at least one number", ColorController.Colors.RED,true);
-            validationCount--;
-        } if(validationCount == 2) {
-            editMessageProperties(editText_password,textView_password_errorMsg,"", ColorController.Colors.WHITE,false);
+        if (validationCount == 2) {
+            editMessageProperties(editText_password, textView_password_errorMsg, "", ColorController.Colors.WHITE, false);
             passwordValidated = true;
-        } return passwordValidated;
+        }
+        return passwordValidated;
     }
 
-    public void login(EditText editText_email, EditText editText_password, TextView textview_login_failed_msg){
+    //If the login method returns false then it will always set the message to say a vague message for security purposes
+    public boolean login(EditText editText_email, EditText editText_password, TextView textview_login_failed_msg) {
         SqlServerDatabase ssd = new SqlServerDatabase();
         BlowfishController blowfishController = new BlowfishController();
         String email = editText_email.getText().toString();
         String password = editText_password.getText().toString();
         String userId = getUserIdFromSqlServerDatabase(email);
-        if(userId != null){
-            String blowfishKey = blowfishController.getBlowfishKeyFromSqlServerDatabase(userId);
-            String encryptedPassword = blowfishController.encrypt(password, blowfishKey);
 
-        } else{
+        //Checks if the account, with email, exists
+        if (userId != null) {
+            String blowfishKey = blowfishController.getBlowfishKeyFromSqlServerDatabase(userId);
+            String encryptedPassword = getEncryptedPasswordFromSqlServerDatabase(userId);
+            String decryptedPassword = blowfishController.decrypt(encryptedPassword, blowfishKey);
+
+
+            if (decryptedPassword.equals(password)) {
+
+                return true;
+
+            } else {
+                editMessageProperties(editText_email, textview_login_failed_msg,
+                        "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
+                        ColorController.Colors.RED, true);
+                return false;
+            }
+        } else {
             editMessageProperties(editText_email, textview_login_failed_msg,
                     "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
-                    ColorController.Colors.RED,true);
-
+                    ColorController.Colors.RED, true);
+            return false;
         }
     }
 
-    public String getUserIdFromSqlServerDatabase(String email){
+    public String getEncryptedPasswordFromSqlServerDatabase(String userId) {
         SqlServerDatabase ssd = new SqlServerDatabase();
-        return ssd.executeSelectStatement("select [dbo].[User].[UserId] from [dbo].[User] where Email='"+email+"';");
-
+        return ssd.executeSelectStatement("select [dbo].[User].[EncryptedPassword] from [dbo].[User] where [dbo].[User].[UserId]= " + userId + "", SqlServerDatabase.returns.String);
 
     }
 
+    public String getUserIdFromSqlServerDatabase(String email) {
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        return ssd.executeSelectStatement("select [dbo].[User].[UserId] from [dbo].[User] where [dbo].[User].[Email]='" + email + "';", SqlServerDatabase.returns.Int);
 
+
+    }
 
 
 }
