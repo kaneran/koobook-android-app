@@ -134,7 +134,7 @@
                             <ImageView
                                 android:layout_width="100dp"
                                 android:layout_height="100dp"
-                                android:src="@drawable/books_icon" />
+                                android:src="@drawable/happy_face_icon" />
 
                             <TextView
                                 android:layout_width="wrap_content"

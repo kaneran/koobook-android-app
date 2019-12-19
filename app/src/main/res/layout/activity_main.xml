@@ -4,8 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="activities.MainActivity">
 
+<android.support.v7.widget.Toolbar
+    android:elevation="5dp"
+    android:id="@+id/toolbar"
+    android:background="@color/colorPrimary"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textview_toolbar"
+        android:textSize="20sp"
+        android:fontFamily="@font/arial_regular"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:text="Home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</android.support.v7.widget.Toolbar>
+    
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -26,8 +45,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu"
         android:background="#00A8F3"
-        app:itemIconTint="@drawable/icon_selected"
-        app:itemTextColor="@drawable/icon_selected"
+        app:itemIconTint="@drawable/item_selected"
+        app:itemTextColor="@drawable/item_selected"
         />
 
 </android.support.constraint.ConstraintLayout>
