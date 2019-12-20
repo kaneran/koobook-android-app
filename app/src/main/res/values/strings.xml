@@ -7,4 +7,5 @@
     <string name="passwords_does_not_match">Passwords does not match</string>
     <string name="login_failed_msg">Username or password or both were incorrectly entered or the account does not exist. Please check and try again.</string>
     <string name="welcome_msg">Welcome</string>
+    <string name="scan_msg">Please scan the barcode on the back of the book</string>
 </resources>

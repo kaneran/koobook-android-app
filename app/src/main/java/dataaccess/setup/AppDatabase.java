@@ -44,6 +44,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static volatile  AppDatabase instance;
 
     //It's syncronised to prevent multiple instance sbeing created from diifferent different threads
+    //This method allows me to get an single instance of this class such that I use it throughout the different acitivities/fragments
     public static synchronized AppDatabase getInstance(Context context){
         if(instance.equals(null)){
             instance = create(context);

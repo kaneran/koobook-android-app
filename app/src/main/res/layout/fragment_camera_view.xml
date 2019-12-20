@@ -4,10 +4,23 @@
     android:layout_height="match_parent"
     tools:context="fragments.CameraViewFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <SurfaceView
+        android:id="@+id/camera_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Camera" />
+        android:layout_height="500dp"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:id="@+id/textview_scan_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below = "@id/camera_view"
+        android:layout_marginTop="10dp"
+        android:text="@string/scan_msg"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:fontFamily="@font/helvetic_neuva_condensed"/>
 
 </FrameLayout>
