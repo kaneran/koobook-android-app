@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="fragments.LoadingScreenFragment">
+
+
+
+
+
+    <ProgressBar
+        android:indeterminateTint="@color/lightBlue"
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="100dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/loading_screen_msg"
+        android:fontFamily="@font/arial_regular"
+        android:layout_below= "@+id/progress_bar"
+        android:gravity="center"
+        android:layout_alignLeft = "@+id/progress_bar"
+        android:layout_alignTop = "@+id/progress_bar"
+        android:layout_alignRight = "@+id/progress_bar"
+        android:layout_alignBottom = "@+id/progress_bar"
+        android:textSize="20dp"
+        android:layout_marginTop="300dp"
+        />
+
+
+
+
+
+</FrameLayout>

@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -26,6 +27,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import Sound.SoundEffect;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,14 +39,19 @@ public class CameraViewFragment extends Fragment {
     CameraSource cameraSource;
     TextView textview_scan_msg;
     BarcodeDetector barcodeDetector;
+    LoadingScreenFragment loadingScreenFragment;
 
     public CameraViewFragment() {
         // Required empty public constructor
     }
 
+    //Credit to https://www.youtube.com/watch?v=ej51mAYXbKs for the tutorial on implementation the scanner using Google vision api
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        loadingScreenFragment = new LoadingScreenFragment();
+
+        final FragmentManager fragmentManager = getFragmentManager();
 
         surfaceView = getView().findViewById(R.id.camera_view);
 
@@ -93,9 +101,12 @@ public class CameraViewFragment extends Fragment {
                     textview_scan_msg.post(new Runnable() {
                         @Override
                         public void run() {
+                            SoundEffect soundEffect = new SoundEffect();
+                            soundEffect.play(getActivity().getApplicationContext());
                             Vibrator vibrator = (Vibrator) getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1000);
                             textview_scan_msg.setText(isbnCodes.valueAt(0).displayValue);
+                            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, loadingScreenFragment).commit();
                         }
                     });
                 }
