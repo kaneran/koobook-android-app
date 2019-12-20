@@ -26,7 +26,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-import scanner.IsbnScanner;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,8 +53,6 @@ public class CameraViewFragment extends Fragment {
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector).setRequestedPreviewSize(640, 480).setAutoFocusEnabled(true).build();
 
-        IsbnScanner isbnScanner = new IsbnScanner();
-        isbnScanner.setup(view, surfaceView, cameraSource, barcodeDetector);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -104,7 +101,6 @@ public class CameraViewFragment extends Fragment {
                 }
             }
         });
-
     }
 
     @Override
