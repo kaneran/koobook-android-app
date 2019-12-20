@@ -6,24 +6,10 @@
     android:layout_height="match_parent"
     tools:context="activities.MainActivity">
 
-<android.support.v7.widget.Toolbar
-    android:elevation="5dp"
+<include
     android:id="@+id/toolbar"
-    android:background="@color/colorPrimary"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:id="@+id/textview_toolbar"
-        android:textSize="20sp"
-        android:fontFamily="@font/arial_regular"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:text="Home"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-</android.support.v7.widget.Toolbar>
+    layout="@layout/toolbar"
+    app:layout_constraintBottom_toTopOf="@id/container"/>
     
     <FrameLayout
         android:id="@+id/container"

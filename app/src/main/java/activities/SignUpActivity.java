@@ -13,7 +13,6 @@ import com.example.koobookandroidapp.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
@@ -44,9 +43,9 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        //db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        db = AppDatabase.getInstance(this);
 
-        map = new HashMap<>();
 
 
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Thanks to https://www.youtube.com/watch?v=oh4YOj9VkVE for the tutorial on creating the menu-->
+
+    <item
+        android:id="@+id/item_about"
+        android:title="About"
+        app:showAsAction="never"
+    />
+
+    <item
+        android:id="@+id/item_help"
+        android:title="Help"
+        app:showAsAction="never"
+        />
+
+</menu>

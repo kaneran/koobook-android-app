@@ -1,7 +1,9 @@
 package dataaccess.setup;
 
 import android.arch.persistence.room.Database;
+import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.content.Context;
 
 import dataaccess.room.AuditBookDao;
 import dataaccess.room.AuditDao;
@@ -34,6 +36,30 @@ import dataaccess.room.UserDao;
 
 @Database(entities = {User.class, Audit.class, Status.class, Book.class, BookGenre.class, Genre.class, BookAuthor.class, Author.class, Color.class, Review.class, Rating.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
+
+    //Credit to Nikhil from https://stackoverflow.com/questions/50103232/using-singleton-within-the-android-room-library/50105730 for the singleton solution
+
+
+    private static final String DATABASE_NAME = "koobook_db";
+    private static volatile  AppDatabase instance;
+
+    //It's syncronised to prevent multiple instance sbeing created from diifferent different threads
+    public static synchronized AppDatabase getInstance(Context context){
+        if(instance.equals(null)){
+            instance = create(context);
+
+        } return instance;
+
+    }
+
+
+    private static AppDatabase create(final Context context){
+        return Room.databaseBuilder(context, AppDatabase.class, DATABASE_NAME).build();
+
+    }
+
+
+
     public abstract UserDao userDao();
     public abstract AuthorDao authorDao();
     public abstract BookAuthorDao bookAuthorDao();
