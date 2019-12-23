@@ -27,7 +27,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-import Sound.SoundEffect;
+import sound.SoundEffect;
 
 
 /**
@@ -117,7 +117,6 @@ public class CameraViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_camera_view, container, false);

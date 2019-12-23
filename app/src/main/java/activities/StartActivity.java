@@ -11,7 +11,6 @@ import dataaccess.setup.AppDatabase;
 import com.example.koobookandroidapp.R;
 
 public class StartActivity extends AppCompatActivity {
-    private AppDatabase db;
     private Button signUpButton;
 
     @Override
@@ -22,10 +21,6 @@ public class StartActivity extends AppCompatActivity {
     }
 
 
-    public void BuildRoomDatabase(){
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-
-    }
 
     public void signUpButtonClicked(View v){
         Intent intent = new Intent(this, SignUpActivity.class);

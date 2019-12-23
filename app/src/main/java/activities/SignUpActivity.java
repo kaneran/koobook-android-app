@@ -43,9 +43,9 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
 
-        //db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        db = AppDatabase.getInstance(this);
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
 
+        map = new HashMap<EditText, TextView>();
 
 
 
@@ -67,7 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
         textView_passwords_error_msg = findViewById(R.id.textview_passwords_error_msg);
 
         //I added the "Password does not match text view to the hashmap because I plan to access it
-        // and modify the string depending on whether the user entered mismatching passwords
+        // and modify the string depending on whether the userId entered mismatching passwords
         // or didn't enter anything at all."
         map.put(editText_confirmPassword, textView_passwords_error_msg);
 

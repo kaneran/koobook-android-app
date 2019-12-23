@@ -1,5 +1,7 @@
 package controllers;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -306,6 +308,27 @@ public class UserController {
         return ssd.executeSelectStatement("select [dbo].[User].[UserId] from [dbo].[User] where [dbo].[User].[Email]='" + email + "';", SqlServerDatabase.returns.Int);
 
 
+    }
+
+    //Store the user id in a shared preference file
+    public boolean storeUserId(Context context, int userId){
+        try{
+            SharedPreferences.Editor editor = context.getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE).edit();
+            editor.putInt("userId", userId).apply();
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+
+        }
+
+
+    }
+
+    //Retrieve the user id from the shared preference file
+    public int getUserIdFromSharedPreferneces(Context context){
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("userId",0);
     }
 
 

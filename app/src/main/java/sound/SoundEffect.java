@@ -1,12 +1,9 @@
-package Sound;
+package sound;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 
-import com.example.koobookandroidapp.R;
 import com.example.koobookandroidapp.R.*;
-
-import activities.MainActivity;
 
 public class SoundEffect {
 

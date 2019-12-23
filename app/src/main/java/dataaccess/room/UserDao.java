@@ -21,11 +21,12 @@ public interface UserDao {
     @Query("SELECT firstName FROM User where userId = :userId")
     public String getUsersName(int userId);
 
-    @Query("SELECT * FROM User where firstName = :firstName")
-    List<User> test(String firstName);
+    @Query("SELECT * FROM User where email = :email")
+    public User getUser(String email);
 
 
-
+    @Query("SELECT * FROM User")
+    public List<User> test();
 
 
 }

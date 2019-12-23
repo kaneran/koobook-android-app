@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.HomeFragment">
+    tools:context="fragments.HomeFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -18,19 +19,11 @@
             android:orientation="vertical">
 
 
-            <ImageView
-                android:paddingTop="70dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:src="@drawable/koobook_logo" />
-
             <TextView
+                android:id="@+id/textview_welcome_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/helvetic_neuva_condensed"
                 android:gravity="center"
                 android:text="@string/welcome_msg"
@@ -42,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
-                android:background="@color/white"
+                android:background="@drawable/start_background_v4"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -55,7 +48,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="0.50"
-                        android:layout_margin="12dp">
+                        android:layout_margin="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="6dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -84,7 +79,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="0.50"
-                        android:layout_margin="12dp">
+                        android:layout_margin="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="6dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -122,6 +119,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.50"
                         android:layout_margin="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="6dp"
                         >
 
                         <LinearLayout
@@ -151,7 +150,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="0.50"
-                        android:layout_margin="12dp">
+                        android:layout_margin="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="6dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package activities;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import com.example.koobookandroidapp.R;
 
 import controllers.UserController;
+import dataaccess.setup.AppDatabase;
+import entities.User;
 
 public class LoginActivity extends AppCompatActivity {
     EditText edittext_email;
@@ -19,6 +22,11 @@ public class LoginActivity extends AppCompatActivity {
     boolean emailEmpty;
     boolean passwordEmpty;
     boolean loginSuccessful;
+    boolean userIdStored;
+    AppDatabase db;
+    int userId;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         edittext_email = findViewById(R.id.edittext_email);
         edittext_password = findViewById(R.id.edittext_password);
         textview_login_failed_msg = findViewById(R.id.textview_login_failed_msg);
+        db = db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
     }
 
     public void signUpButtonClicked(View v){
@@ -46,10 +55,14 @@ public class LoginActivity extends AppCompatActivity {
 
             //Generate notification and navigate to the main activity
             if(loginSuccessful == true){
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                userId = db.userDao().getUserId(edittext_email.getText().toString());
+                userIdStored = userController.storeUserId(getApplicationContext(),userId);
+                if(userIdStored == true){
+                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                }
             }
 
         }
