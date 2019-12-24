@@ -20,6 +20,7 @@ public class UserController {
     EditText editText_confirmedPassword;
     HashMap<EditText, TextView> map;
     AppDatabase db;
+    SqlServerDatabase ssd;
     boolean passwordsMatch;
 
 
@@ -58,22 +59,23 @@ public class UserController {
 
     }
 
-    public boolean checkIfPasswordsMatch(ArrayList<EditText> passwords, TextView passwordDoesNotMatchTextView) {
+    public boolean checkIfPasswordsMatch(ArrayList<EditText> passwords, TextView passwordDoesNotMatchTextView, boolean passwordsValidated) {
         ColorController colorController = new ColorController();
         editText_password = passwords.get(0);
         editText_confirmedPassword = passwords.get(1);
         passwordsMatch = true;
-        //If password does not match then outline both edittext in red and display the error message to say password does not match
-        if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
-            passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
-            passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
-            colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.RED);
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
-            return false;
-        } else if (!editText_password.getText().toString().matches("") && !editText_confirmedPassword.getText().toString().matches("")) {
-            passwordDoesNotMatchTextView.setVisibility(View.INVISIBLE);
-            colorController.setBackgroundTint(editText_password, ColorController.Colors.WHITE);
-            colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.WHITE);
+
+        if(passwordsValidated == true){
+
+            //Check if passwords match
+            if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
+                passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
+                passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
+                colorController.setBackgroundTint(editText_confirmedPassword, ColorController.Colors.RED);
+                colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
+                passwordsMatch = false;
+            }
+
         }
         return passwordsMatch;
 
@@ -173,20 +175,36 @@ public class UserController {
         boolean emailedValidated = false;
         int validationCount = 2;
         String email = editText_email.getText().toString();
-        if (!email.contains("@") || !email.contains(".")) {
-            editMessageProperties(editText_email, textView_email_errorMsg, "Invalid email", ColorController.Colors.RED, true);
-            validationCount--;
-        }
-        if (checkEditTextFieldNonEmpty(editText_email, textView_email_errorMsg) == false) {
 
-            validationCount--;
-        }
-        if (validationCount == 2) {
-            editMessageProperties(editText_email, textView_email_errorMsg, "", ColorController.Colors.WHITE, false);
-            emailedValidated = true;
+        if (checkEditTextFieldNonEmpty(editText_email, textView_email_errorMsg, false) == true) {
+
+            if (!email.contains("@") || !email.contains(".")) {
+                editMessageProperties(editText_email, textView_email_errorMsg, "Invalid email", ColorController.Colors.RED, true);
+                validationCount--;
+            }
+            if (checkIfEmailAlreadyUsed(email) == true) {
+                editMessageProperties(editText_email, textView_email_errorMsg, "Email already used", ColorController.Colors.RED, true);
+                validationCount--;
+            }
+            //Both validation checks passed
+            if (validationCount == 2) {
+                editMessageProperties(editText_email, textView_email_errorMsg, "", ColorController.Colors.WHITE, false);
+                emailedValidated = true;
+            }
         }
         return emailedValidated;
 
+    }
+
+    //Checks to see if the email is affilaited with an existing account
+    public boolean checkIfEmailAlreadyUsed(String email) {
+        ssd = new SqlServerDatabase();
+        String firstName = ssd.executeSelectStatement("SELECT [dbo].[User].[FirstName] FROM [dbo].[User] WHERE email='" + email + "';", SqlServerDatabase.returns.String);
+        if (firstName != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //Method used to edit the prpoperities of a message textview such as visibility and its text value
@@ -207,15 +225,21 @@ public class UserController {
     }
 
 
-    public boolean checkEditTextFieldNonEmpty(EditText editText, TextView textView_errorMsg) {
+    //The boolean value was added as an arugment to check if the activity is the Login acitivty
+    //if it is then I don't want the textview error message to be the default message
+    public boolean checkEditTextFieldNonEmpty(EditText editText, TextView textView_errorMsg, boolean isLoginActivity) {
         String editText_value = editText.getText().toString();
         ColorController colorController = new ColorController();
         if (editText_value.matches("")) {
-
-            //If the text view is for "confirmed password" then I must override its string value
-            textView_errorMsg.setText(R.string.this_field_is_required);
-            textView_errorMsg.setVisibility(View.VISIBLE);
             colorController.setBackgroundTint(editText, ColorController.Colors.RED);
+
+            if (isLoginActivity == true) {
+                textView_errorMsg.setText("Email or password or both are empty");
+            } else {
+                textView_errorMsg.setText(R.string.this_field_is_required);
+            }
+            textView_errorMsg.setVisibility(View.VISIBLE);
+
             return false;
         } else {
             return true;
@@ -227,21 +251,21 @@ public class UserController {
     public boolean validateFirstName(EditText editText_firstName, TextView textView_firstName_errorMsg) {
         String firstName = editText_firstName.getText().toString();
         boolean firstNameValidated = false;
-        int validationCount = 2;
-        if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg) == false) {
+        int validationCount = 1;
+        if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg, false) == true) {
 
-            validationCount--;
+            if (firstName.matches(".*\\d+.*")) {
+                editMessageProperties(editText_firstName, textView_firstName_errorMsg, "Invalid first Names", ColorController.Colors.RED, true);
+                validationCount--;
+
+            }
+            if (validationCount == 1) {
+                editMessageProperties(editText_firstName, textView_firstName_errorMsg, "", ColorController.Colors.WHITE, false);
+                firstNameValidated = true;
+            }
+
         }
 
-        if (firstName.matches(".*\\d+.*")) {
-            editMessageProperties(editText_firstName, textView_firstName_errorMsg, "Invalid first name", ColorController.Colors.RED, true);
-            validationCount--;
-
-        }
-        if (validationCount == 2) {
-            editMessageProperties(editText_firstName, textView_firstName_errorMsg, "", ColorController.Colors.WHITE, false);
-            firstNameValidated = true;
-        }
         return firstNameValidated;
 
     }
@@ -250,16 +274,26 @@ public class UserController {
     public boolean validatePassword(EditText editText_password, TextView textView_password_errorMsg) {
         String password = editText_password.getText().toString();
         boolean passwordValidated = false;
-        int validationCount = 2;
-        if (checkEditTextFieldNonEmpty(editText_password, textView_password_errorMsg) == false) {
-            validationCount--;
-        } else if (!password.matches(".*\\d+.*")) {
-            editMessageProperties(editText_password, textView_password_errorMsg, "Password must contain at least one number", ColorController.Colors.RED, true);
-            validationCount--;
-        }
-        if (validationCount == 2) {
-            editMessageProperties(editText_password, textView_password_errorMsg, "", ColorController.Colors.WHITE, false);
-            passwordValidated = true;
+        int validationCount = 1;
+        if (checkEditTextFieldNonEmpty(editText_password, textView_password_errorMsg, false) == true) {
+
+            if (password.matches(".*\\d+.*")) {
+
+                if (password.length() <= 8) {
+                    editMessageProperties(editText_password, textView_password_errorMsg, "Password length must be at least 8 characters long", ColorController.Colors.RED, true);
+                    validationCount--;
+                }
+
+            } else {
+                editMessageProperties(editText_password, textView_password_errorMsg, "Password must contain at least one number", ColorController.Colors.RED, true);
+                validationCount--;
+
+            }
+            if (validationCount == 1) {
+                editMessageProperties(editText_password, textView_password_errorMsg, "", ColorController.Colors.WHITE, false);
+                passwordValidated = true;
+            }
+
         }
         return passwordValidated;
     }
@@ -311,12 +345,12 @@ public class UserController {
     }
 
     //Store the user id in a shared preference file
-    public boolean storeUserId(Context context, int userId){
-        try{
+    public boolean storeUserId(Context context, int userId) {
+        try {
             SharedPreferences.Editor editor = context.getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE).edit();
             editor.putInt("userId", userId).apply();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
 
@@ -326,9 +360,9 @@ public class UserController {
     }
 
     //Retrieve the user id from the shared preference file
-    public int getUserIdFromSharedPreferneces(Context context){
+    public int getUserIdFromSharedPreferneces(Context context) {
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt("userId",0);
+        return sharedPreferences.getInt("userId", 0);
     }
 
 

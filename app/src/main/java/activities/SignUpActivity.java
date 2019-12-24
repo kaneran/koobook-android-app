@@ -36,6 +36,7 @@ public class SignUpActivity extends AppCompatActivity {
     boolean emailValidated;
     boolean passwordValidated;
     boolean confirmPasswordValidated;
+    boolean passwordsValidated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,8 @@ public class SignUpActivity extends AppCompatActivity {
         emailValidated = userController.validateEmail(editText_email,textView_email_error_msg);
         passwordValidated = userController.validatePassword(editText_password,textView_password_error_msg);
         confirmPasswordValidated = userController.validatePassword(editText_confirmPassword, textView_passwords_error_msg);
-        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg);
+        passwordsValidated = passwordValidated && confirmPasswordValidated;
+        userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg,passwordsValidated);
         if(firstNameValidated && emailValidated && passwordValidated && confirmPasswordValidated ==true){
             userDetails = userController.getUserDetails(map);
             boolean accountCreated = userController.createUserAccount(userDetails);

@@ -11,13 +11,12 @@ import dataaccess.setup.AppDatabase;
 import com.example.koobookandroidapp.R;
 
 public class StartActivity extends AppCompatActivity {
-    private Button signUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        signUpButton = findViewById(R.id.sign_up_btn);
+
     }
 
 

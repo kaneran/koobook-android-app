@@ -47,8 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginButtonClicked(View v){
         UserController userController = new UserController();
-        emailEmpty = userController.checkEditTextFieldNonEmpty(edittext_email, textview_login_failed_msg);
-        passwordEmpty = userController.checkEditTextFieldNonEmpty(edittext_password, textview_login_failed_msg);
+        emailEmpty = userController.checkEditTextFieldNonEmpty(edittext_email, textview_login_failed_msg, true);
+        passwordEmpty = userController.checkEditTextFieldNonEmpty(edittext_password, textview_login_failed_msg, true);
 
         if(emailEmpty && passwordEmpty == true){
             loginSuccessful = userController.login(edittext_email, edittext_password, textview_login_failed_msg);
@@ -58,8 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                 userId = db.userDao().getUserId(edittext_email.getText().toString());
                 userIdStored = userController.storeUserId(getApplicationContext(),userId);
                 if(userIdStored == true){
-                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, SplashActivity.class);
                     startActivity(intent);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
