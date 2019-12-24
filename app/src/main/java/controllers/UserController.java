@@ -242,6 +242,7 @@ public class UserController {
 
             return false;
         } else {
+            colorController.setBackgroundTint(editText, ColorController.Colors.WHITE);
             return true;
         }
     }
@@ -255,7 +256,7 @@ public class UserController {
         if (checkEditTextFieldNonEmpty(editText_firstName, textView_firstName_errorMsg, false) == true) {
 
             if (firstName.matches(".*\\d+.*")) {
-                editMessageProperties(editText_firstName, textView_firstName_errorMsg, "Invalid first Names", ColorController.Colors.RED, true);
+                editMessageProperties(editText_firstName, textView_firstName_errorMsg, "Invalid first name", ColorController.Colors.RED, true);
                 validationCount--;
 
             }
@@ -302,6 +303,7 @@ public class UserController {
     public boolean login(EditText editText_email, EditText editText_password, TextView textview_login_failed_msg) {
         SqlServerDatabase ssd = new SqlServerDatabase();
         BlowfishController blowfishController = new BlowfishController();
+        ColorController colorController = new ColorController();
         String email = editText_email.getText().toString();
         String password = editText_password.getText().toString();
         String userId = getUserIdFromSqlServerDatabase(email);
@@ -321,12 +323,14 @@ public class UserController {
                 editMessageProperties(editText_email, textview_login_failed_msg,
                         "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
                         ColorController.Colors.RED, true);
+                colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
                 return false;
             }
         } else {
             editMessageProperties(editText_email, textview_login_failed_msg,
                     "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
                     ColorController.Colors.RED, true);
+            colorController.setBackgroundTint(editText_password, ColorController.Colors.RED);
             return false;
         }
     }
