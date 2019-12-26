@@ -165,10 +165,11 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/arial_regular"
             android:gravity="bottom|center"
+            android:onClick="loginLinkTextClicked"
             android:paddingTop="10dp"
             android:text="@string/login"
-            android:textColor="@color/white"
 
+            android:textColor="@color/white"
             android:textSize="14dp" />
 
     </LinearLayout>

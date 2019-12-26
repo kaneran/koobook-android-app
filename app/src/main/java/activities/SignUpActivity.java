@@ -103,4 +103,11 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void loginLinkTextClicked(View v){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+    }
 }
