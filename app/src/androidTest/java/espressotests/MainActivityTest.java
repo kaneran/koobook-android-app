@@ -47,7 +47,6 @@ public class MainActivityTest {
     @Test
     public void clickOnToolbarMenu(){
 
-
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 
         onView(withText("About")).check(matches(isDisplayed()));

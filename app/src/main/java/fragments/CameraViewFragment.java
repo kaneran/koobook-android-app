@@ -27,6 +27,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import controllers.BookController;
 import sound.SoundEffect;
 
 
@@ -40,6 +41,8 @@ public class CameraViewFragment extends Fragment {
     TextView textview_scan_msg;
     BarcodeDetector barcodeDetector;
     LoadingScreenFragment loadingScreenFragment;
+    BookController bookController;
+    String isbn;
 
     public CameraViewFragment() {
         // Required empty public constructor
@@ -101,11 +104,14 @@ public class CameraViewFragment extends Fragment {
                     textview_scan_msg.post(new Runnable() {
                         @Override
                         public void run() {
+                            bookController = new BookController();
                             SoundEffect soundEffect = new SoundEffect();
                             soundEffect.play(getActivity().getApplicationContext());
                             Vibrator vibrator = (Vibrator) getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1000);
-                            textview_scan_msg.setText(isbnCodes.valueAt(0).displayValue);
+                            //textview_scan_msg.setText(isbnCodes.valueAt(0).displayValue);
+                            isbn = isbnCodes.valueAt(0).displayValue;
+                            bookController.storeBookIsbn(getContext(), isbn);
                             fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, loadingScreenFragment).commit();
                         }
                     });

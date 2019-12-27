@@ -53,6 +53,18 @@ public class SignUpActivityTest {
         onView(withId(R.id.sign_up_btn)).perform(click());
 
         intended(hasComponent(new ComponentName(getTargetContext(), LoginActivity.class)));
+
+    }
+
+    @Test
+    public void accountAlreadyCreatedForEmail(){
+        String dummyEmail = "DummyTestUser@.com";
+
+        onView(withId(R.id.edittext_email)).perform(swipeDown(),typeText(dummyEmail), closeSoftKeyboard());
+        onView(withId(R.id.sign_up_btn)).perform(click());
+
+        onView(withId(R.id.textview_email_error_msg)).check(matches(withText("Email already used")));
+
         SqlServerDatabase ssd = new SqlServerDatabase();
         ssd.executeUpdateStatement("DELETE FROM [dbo].[User] WHERE FirstName ='DummyTestUser'");
     }
