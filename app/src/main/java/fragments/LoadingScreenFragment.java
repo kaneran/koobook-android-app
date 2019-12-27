@@ -12,14 +12,12 @@ import android.view.ViewGroup;
 import com.example.koobookandroidapp.R;
 
 import controllers.BookController;
-import dataaccess.tcp.TCPClient;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class LoadingScreenFragment extends Fragment {
-    TCPClient client;
     BookReviewFragment bookReviewFragment;
     BookController bookController;
     boolean bookExists;
@@ -43,11 +41,10 @@ public class LoadingScreenFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         bookReviewFragment = new BookReviewFragment();
         bookController = new BookController();
-        TCPClient client = new TCPClient();
 
         bookExists = bookController.checkIfBookExistsInDatabase(getContext());
-        if(bookExists != false){
-            client.connect();
+        if(bookExists == false){
+            bookController.execute();
         }
     }
 }
