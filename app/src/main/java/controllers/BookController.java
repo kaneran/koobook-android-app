@@ -65,13 +65,14 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         byte[] messageByte = new byte[1000];
         boolean end = false;
         String dataString = "";
+        String fromReceiver = "";
         try{
             String data;
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
             Socket clientSocket = new Socket("192.168.1.141",9876);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-            //DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            //outToServer.writeBytes("Oi oi");
+            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+            //Receive the book data from the server
             while(!end){
                 int bytesRead = in.read(messageByte);
                 dataString += new String(messageByte, 0, bytesRead);
@@ -79,6 +80,21 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                     end = true;
                 }
 
+            }
+            //reset the end boolean value and dataString value
+            end = false;
+
+            //Send a FIN message to the server to tell it that it is ready to close connection
+            outToServer.writeBytes("FIN");
+            while(!end){
+                int bytesRead = in.read(messageByte);
+                fromReceiver += new String(messageByte, 0, bytesRead);
+
+                //Checks to see if the Server acknowledged(ACK) and also it is ready to close connection (FIN)
+                if(fromReceiver.length()> 0 && fromReceiver.contains("FIN") && fromReceiver.contains("ACK")){
+                    outToServer.writeBytes("ACK");
+                    end = true;
+                }
             }
             clientSocket.close();
         } catch (Exception e){
