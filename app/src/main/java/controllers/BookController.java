@@ -93,6 +93,10 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                 //Checks to see if the Server acknowledged(ACK) and also it is ready to close connection (FIN)
                 if(fromReceiver.length()> 0 && fromReceiver.contains("FIN") && fromReceiver.contains("ACK")){
                     outToServer.writeBytes("ACK");
+
+                }
+                //Check to see if the server has proceeded to close its connection from its side
+                if(fromReceiver.length()>0 && fromReceiver.contains("CLOSED")){
                     end = true;
                 }
             }
