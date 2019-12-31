@@ -69,9 +69,13 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         try{
             String data;
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Socket clientSocket = new Socket("192.168.1.141",9876);
+            Socket clientSocket = new Socket("192.168.1.252",9876);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
+            //Send isbn number to the server
+            outToServer.writeBytes(isbn);
+
             //Receive the book data from the server
             while(!end){
                 int bytesRead = in.read(messageByte);

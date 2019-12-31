@@ -104,6 +104,7 @@ public class CameraViewFragment extends Fragment {
                     textview_scan_msg.post(new Runnable() {
                         @Override
                         public void run() {
+                            cameraSource.stop();
                             bookController = new BookController();
                             SoundEffect soundEffect = new SoundEffect();
                             soundEffect.play(getActivity().getApplicationContext());
