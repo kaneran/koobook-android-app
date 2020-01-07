@@ -44,6 +44,11 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void forgotPasswordLinkClicked(View v){
+
+
+    }
+
 
     public void loginButtonClicked(View v){
         UserController userController = new UserController();

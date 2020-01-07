@@ -77,6 +77,19 @@
             android:drawableLeft="@drawable/password_icon"
             />
 
+        <TextView
+            android:id="@+id/textview_forgotpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arial_regular"
+            android:gravity="bottom|center"
+            android:onClick="forgotPasswordLinkClicked"
+            android:paddingTop="15dp"
+            android:paddingBottom="10dp"
+            android:text="@string/forgot_password"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
         <Button
             android:id="@+id/login_btn"
             android:layout_width="match_parent"
