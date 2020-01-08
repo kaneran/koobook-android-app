@@ -12,8 +12,10 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
+import activities.ForgotPasswordActivity;
 import activities.LoginActivity;
 import activities.MainActivity;
+import activities.ResetPasswordActivity;
 import activities.SignUpActivity;
 import activities.SplashActivity;
 
@@ -63,6 +65,14 @@ public class LoginActivityTest {
 
         intended(hasComponent(new ComponentName(getTargetContext(), SignUpActivity.class)));
     }
+
+    @Test
+    public void navigateToForgotPasswordScreen(){
+        onView(withId(R.id.textview_forgotpassword)).perform(click());
+
+        intended(hasComponent(new ComponentName(getTargetContext(), ForgotPasswordActivity.class)));
+    }
+
 
     @Test
     public void loginWithValidInformation(){
