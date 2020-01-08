@@ -5,12 +5,13 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.koobookandroidapp.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import dataaccess.setup.AppDatabase;
 import dataaccess.sqlserver.SqlServerDatabase;
@@ -64,6 +65,7 @@ public class UserController {
         editText_password = passwords.get(0);
         editText_confirmedPassword = passwords.get(1);
         passwordsMatch = true;
+
 
         if(passwordsValidated == true){
 
@@ -243,6 +245,7 @@ public class UserController {
             return false;
         } else {
             colorController.setBackgroundTint(editText, ColorController.Colors.WHITE);
+            textView_errorMsg.setVisibility(View.INVISIBLE);
             return true;
         }
     }
@@ -360,13 +363,75 @@ public class UserController {
 
         }
 
-
     }
+
 
     //Retrieve the user id from the shared preference file
     public int getUserIdFromSharedPreferneces(Context context) {
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("userId", 0);
+    }
+
+    //Store the one time password(OTP) in a shared preference file
+    public boolean storeOneTimePassword(Context context, String oneTimePassword){
+        try{
+            SharedPreferences.Editor editor = context.getSharedPreferences("OneTimePasswordPref", Context.MODE_PRIVATE).edit();
+            editor.putString("oneTimePassword", oneTimePassword). apply();
+            return true;
+        } catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    //Retrieve the one time password from the shared preference file
+    public String getOneTimePasswordFromSharedPreferneces(Context context) {
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("OneTimePasswordPref", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("oneTimePassword", "");
+    }
+
+    public boolean validateOneTimePassword(EditText editText_oneTimePassword,TextView textView_oneTimePassword_error_msg, String oneTimePassword){
+        String oneTimePasswordEntered = editText_oneTimePassword.getText().toString();
+        if (!oneTimePassword.equals(oneTimePasswordEntered)){
+            editMessageProperties(editText_oneTimePassword, textView_oneTimePassword_error_msg, "One Time Password (OTP) incorrect", ColorController.Colors.RED, true);
+            return false;
+        } else{
+
+            return true;
+        }
+    }
+
+    public String generateOneTimePassword() {
+        StringBuilder otp = new StringBuilder();
+        Random random = new Random();
+        BlowfishController blowfishController = new BlowfishController();
+        for (int i = 0; i < 6; i++) {
+            if (random.nextInt(2) == 1) {
+                otp.append(blowfishController.generateRandomDigit());
+            } else {
+                otp.append(blowfishController.generateRandomLetter());
+
+            }
+        }
+        return otp.toString().toUpperCase();
+    }
+
+    public boolean resetPassword(int userId,String newPassword){
+        BlowfishController blowfishController = new BlowfishController();
+        String blowfishKey = blowfishController.getBlowfishKeyFromSqlServerDatabase(Integer.toString(userId));
+        String encryptedPassword = blowfishController.encrypt(newPassword, blowfishKey);
+        boolean passwordUpdated = updatePassword(userId, encryptedPassword);
+
+        if(passwordUpdated == true){
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    public boolean updatePassword(int userId, String newPassword){
+        SqlServerDatabase ssd = new SqlServerDatabase();
+        return ssd.executeUpdateStatement("UPDATE [User] SET EncryptedPassword ='"+newPassword+"' WHERE UserId = '"+userId+"'");
     }
 
 

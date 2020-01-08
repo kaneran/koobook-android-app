@@ -28,7 +28,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 
 import controllers.BookController;
-import sound.SoundEffect;
+import extras.SoundEffect;
 
 
 /**

@@ -7,20 +7,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
-import entities.User;
 
 public class LoginActivity extends AppCompatActivity {
     EditText edittext_email;
     EditText edittext_password;
     TextView textview_login_failed_msg;
-    boolean emailEmpty;
-    boolean passwordEmpty;
+    boolean emailNonEmpty;
+    boolean passwordNonEmpty;
     boolean loginSuccessful;
     boolean userIdStored;
     AppDatabase db;
@@ -46,16 +44,18 @@ public class LoginActivity extends AppCompatActivity {
 
     public void forgotPasswordLinkClicked(View v){
 
-
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
 
     public void loginButtonClicked(View v){
         UserController userController = new UserController();
-        emailEmpty = userController.checkEditTextFieldNonEmpty(edittext_email, textview_login_failed_msg, true);
-        passwordEmpty = userController.checkEditTextFieldNonEmpty(edittext_password, textview_login_failed_msg, true);
+        emailNonEmpty = userController.checkEditTextFieldNonEmpty(edittext_email, textview_login_failed_msg, true);
+        passwordNonEmpty = userController.checkEditTextFieldNonEmpty(edittext_password, textview_login_failed_msg, true);
 
-        if(emailEmpty && passwordEmpty == true){
+        if(emailNonEmpty && passwordNonEmpty == true){
             loginSuccessful = userController.login(edittext_email, edittext_password, textview_login_failed_msg);
 
             //Generate notification and navigate to the main activity
