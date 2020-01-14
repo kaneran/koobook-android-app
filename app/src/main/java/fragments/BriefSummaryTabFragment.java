@@ -1,6 +1,7 @@
 package fragments;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,21 +9,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
-
-import controllers.BookController;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoadingScreenFragment extends Fragment {
-    BookReviewFragment bookReviewFragment;
-    BookController bookController;
-    boolean bookExists;
+public class BriefSummaryTabFragment extends Fragment {
 
-    public LoadingScreenFragment() {
+    TextView textview_reviews;
+    String[] reviews;
+
+    public BriefSummaryTabFragment() {
         // Required empty public constructor
     }
 
@@ -31,21 +31,23 @@ public class LoadingScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        return inflater.inflate(R.layout.fragment_loading_screen, container, false);
-
+        return inflater.inflate(R.layout.fragment_brief_summary_tab, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookReviewFragment = new BookReviewFragment();
-        bookController = new BookController(getContext());
+        reviews = new String[20];
+        reviews[0]= "Amazing";
+        reviews[1]= "Sick plays";
 
-        bookExists = bookController.checkIfBookExistsInDatabase(getContext());
-
-        if(bookExists == false){
-            bookController.execute();
-        }
+        textview_reviews = getView().findViewById(R.id.textview_reviews);
+        textview_reviews.setText("\""+reviews[0]+"\"\n\n\""+reviews[1]+"\"");
     }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
 }

@@ -14,6 +14,6 @@ public interface ReviewDao {
     @Insert
     void insertReview(Review... review);
 
-    @Query("SELECT * FROM Review")
-    List<Review> getReviews();
+    @Query("SELECT * FROM Review WHERE book_bookId= :bookId")
+    List<Review> getReviews(int bookId);
 }

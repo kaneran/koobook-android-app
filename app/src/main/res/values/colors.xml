@@ -8,4 +8,10 @@
     <color name= "lightBlue">#2196F3</color>
     <color name="pinkRed">#D81B60</color>
     <color name="violet">#4D5288</color>
+    <color name="lightGrey">#EAE1E1</color>
+    <color name= "charcoalBlack">#444444</color>
+    <color name= "crimsonRed">#E15353</color>
+    <color name= "darkRed">#880E0E</color>
+    <color name="upvoteColor">#4BA1F1</color>
+    <color name="yellowOrange">#EA9708</color>
 </resources>

@@ -105,7 +105,7 @@ public class CameraViewFragment extends Fragment {
                         @Override
                         public void run() {
                             cameraSource.stop();
-                            bookController = new BookController();
+                            bookController = new BookController(getActivity().getApplicationContext());
                             SoundEffect soundEffect = new SoundEffect();
                             soundEffect.play(getActivity().getApplicationContext());
                             Vibrator vibrator = (Vibrator) getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);

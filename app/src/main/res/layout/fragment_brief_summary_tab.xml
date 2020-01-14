@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="fragments.BriefSummaryTabFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:text="Brief Summary"
+            android:textSize="18dp"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:textStyle="bold"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/textview_bookSummary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:text="The lives a very bad wolf who lives in the woods. Jimbo has a mission to hunt the wolf and terminate it. Will he succeed?"
+            android:textSize="16dp"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Reviews"
+                android:textSize="18dp"
+                android:fontFamily="@font/helvetic_neuva_condensed"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textview_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:text="The lives a very bad wolf who lives in the woods. Jimbo has a mission to hunt the wolf and terminate it. Will he succeed?"
+            android:textSize="16dp"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+
+</FrameLayout>

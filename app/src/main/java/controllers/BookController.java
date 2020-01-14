@@ -10,12 +10,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import dataaccess.setup.AppDatabase;
+import entities.Author;
 import entities.Book;
+import entities.BookAuthor;
+import entities.BookGenre;
+import entities.Genre;
+import entities.Rating;
+import entities.Review;
+import extras.Helper;
 
 public class BookController extends AsyncTask<String, Void, Boolean> {
     AppDatabase db;
@@ -25,6 +30,12 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     String[] genres;
     String[] reviews;
     String[] authors;
+
+    Context context;
+
+    public BookController(Context context) {
+        this.context = context;
+    }
 
     //Checks in room database to see if book exists
     public boolean checkIfBookExistsInDatabase(Context context) {
@@ -116,11 +127,98 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             genres = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
             authors = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
             reviews = SplitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
+            saveBookInformation(bookDataMap, authors, genres, reviews);
+
+
         } catch (Exception e){
             e.printStackTrace();
         }
 
     }
+
+
+
+    public void saveBookInformation(HashMap<BookData,String> bookDataMap, String[] authors,String[] genres, String[] reviews){
+        try {
+
+            Helper helper = new Helper();
+
+            String isbnNumber = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Isbn));
+            String title = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Title));
+            String subtitle = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Subtitle));
+            int pageCount = Integer.parseInt(bookDataMap.get(BookData.PageCount));
+            String summary = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Description));
+            String thumbnailUrl = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.ThumbnailUrl));
+            double amazonAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.AmazonAverageRating));
+            double googleBooksAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.GoogleBooksAverageRating));
+            double goodreadsAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.GoodreadsAverageRating));
+            int amazonFiveStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonFiveStarRatingPercentage));
+            int amazonFourStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonFourStarRatingPercentage));
+            int amazonThreeStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonThreeStarRatingPercentage));
+            int amazonTwoStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonTwoStarRatingPercentage));
+            int amazonOneStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonOneStarRatingPercentage));
+            int amazonReviewsCount = helper.convertStringToInt(bookDataMap.get(BookData.AmazonReviewsCount));
+            HashMap<BookData, Double> averageRatingMap = new HashMap<>();
+
+            db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+
+            db.bookDao().insertBook(new Book(0, isbnNumber, title, subtitle, pageCount, summary, thumbnailUrl, 0));
+
+            int bookId = db.bookDao().getBook(isbnNumber).bookId;
+
+            int authorId;
+            for (String author : authors) {
+                db.authorDao().insertAuthor(new Author(0, author));
+                authorId = db.authorDao().getAuthorId(author);
+                db.bookAuthorDao().insertBookAuthor(new BookAuthor(0, bookId, authorId));
+            }
+
+            int genreId;
+            for (String genre : genres) {
+                db.genreDao().insertGenre(new Genre(0, genre));
+                genreId = db.genreDao().getGenreId(genre);
+                db.bookGenreDao().insertBookGenre(new BookGenre(0, bookId, genreId));
+            }
+
+
+            averageRatingMap.put(BookData.AmazonAverageRating, amazonAverageRating);
+            averageRatingMap.put(BookData.GoogleBooksAverageRating, googleBooksAverageRating);
+            averageRatingMap.put(BookData.GoodreadsAverageRating, goodreadsAverageRating);
+            double overallAverageRating = ComputeOverallAverageRating(averageRatingMap);
+            db.ratingDao().insertRatings(new Rating(0, bookId, overallAverageRating, amazonAverageRating, googleBooksAverageRating, goodreadsAverageRating,
+                    amazonFiveStarRatingPercentage, amazonFourStarRatingPercentage, amazonThreeStarRatingPercentage, amazonTwoStarRatingPercentage, amazonOneStarRatingPercentage,
+                    amazonReviewsCount));
+
+            for (String review : reviews) {
+                if(review != "")
+                    db.reviewDao().insertReview(new Review(0, bookId, review));
+            }
+
+
+        } catch(Exception e){
+            e.printStackTrace();
+            String errorMsg = e.getMessage();
+        }
+    }
+
+
+
+    private double ComputeOverallAverageRating(HashMap<BookData, Double> averageRatingMap) {
+        int count = 0;
+        for(double averageRating : averageRatingMap.values()){
+            if(averageRating != 0){
+                count++;
+            }
+        }
+        double amazonAverageRating = averageRatingMap.get(BookData.AmazonAverageRating);
+        double googleBooksAverageRating = averageRatingMap.get(BookData.GoogleBooksAverageRating);
+        double goodreadsAverageRating = averageRatingMap.get(BookData.GoodreadsAverageRating);
+        double averageRating = (amazonAverageRating + googleBooksAverageRating + goodreadsAverageRating)/count;
+        return Math.round((averageRating*10)/10.0);
+    }
+
+    //If the current string built by the string builder is "*" then that means that the book source returned no data for that specific field.
+    //Hence why I want to replace it with ""
     public HashMap<BookData,String> EncodeBookData(String bookData) {
         char[] chars  = bookData.toCharArray();
         HashMap<BookData,String> bookDataMap = new HashMap<BookData,String>();
@@ -165,6 +263,8 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                         bookDataMap.put(BookData.Genres, sb.toString());
                     case 17:
                         bookDataMap.put(BookData.PageCount, sb.toString());
+                    case 18:
+                        bookDataMap.put(BookData.ThumbnailUrl, sb.toString());
                 }
                 sb.setLength(0);
 
@@ -180,7 +280,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     }
 
     public static String[] SplitStringsAndPutIntoList(String str){
-        String[] stringArray = str.split("#",5);
+        String[] stringArray = str.split("#",100);
 
         return stringArray;
     }
@@ -202,6 +302,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         AmazonReviews,
         AmazonReviewsCount,
         Genres,
-        PageCount
+        PageCount,
+        ThumbnailUrl
     }
 }
