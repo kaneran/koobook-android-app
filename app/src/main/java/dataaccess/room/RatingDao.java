@@ -14,4 +14,7 @@ public interface RatingDao {
 
     @Query("SELECT ratingId FROM Rating WHERE book_bookId = :bookId")
     int getRatingId(int bookId);
+
+    @Query("SELECT * FROM Rating WHERE book_bookId = :bookId")
+    Rating getRating(int bookId);
 }

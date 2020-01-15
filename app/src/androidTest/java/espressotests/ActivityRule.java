@@ -24,7 +24,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * A JUnit {@link Rule @Rule} which launches an activity when your test starts. Stop extending
+ * A JUnit {@link Rule @Rule} which launches an activity when your displayBookInformationInBriefSummaryTab starts. Stop extending
  * gross {@code ActivityInstrumentationBarfCase2}!
  * <p>
  * Usage:
@@ -34,7 +34,7 @@ import org.junit.runners.model.Statement;
  *     new espressotests.ActivityRule<>(ExampleActivity.class);
  * }</pre>
  *
- * This will automatically launch the activity for each test method. The instance will also be
+ * This will automatically launch the activity for each displayBookInformationInBriefSummaryTab method. The instance will also be
  * created sooner should you need to use it in a {@link Before @Before} method.
  * <p>
  * You can also customize the way in which the activity is launched by overriding
@@ -78,7 +78,7 @@ public class ActivityRule<T extends Activity> implements TestRule {
         return activity;
     }
 
-    /** Get the {@link Instrumentation} instance for this test. */
+    /** Get the {@link Instrumentation} instance for this displayBookInformationInBriefSummaryTab. */
     public final Instrumentation instrumentation() {
         launchActivity();
         return instrumentation;

@@ -12,6 +12,10 @@ public interface AuthorDao {
     @Query("SELECT authorId FROM Author WHERE name = :name")
     int getAuthorId(String name);
 
+    @Query("SELECT name FROM Author WHERE authorId = :authorId")
+    String getAuthorName(int authorId);
+
     @Insert
     void insertAuthor(Author... author);
+
 }

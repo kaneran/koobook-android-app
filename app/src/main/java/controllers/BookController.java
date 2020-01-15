@@ -1,16 +1,34 @@
 package controllers;
 
+import android.app.ActionBar;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+
+import com.example.koobookandroidapp.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import dataaccess.setup.AppDatabase;
 import entities.Author;
@@ -21,6 +39,9 @@ import entities.Genre;
 import entities.Rating;
 import entities.Review;
 import extras.Helper;
+import extras.MyComparator;
+import fragments.BriefSummaryTabFragment;
+import fragments.RatingTabFragment;
 
 public class BookController extends AsyncTask<String, Void, Boolean> {
     AppDatabase db;
@@ -160,7 +181,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             int amazonReviewsCount = helper.convertStringToInt(bookDataMap.get(BookData.AmazonReviewsCount));
             HashMap<BookData, Double> averageRatingMap = new HashMap<>();
 
-            db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+            //db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
 
             db.bookDao().insertBook(new Book(0, isbnNumber, title, subtitle, pageCount, summary, thumbnailUrl, 0));
 
@@ -201,9 +222,130 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
     }
 
+    public void displayBookInformation(View view, FragmentManager fragmentManager, Toolbar toolbar){
+        try {
+            db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+            String isbn = getBookIsbnFromSharedPreferneces(context);
+            Book book = db.bookDao().getBook(isbn);
+            toolbar.setTitle(book.getTitle());
+            List<Integer> genreIds = db.bookGenreDao().getGenreIdsOfBook(book.bookId);
+            List<String> genreLabels = new ArrayList<>();
+            for (int i = 0; i < genreIds.size(); i++) {
+                genreLabels.add(db.genreDao().getGenreLabel(genreIds.get(i)));
+            }
+            List<Integer> authorIds = db.bookAuthorDao().getAuthorIdsOfBook(book.bookId);
+            List<String> authorNames = new ArrayList<>();
+            for (int i = 0; i < authorIds.size(); i++) {
+                authorNames.add(db.authorDao().getAuthorName(authorIds.get(i)));
+            }
+
+            Rating ratings = db.ratingDao().getRating(book.bookId);
+            ImageView imageview_bookthumbnail = view.findViewById(R.id.imageview_bookthumbnail);
+            TextView textview_book_subtitle = view.findViewById(R.id.textview_book_subtitle);
+            TextView textview_book_isbn = view.findViewById(R.id.textview_book_isbn);
+            TextView textview_genres = view.findViewById(R.id.textview_genres);
+            TextView textview_authors = view.findViewById(R.id.textview_authors);
+            RatingBar ratingbar_overall_rating = view.findViewById(R.id.ratingbar_overallrating);
+
+            if (!book.getThumbnailUrl().matches("")) {
+                //Credit to the creators of Picasso at https://square.github.io/picasso/
+                Picasso.with(context).load(book.getThumbnailUrl()).into(imageview_bookthumbnail);
+            }
+
+            if (book.getSubtitle().matches("")) {
+                textview_book_subtitle.setText("No subtitle");
+            } else {
+                textview_book_subtitle.setText(book.getSubtitle());
+            }
+            textview_book_isbn.setText(book.getIsbnNumber());
+            String genres = "";
+            for (int i = 0; i < genreLabels.size(); i++) {
+                if (i == (genreLabels.size() - 1) && genreLabels.get(i) != null) {
+                    genres += genreLabels.get(i);
+                } else if (genreLabels.get(i) != null) {
+                    genres += (genreLabels.get(i) + ", ");
+                }
+            }
+            if (genres.length() == 0) {
+                textview_genres.setText("Unavailable");
+            } else {
+                textview_genres.setText(genres);
+            }
+
+            String authors = "";
+            for (int i = 0; i < authorNames.size(); i++) {
+                if (i == (authorNames.size() - 1) && authorNames.get(i) != null) {
+                    authors += authorNames.get(i);
+                } else if (authorNames.get(i) != null) {
+                    authors += (authorNames.get(i) + ", ");
+                }
+            }
+            if (authors.length() == 0) {
+                textview_authors.setText("Unavailable");
+            } else {
+                textview_authors.setText(authors);
+            }
+            ratingbar_overall_rating.setRating((float) ratings.getOverallAverageRating());
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void displayBookInformationInBriefSummaryTab(View view){
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        TextView textview_book_summary = view.findViewById(R.id.textview_book_summary);
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        Book book = db.bookDao().getBook(isbn);
+        textview_book_summary.setText(book.getSummary());
+
+    }
+
+    public void displayBookInformationInReviewsTab(View view){
+        MyComparator myComparator = new MyComparator();
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        Book book = db.bookDao().getBook(isbn);
+        TextView textview_reviews = view.findViewById(R.id.textview_reviews);
+        List<Review> reviews = db.reviewDao().getReviews(book.bookId);
+        Collections.sort(reviews, myComparator);
+        String reviewsString = "";
+
+        //Display the first 4 reviews
+        for(int i =0; i<reviews.size(); i++){
+
+                    if (i == (reviews.size() - 1) && i<5 && !reviews.get(i).getReview().matches("")) {
+                        reviewsString += ("\"" + reviews.get(i).getReview() + "\"");
+                    } else if(i<4 && !reviews.get(i).getReview().matches("")){
+                        reviewsString += ("\"" + reviews.get(i).getReview() + "\"\n\n");
+                    }
+
+        }
+        textview_reviews.setText(reviewsString);
+    }
+
+    public void displayBookInformationInRatingTab(View view){
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        Book book = db.bookDao().getBook(isbn);
+        Rating ratings = db.ratingDao().getRating(book.getBookId());
+
+        RatingBar ratingbar_amazon_average_rating = view.findViewById(R.id.ratingbar_amazon_average_rating);
+        RatingBar ratingbar_googlebooks_average_rating = view.findViewById(R.id.ratingbar_googlebooks_average_rating);
+        RatingBar ratingbar_goodreads_average_rating = view.findViewById(R.id.ratingbar_goodreads_average_rating);
+        TextView textview_four_to_five_star_rating_percentage = view.findViewById(R.id.textview_fourtofivestarratingpercentage);
+        TextView textview_one_star_rating_percentage = view.findViewById(R.id.textview_onestarratingpercentage);
+
+        ratingbar_amazon_average_rating.setRating((float)ratings.getAmazonAverageRating());
+        ratingbar_googlebooks_average_rating.setRating((float)ratings.getGoogleBooksAverageRating());
+        ratingbar_goodreads_average_rating.setRating((float)ratings.getGoodreadsAverageRating());
+        int fourToFiveStarRatingPercentage = ratings.getAmazonFiveStarRatingPercentage() + ratings.getAmazonFourStarRatingPercentage();
+        textview_four_to_five_star_rating_percentage.setText(fourToFiveStarRatingPercentage+"%");
+        textview_one_star_rating_percentage.setText(ratings.getAmazonOneStarRatingPercentage()+ "%");
+    }
 
 
-    private double ComputeOverallAverageRating(HashMap<BookData, Double> averageRatingMap) {
+
+    private double  ComputeOverallAverageRating(HashMap<BookData, Double> averageRatingMap) {
         int count = 0;
         for(double averageRating : averageRatingMap.values()){
             if(averageRating != 0){

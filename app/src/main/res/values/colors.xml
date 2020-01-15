@@ -14,4 +14,6 @@
     <color name= "darkRed">#880E0E</color>
     <color name="upvoteColor">#4BA1F1</color>
     <color name="yellowOrange">#EA9708</color>
+    <color name="green">#0ED145</color>
+    <color name= "dislikeRed">#EA0831</color>
 </resources>

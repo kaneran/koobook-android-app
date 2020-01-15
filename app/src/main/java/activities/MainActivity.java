@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     HomeFragment homeFragment = new HomeFragment();
     CameraViewFragment cameraViewFragment = new CameraViewFragment();
     SearchFragment searchFragment = new SearchFragment();
-    //SettingsFragment settingsFragment = new SettingsFragment();
-    BookReviewFragment bookReviewFragment = new BookReviewFragment();
+    SettingsFragment settingsFragment = new SettingsFragment();
+    //BookReviewFragment bookReviewFragment = new BookReviewFragment();
 
 
     @Override
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
 
             case R.id.navigation_settings:
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, settingsFragment).commit();
                 getSupportActionBar().setTitle("Settings");
                 return true;
 

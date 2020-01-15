@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
@@ -19,12 +18,10 @@ import controllers.BookController;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BriefSummaryTabFragment extends Fragment {
+public class ReviewsTabFragment extends Fragment {
 
-    TextView textview_reviews;
-    String[] reviews;
 
-    public BriefSummaryTabFragment() {
+    public ReviewsTabFragment() {
         // Required empty public constructor
     }
 
@@ -33,14 +30,14 @@ public class BriefSummaryTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_brief_summary_tab, container, false);
+        return inflater.inflate(R.layout.fragment_reviews_tab, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         BookController bookController = new BookController(getContext());
-        bookController.displayBookInformationInBriefSummaryTab(view);
+        bookController.displayBookInformationInReviewsTab(view);
     }
 
     public interface OnFragmentInteractionListener {

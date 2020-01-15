@@ -1,6 +1,7 @@
 package fragments;
 
 
+import android.app.ActionBar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,20 +10,24 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.koobookandroidapp.R;
 
+import controllers.BookController;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 ////Source- https://www.youtube.com/watch?v=zcnT-3F-9JA
-public class BookReviewFragment extends Fragment implements RatingTabFragment.OnFragmentInteractionListener, BriefSummaryTabFragment.OnFragmentInteractionListener{
+public class BookReviewFragment extends Fragment implements RatingTabFragment.OnFragmentInteractionListener, BriefSummaryTabFragment.OnFragmentInteractionListener, ReviewsTabFragment.OnFragmentInteractionListener{
 
     TabLayout tabLayout;
+    Toolbar toolbar;
 
     public BookReviewFragment() {
         // Required empty public constructor
@@ -39,10 +44,17 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        BookController bookController = new BookController(getContext());
+        toolbar = getActivity().findViewById(R.id.toolbar);
+        bookController.displayBookInformation(view, getFragmentManager(),toolbar);
         tabLayout = getView().findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("Brief"));
         tabLayout.addTab(tabLayout.newTab().setText("Rating"));
+        tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
 
         final ViewPager viewPager = getView().findViewById(R.id.pager);
         final PagerAdapter adapter = new adapters.PagerAdapter(getFragmentManager(), tabLayout.getTabCount());

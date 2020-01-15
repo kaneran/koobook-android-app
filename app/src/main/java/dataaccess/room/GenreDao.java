@@ -14,4 +14,7 @@ public interface GenreDao {
 
     @Query("SELECT genreId FROM Genre WHERE genreLabel = :genreLabel")
     int getGenreId(String genreLabel);
+
+    @Query("SELECT genreLabel FROM Genre WHERE genreId = :genreId")
+    String getGenreLabel(int genreId);
 }

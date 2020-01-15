@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import fragments.BriefSummaryTabFragment;
 import fragments.RatingTabFragment;
+import fragments.ReviewsTabFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -26,6 +27,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 RatingTabFragment ratingTabFragment = new RatingTabFragment();
                 return ratingTabFragment;
+
+            case 2:
+                ReviewsTabFragment reviewsTabFragment = new ReviewsTabFragment();
+                return reviewsTabFragment;
 
              default:
                  return null;
