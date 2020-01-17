@@ -93,9 +93,9 @@ public class SignUpActivity extends AppCompatActivity {
         userController.checkIfPasswordsMatch(passwords, textView_passwords_error_msg,passwordsValidated);
         if(firstNameValidated && emailValidated && passwordValidated && confirmPasswordValidated ==true){
             userDetails = userController.getUserDetails(map);
-            boolean accountCreated = userController.createUserAccount(userDetails);
+            boolean accountCreated = userController.createUserAccount(editText_firstName.getText().toString(), editText_email.getText().toString());
             if(accountCreated == true){
-                db.userDao().insertUserAccont(new User(0,userDetails.get(1), userDetails.get(0)));
+                db.userDao().insertUserAccont(new User(0,editText_email.getText().toString(), editText_firstName.getText().toString()));
                 Toast.makeText(getApplicationContext(), "You have successfully created an account, you can now proceed to login",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);

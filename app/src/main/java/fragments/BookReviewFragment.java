@@ -14,10 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.koobookandroidapp.R;
 
 import controllers.BookController;
+import dialogs.LikeBookDialog;
 
 
 /**
@@ -28,6 +30,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
 
     TabLayout tabLayout;
     Toolbar toolbar;
+    Button button_like;
 
     public BookReviewFragment() {
         // Required empty public constructor
@@ -47,14 +50,14 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
 
         BookController bookController = new BookController(getContext());
         toolbar = getActivity().findViewById(R.id.toolbar);
+        button_like = getView().findViewById(R.id.button_like);
         bookController.displayBookInformation(view, getFragmentManager(),toolbar);
         tabLayout = getView().findViewById(R.id.tablayout);
+
         tabLayout.addTab(tabLayout.newTab().setText("Brief"));
         tabLayout.addTab(tabLayout.newTab().setText("Rating"));
         tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
 
         final ViewPager viewPager = getView().findViewById(R.id.pager);
         final PagerAdapter adapter = new adapters.PagerAdapter(getFragmentManager(), tabLayout.getTabCount());
@@ -75,6 +78,14 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
+            }
+        });
+
+        button_like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LikeBookDialog likeBookDialog = new LikeBookDialog();
+                likeBookDialog.show(getFragmentManager(),"Like dialog");
             }
         });
     }

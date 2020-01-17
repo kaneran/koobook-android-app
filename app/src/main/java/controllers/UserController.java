@@ -106,14 +106,14 @@ public class UserController {
     }
 
     //Collects all required fields and stores in SQL server database and room database
-    public boolean createUserAccount(HashMap<Integer, String> userDetails) {
+    public boolean createUserAccount(String firstName, String email) {
         try {
             BlowfishController blowfishController = new BlowfishController();
             String key = blowfishController.generateKey();
             String encryptedPassword = blowfishController.encrypt(editText_password.getText().toString(), key);
             SqlServerDatabase ssd = new SqlServerDatabase();
-            insertUserAccountInSqlDatabase(userDetails.get(0), userDetails.get(1), encryptedPassword);
-            blowfishController.insertBlowfishKeyInSqlServerDatabase(key, userDetails.get(1));
+            insertUserAccountInSqlDatabase(firstName, email, encryptedPassword);
+            blowfishController.insertBlowfishKeyInSqlServerDatabase(key, email);
             return true;
         } catch (Exception e) {
             return false;

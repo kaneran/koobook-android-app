@@ -45,10 +45,9 @@ public class LoadingScreenFragment extends Fragment {
         bookController = new BookController(getContext());
 
         bookExists = bookController.checkIfBookExistsInDatabase(getContext());
-
         if(bookExists == false){
             bookController.execute();
-            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+
         } else{
             fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
         }

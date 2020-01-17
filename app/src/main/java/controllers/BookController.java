@@ -1,14 +1,10 @@
 package controllers;
 
-import android.app.ActionBar;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -24,13 +20,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import dataaccess.setup.AppDatabase;
+import entities.Audit;
 import entities.Author;
 import entities.Book;
 import entities.BookAuthor;
@@ -40,8 +38,8 @@ import entities.Rating;
 import entities.Review;
 import extras.Helper;
 import extras.MyComparator;
-import fragments.BriefSummaryTabFragment;
-import fragments.RatingTabFragment;
+import fragments.BookReviewFragment;
+import fragments.ErrorFragment;
 
 public class BookController extends AsyncTask<String, Void, Boolean> {
     AppDatabase db;
@@ -89,7 +87,17 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... strings) {
         try{
-            receiveBookInformation(strings);
+            BookReviewFragment bookReviewFragment = new BookReviewFragment();
+            ErrorFragment errorFragment = new ErrorFragment();
+            boolean bookInformationreceived = receiveBookInformation(strings);
+            if (bookInformationreceived == true){
+                FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+
+            } else{
+                FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
+            }
             return true;
         } catch (Exception e){
 
@@ -100,7 +108,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
     //Credit to  //Code from https://systembash.com/a-simple-java-tcp-server-and-tcp-client/ and
     // Rodolk from https://stackoverflow.com/questions/19839172/how-to-read-all-of-inputstream-in-server-socket-java for the TCP client implementation
-    public void receiveBookInformation(String... strings){
+    public boolean receiveBookInformation(String... strings){
         byte[] messageByte = new byte[1000];
         boolean end = false;
         String bookDataString = "";
@@ -148,26 +156,27 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             genres = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
             authors = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
             reviews = SplitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
-            saveBookInformation(bookDataMap, authors, genres, reviews);
-
+            boolean bookInformationSaved = saveBookInformation(bookDataMap, authors, genres, reviews);
+            return bookInformationSaved;
 
         } catch (Exception e){
             e.printStackTrace();
+            return false;
         }
 
     }
 
 
 
-    public void saveBookInformation(HashMap<BookData,String> bookDataMap, String[] authors,String[] genres, String[] reviews){
+    public boolean saveBookInformation(HashMap<BookData,String> bookDataMap, String[] authors,String[] genres, String[] reviews){
         try {
 
             Helper helper = new Helper();
-
+            RatingController ratingController = new RatingController();
             String isbnNumber = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Isbn));
             String title = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Title));
             String subtitle = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Subtitle));
-            int pageCount = Integer.parseInt(bookDataMap.get(BookData.PageCount));
+            int pageCount = helper.convertStringToInt(bookDataMap.get(BookData.PageCount));
             String summary = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Description));
             String thumbnailUrl = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.ThumbnailUrl));
             double amazonAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.AmazonAverageRating));
@@ -205,7 +214,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             averageRatingMap.put(BookData.AmazonAverageRating, amazonAverageRating);
             averageRatingMap.put(BookData.GoogleBooksAverageRating, googleBooksAverageRating);
             averageRatingMap.put(BookData.GoodreadsAverageRating, goodreadsAverageRating);
-            double overallAverageRating = ComputeOverallAverageRating(averageRatingMap);
+            double overallAverageRating = ratingController.computeOverallAverageRating(averageRatingMap);
             db.ratingDao().insertRatings(new Rating(0, bookId, overallAverageRating, amazonAverageRating, googleBooksAverageRating, goodreadsAverageRating,
                     amazonFiveStarRatingPercentage, amazonFourStarRatingPercentage, amazonThreeStarRatingPercentage, amazonTwoStarRatingPercentage, amazonOneStarRatingPercentage,
                     amazonReviewsCount));
@@ -215,10 +224,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                     db.reviewDao().insertReview(new Review(0, bookId, review));
             }
 
-
+            return true;
         } catch(Exception e){
             e.printStackTrace();
             String errorMsg = e.getMessage();
+            return false;
         }
     }
 
@@ -296,8 +306,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         TextView textview_book_summary = view.findViewById(R.id.textview_book_summary);
         String isbn = getBookIsbnFromSharedPreferneces(context);
         Book book = db.bookDao().getBook(isbn);
-        textview_book_summary.setText(book.getSummary());
-
+        if(book.getSummary().length() == 0){
+            textview_book_summary.setText("Unavailable");
+        } else {
+            textview_book_summary.setText(book.getSummary());
+        }
     }
 
     public void displayBookInformationInReviewsTab(View view){
@@ -313,14 +326,17 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         //Display the first 4 reviews
         for(int i =0; i<reviews.size(); i++){
 
-                    if (i == (reviews.size() - 1) && i<5 && !reviews.get(i).getReview().matches("")) {
-                        reviewsString += ("\"" + reviews.get(i).getReview() + "\"");
-                    } else if(i<4 && !reviews.get(i).getReview().matches("")){
-                        reviewsString += ("\"" + reviews.get(i).getReview() + "\"\n\n");
-                    }
+            if (i == (reviews.size() - 1) && i<5 && !reviews.get(i).getReview().matches("")) {
+                reviewsString += ("\"" + reviews.get(i).getReview() + "\"");
+            } else if(i<5 && !reviews.get(i).getReview().matches("")){
+                reviewsString += ("\"" + reviews.get(i).getReview() + "\"\n\n");
+            }
 
+        } if(reviewsString.matches("")){
+            textview_reviews.setText("Unavailable");
+        } else {
+            textview_reviews.setText(reviewsString);
         }
-        textview_reviews.setText(reviewsString);
     }
 
     public void displayBookInformationInRatingTab(View view){
@@ -329,6 +345,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         Book book = db.bookDao().getBook(isbn);
         Rating ratings = db.ratingDao().getRating(book.getBookId());
 
+        TextView textview_amazon_rating_breakdown_title = view.findViewById(R.id.textview_amazonratingbreakdown_title);
         RatingBar ratingbar_amazon_average_rating = view.findViewById(R.id.ratingbar_amazon_average_rating);
         RatingBar ratingbar_googlebooks_average_rating = view.findViewById(R.id.ratingbar_googlebooks_average_rating);
         RatingBar ratingbar_goodreads_average_rating = view.findViewById(R.id.ratingbar_goodreads_average_rating);
@@ -338,26 +355,29 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         ratingbar_amazon_average_rating.setRating((float)ratings.getAmazonAverageRating());
         ratingbar_googlebooks_average_rating.setRating((float)ratings.getGoogleBooksAverageRating());
         ratingbar_goodreads_average_rating.setRating((float)ratings.getGoodreadsAverageRating());
-        int fourToFiveStarRatingPercentage = ratings.getAmazonFiveStarRatingPercentage() + ratings.getAmazonFourStarRatingPercentage();
-        textview_four_to_five_star_rating_percentage.setText(fourToFiveStarRatingPercentage+"%");
-        textview_one_star_rating_percentage.setText(ratings.getAmazonOneStarRatingPercentage()+ "%");
-    }
 
-
-
-    private double  ComputeOverallAverageRating(HashMap<BookData, Double> averageRatingMap) {
-        int count = 0;
-        for(double averageRating : averageRatingMap.values()){
-            if(averageRating != 0){
-                count++;
-            }
+        if(ratings.getAmazonReviewsCount()==0){
+            textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown");
+        } else{
+            textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown ("+ ratings.getAmazonReviewsCount() +" reviews)");
         }
-        double amazonAverageRating = averageRatingMap.get(BookData.AmazonAverageRating);
-        double googleBooksAverageRating = averageRatingMap.get(BookData.GoogleBooksAverageRating);
-        double goodreadsAverageRating = averageRatingMap.get(BookData.GoodreadsAverageRating);
-        double averageRating = (amazonAverageRating + googleBooksAverageRating + goodreadsAverageRating)/count;
-        return Math.round((averageRating*10)/10.0);
+        int fourToFiveStarRatingPercentage = ratings.getAmazonFiveStarRatingPercentage() + ratings.getAmazonFourStarRatingPercentage();
+        if(fourToFiveStarRatingPercentage == 0){
+            textview_four_to_five_star_rating_percentage.setText("Unavailable");
+        } else{
+            textview_four_to_five_star_rating_percentage.setText(fourToFiveStarRatingPercentage+"%");
+        }
+        if(ratings.getAmazonOneStarRatingPercentage() == 0){
+            textview_one_star_rating_percentage.setText("Unavailable");
+        } else{
+            textview_one_star_rating_percentage.setText(ratings.getAmazonOneStarRatingPercentage()+ "%");
+        }
+
     }
+
+
+
+
 
     //If the current string built by the string builder is "*" then that means that the book source returned no data for that specific field.
     //Hence why I want to replace it with ""
@@ -446,5 +466,45 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         Genres,
         PageCount,
         ThumbnailUrl
+    }
+
+    public void likeBook(){
+        UserController userController = new UserController();
+        int userId = userController.getUserIdFromSharedPreferneces(context);
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        int bookId = db.bookDao().getBook(isbn).getBookId();
+
+        Audit audit = db.auditDao().getAudit(userId,bookId);
+        if (audit != null){
+            //Update Status record
+            updateStatus(audit.getAuditId(), BookStatus.Like, db);
+
+        } else{
+            //Create new Audit and status record
+            createAudit(userId, bookId, BookStatus.Like, db);
+        }
+
+    }
+    public void updateStatus(int auditId,BookStatus bookStatus, AppDatabase db){
+        String newStatus = bookStatus.toString();
+        db.statusDao().updateStatusStatus(newStatus, auditId);
+        db.statusDao().updateStatusReason("",auditId);
+    }
+    public void createAudit(int userId, int bookId, BookStatus bookStatus, AppDatabase db){
+        db.auditDao().insertAudit(new Audit(0, userId, bookId));
+        int auditId = db.auditDao().getAudit(userId,bookId).getAuditId();
+        createStatus(auditId, bookStatus, db);
+    }
+
+    public void createStatus(int auditId, BookStatus bookStatus, AppDatabase db){
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        String status = bookStatus.toString();
+        db.statusDao().insertStatus(new entities.Status(0,auditId,status,timeStamp,""));
+    }
+
+
+    public enum BookStatus{
+        Like, Dislike, ReviewLater
     }
 }

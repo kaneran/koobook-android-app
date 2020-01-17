@@ -25,10 +25,13 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+
 import java.io.IOException;
 
 import controllers.BookController;
 import extras.SoundEffect;
+
+import static com.google.android.gms.vision.barcode.Barcode.*;
 
 
 /**
@@ -60,7 +63,7 @@ public class CameraViewFragment extends Fragment {
 
         textview_scan_msg = getView().findViewById(R.id.textview_scan_msg);
 
-        barcodeDetector = new BarcodeDetector.Builder(getContext()).setBarcodeFormats(Barcode.ALL_FORMATS).build();
+        barcodeDetector = new BarcodeDetector.Builder(getContext()).setBarcodeFormats(ALL_FORMATS).build();
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector).setRequestedPreviewSize(640, 480).setAutoFocusEnabled(true).build();
 

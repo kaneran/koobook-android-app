@@ -12,6 +12,7 @@ import com.example.koobookandroidapp.R;
 
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
+import entities.User;
 
 public class LoginActivity extends AppCompatActivity {
     EditText edittext_email;
@@ -60,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
             //Generate notification and navigate to the main activity
             if(loginSuccessful == true){
+                User user= db.userDao().getUser(edittext_email.getText().toString());
                 userId = db.userDao().getUserId(edittext_email.getText().toString());
                 userIdStored = userController.storeUserId(getApplicationContext(),userId);
                 if(userIdStored == true){

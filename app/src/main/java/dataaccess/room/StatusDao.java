@@ -17,4 +17,10 @@ public interface StatusDao {
     @Query("SELECT * FROM Status")
     List<Status> getStatuses();
 
+    @Query("UPDATE Status SET status= :newStatus WHERE audit_auditId = :auditId")
+    void updateStatusStatus(String newStatus, int auditId);
+
+    @Query("UPDATE Status SET reason= :reason WHERE audit_auditId = :auditId")
+    void updateStatusReason(String reason, int auditId);
+
 }

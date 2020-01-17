@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="alertDialogTheme">@style/AlertDialogCustom</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -13,5 +14,10 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <!--Credit to Pecepts from https://stackoverflow.com/questions/27965662/how-can-i-change-default-dialog-button-text-color-in-android-5 -->
+    <style name="AlertDialogCustom" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorPrimary">#00397F</item>
+        <item name="android:colorAccent">#0AAEEF</item>
+    </style>
 
 </resources>
