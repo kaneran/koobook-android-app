@@ -19,7 +19,9 @@ import android.widget.Button;
 import com.example.koobookandroidapp.R;
 
 import controllers.BookController;
+import dialogs.DislikeBookDialog;
 import dialogs.LikeBookDialog;
+import dialogs.ReviewBookLaterDialog;
 
 
 /**
@@ -31,6 +33,8 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
     TabLayout tabLayout;
     Toolbar toolbar;
     Button button_like;
+    Button button_reviewlater;
+    Button button_dislike;
 
     public BookReviewFragment() {
         // Required empty public constructor
@@ -51,6 +55,8 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
         BookController bookController = new BookController(getContext());
         toolbar = getActivity().findViewById(R.id.toolbar);
         button_like = getView().findViewById(R.id.button_like);
+        button_reviewlater = getView().findViewById(R.id.button_reviewlater);
+        button_dislike = getView().findViewById(R.id.button_dislike);
         bookController.displayBookInformation(view, getFragmentManager(),toolbar);
         tabLayout = getView().findViewById(R.id.tablayout);
 
@@ -86,6 +92,22 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
             public void onClick(View v) {
                 LikeBookDialog likeBookDialog = new LikeBookDialog();
                 likeBookDialog.show(getFragmentManager(),"Like dialog");
+            }
+        });
+
+        button_reviewlater.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReviewBookLaterDialog reviewBookLaterDialog = new ReviewBookLaterDialog();
+                reviewBookLaterDialog.show(getFragmentManager(), "Review later dialog");
+            }
+        });
+
+        button_dislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DislikeBookDialog dislikeBookDialog = new DislikeBookDialog();
+                dislikeBookDialog.show(getFragmentManager(), "Dislike book dialog");
             }
         });
     }

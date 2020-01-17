@@ -246,6 +246,7 @@
                 android:layout_marginRight="30dp"/>
 
             <Button
+                android:id="@+id/button_reviewlater"
                 android:layout_weight="0.33"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -261,6 +262,7 @@
 
 
             <Button
+                android:id="@+id/button_dislike"
                 android:layout_weight="0.33"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -36,6 +36,7 @@ import entities.BookGenre;
 import entities.Genre;
 import entities.Rating;
 import entities.Review;
+import entities.Status;
 import extras.Helper;
 import extras.MyComparator;
 import fragments.BookReviewFragment;
@@ -49,7 +50,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     String[] genres;
     String[] reviews;
     String[] authors;
-
+    String reasonForDislikingBook;
     Context context;
 
     public BookController(Context context) {
@@ -486,10 +487,60 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
 
     }
+
+    public void reviewBookLater(){
+        UserController userController = new UserController();
+        int userId = userController.getUserIdFromSharedPreferneces(context);
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        int bookId = db.bookDao().getBook(isbn).getBookId();
+
+        Audit audit = db.auditDao().getAudit(userId,bookId);
+        if (audit != null){
+            //Update Status record
+            updateStatus(audit.getAuditId(), BookStatus.ReviewLater, db);
+
+        } else{
+            //Create new Audit and status record
+            createAudit(userId, bookId, BookStatus.ReviewLater, db);
+        }
+    }
+
+    public void dislikeBook(String selectedChoice){
+        if(selectedChoice.equals("Didn't like the genre")){
+            reasonForDislikingBook = "Genre";
+        } else{
+            reasonForDislikingBook = "LostInterests";
+        }
+
+        UserController userController = new UserController();
+        int userId = userController.getUserIdFromSharedPreferneces(context);
+        String isbn = getBookIsbnFromSharedPreferneces(context);
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        int bookId = db.bookDao().getBook(isbn).getBookId();
+
+        Audit audit = db.auditDao().getAudit(userId,bookId);
+        if (audit != null){
+            //Update Status record
+            updateStatus(audit.getAuditId(), BookStatus.Dislike, db);
+
+        } else{
+            //Create new Audit and status record
+            createAudit(userId, bookId, BookStatus.Dislike, db);
+        }
+
+    }
     public void updateStatus(int auditId,BookStatus bookStatus, AppDatabase db){
         String newStatus = bookStatus.toString();
         db.statusDao().updateStatusStatus(newStatus, auditId);
-        db.statusDao().updateStatusReason("",auditId);
+        if(newStatus.equals("Dislike")){
+            db.statusDao().updateStatusReason(reasonForDislikingBook,auditId);
+        }else{
+            db.statusDao().updateStatusReason("",auditId);
+        }
+
+        List<entities.Status> sttats = db.statusDao().getStatuses();
+
     }
     public void createAudit(int userId, int bookId, BookStatus bookStatus, AppDatabase db){
         db.auditDao().insertAudit(new Audit(0, userId, bookId));
