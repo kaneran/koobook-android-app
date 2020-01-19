@@ -189,6 +189,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             int amazonTwoStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonTwoStarRatingPercentage));
             int amazonOneStarRatingPercentage = helper.convertStringToInt(bookDataMap.get(BookData.AmazonOneStarRatingPercentage));
             int amazonReviewsCount = helper.convertStringToInt(bookDataMap.get(BookData.AmazonReviewsCount));
+            String formattedGenre;
             HashMap<BookData, Double> averageRatingMap = new HashMap<>();
 
             //db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
@@ -206,9 +207,13 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
             int genreId;
             for (String genre : genres) {
-                db.genreDao().insertGenre(new Genre(0, genre));
-                genreId = db.genreDao().getGenreId(genre);
-                db.bookGenreDao().insertBookGenre(new BookGenre(0, bookId, genreId));
+                //Some of the genres retrieved from the google books api may contains only numbers
+                formattedGenre = genre.replace("[^A-Za-z]","");
+                if(!formattedGenre.matches("")){
+                    db.genreDao().insertGenre(new Genre(0, formattedGenre));
+                    genreId = db.genreDao().getGenreId(formattedGenre);
+                    db.bookGenreDao().insertBookGenre(new BookGenre(0, bookId, genreId));
+                }
             }
 
 
@@ -257,6 +262,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             TextView textview_genres = view.findViewById(R.id.textview_genres);
             TextView textview_authors = view.findViewById(R.id.textview_authors);
             RatingBar ratingbar_overall_rating = view.findViewById(R.id.ratingbar_overallrating);
+            TextView textview_overall_rating = view.findViewById(R.id.textview_overall_average_rating);
 
             if (!book.getThumbnailUrl().matches("")) {
                 //Credit to the creators of Picasso at https://square.github.io/picasso/
@@ -270,6 +276,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             }
             textview_book_isbn.setText(book.getIsbnNumber());
             String genres = "";
+            String formattedGenres;
             for (int i = 0; i < genreLabels.size(); i++) {
                 if (i == (genreLabels.size() - 1) && genreLabels.get(i) != null) {
                     genres += genreLabels.get(i);
@@ -280,7 +287,14 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             if (genres.length() == 0) {
                 textview_genres.setText("Unavailable");
             } else {
-                textview_genres.setText(genres);
+                //Credit to Gian from https://stackoverflow.com/questions/17516049/java-removing-numeric-values-from-string the solution for removing numeric values from a string
+                formattedGenres = genres.replaceAll("[^A-Za-z]","");
+                if(!formattedGenres.matches("")){
+                    textview_genres.setText(formattedGenres);
+                } else{
+                    textview_genres.setText("Unavailable");
+                }
+
             }
 
             String authors = "";
@@ -297,6 +311,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                 textview_authors.setText(authors);
             }
             ratingbar_overall_rating.setRating((float) ratings.getOverallAverageRating());
+            if(ratings.getOverallAverageRating() == 0){
+                textview_overall_rating.setText("");
+            } else{
+                textview_overall_rating.setText("("+ratings.getOverallAverageRating()+")");
+            }
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -323,12 +342,14 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         List<Review> reviews = db.reviewDao().getReviews(book.bookId);
         Collections.sort(reviews, myComparator);
         String reviewsString = "";
+        String review;
 
         //Display the first 4 reviews
         for(int i =0; i<reviews.size(); i++){
 
             if (i == (reviews.size() - 1) && i<5 && !reviews.get(i).getReview().matches("")) {
-                reviewsString += ("\"" + reviews.get(i).getReview() + "\"");
+                review = reviews.get(i).getReview().replace("\"","");
+                reviewsString += ("\"" + review + "\"");
             } else if(i<5 && !reviews.get(i).getReview().matches("")){
                 reviewsString += ("\"" + reviews.get(i).getReview() + "\"\n\n");
             }
@@ -348,14 +369,33 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
         TextView textview_amazon_rating_breakdown_title = view.findViewById(R.id.textview_amazonratingbreakdown_title);
         RatingBar ratingbar_amazon_average_rating = view.findViewById(R.id.ratingbar_amazon_average_rating);
+        TextView textview_amazon_average_rating = view.findViewById(R.id.textview_amazon_average_rating);
         RatingBar ratingbar_googlebooks_average_rating = view.findViewById(R.id.ratingbar_googlebooks_average_rating);
+        TextView textview_googlebooks_average_rating = view.findViewById(R.id.textview_google_books_average_rating);
         RatingBar ratingbar_goodreads_average_rating = view.findViewById(R.id.ratingbar_goodreads_average_rating);
+        TextView textview_goodreads_average_rating = view.findViewById(R.id.textview_goodreads_average_rating);
         TextView textview_four_to_five_star_rating_percentage = view.findViewById(R.id.textview_fourtofivestarratingpercentage);
         TextView textview_one_star_rating_percentage = view.findViewById(R.id.textview_onestarratingpercentage);
 
         ratingbar_amazon_average_rating.setRating((float)ratings.getAmazonAverageRating());
+        if(ratings.getAmazonAverageRating() == 0){
+            textview_amazon_average_rating.setText("");
+        } else{
+            textview_amazon_average_rating.setText("("+(float)ratings.getAmazonAverageRating()+ ")");
+        }
         ratingbar_googlebooks_average_rating.setRating((float)ratings.getGoogleBooksAverageRating());
+        if(ratings.getGoogleBooksAverageRating() == 0){
+            textview_googlebooks_average_rating.setText("");
+        } else{
+            textview_googlebooks_average_rating.setText("("+(float)ratings.getGoogleBooksAverageRating()+ ")");
+        }
+
         ratingbar_goodreads_average_rating.setRating((float)ratings.getGoodreadsAverageRating());
+        if(ratings.getGoodreadsAverageRating() == 0){
+            textview_goodreads_average_rating.setText("");
+        } else{
+            textview_goodreads_average_rating.setText("("+(float)ratings.getGoodreadsAverageRating()+ ")");
+        }
 
         if(ratings.getAmazonReviewsCount()==0){
             textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown");

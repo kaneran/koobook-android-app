@@ -27,7 +27,7 @@ public class ReviewBookLaterDialog extends AppCompatDialogFragment {
                         // Create/Update new audit record
                         bookController.reviewBookLater();
                         dialog.dismiss();
-                        Toast.makeText(getContext(), "This book has been saved to be revied later", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "This book has been saved to be reviewed later", Toast.LENGTH_SHORT).show();
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override

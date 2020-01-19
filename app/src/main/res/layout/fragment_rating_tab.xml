@@ -93,6 +93,42 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="5dp"
+                >
+
+                <TextView
+                    android:id="@+id/textview_amazon_average_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:text="x"
+                    android:textSize="16dp"/>
+
+                <TextView
+                    android:id="@+id/textview_google_books_average_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:text="x"
+                    android:textSize="16dp"/>
+
+                <TextView
+                    android:id="@+id/textview_goodreads_average_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:text="x"
+                    android:textSize="16dp"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
 
