@@ -10,7 +10,10 @@ import entities.Book;
 public interface BookDao {
 
     @Query("SELECT * FROM Book WHERE isbnNumber = :isbnNumber")
-    Book getBook(String isbnNumber);
+    Book getBookBasedOnIsbnNumber(String isbnNumber);
+
+    @Query("SELECT * FROM Book WHERE bookId = :bookId")
+    Book getBookBasedOnBookId(int bookId);
 
     @Query("UPDATE Book SET upvoteCount = :upvoteCount WHERE isbnNumber = :isbnNumber")
     void updateUpvoteCount(String isbnNumber, int upvoteCount);

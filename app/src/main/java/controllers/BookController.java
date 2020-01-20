@@ -36,7 +36,6 @@ import entities.BookGenre;
 import entities.Genre;
 import entities.Rating;
 import entities.Review;
-import entities.Status;
 import extras.Helper;
 import extras.MyComparator;
 import fragments.BookReviewFragment;
@@ -50,6 +49,8 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     String[] genres;
     String[] reviews;
     String[] authors;
+    List<Book> books;
+    List<Integer> auditIds;
     String reasonForDislikingBook;
     Context context;
 
@@ -61,7 +62,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     public boolean checkIfBookExistsInDatabase(Context context) {
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         isbn = getBookIsbnFromSharedPreferneces(context);
-        book = db.bookDao().getBook(isbn);
+        book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
         return !(book == null);
     }
 
@@ -83,6 +84,24 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     public String getBookIsbnFromSharedPreferneces(Context context) {
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("BookPref", Context.MODE_PRIVATE);
         return sharedPreferences.getString("isbn", "default");
+    }
+
+    //Store the type of books the user wants to view in a shared preference file
+    public boolean storeBookListType(Context context, BookListType bookListType) {
+        try {
+            SharedPreferences.Editor editor = context.getApplicationContext().getSharedPreferences("BookListTypePref", Context.MODE_PRIVATE).edit();
+            editor.putString("bookListType", bookListType.toString()).apply();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    //Retrieve the book list type from the shared preference file
+    public String getBookListTypeFromSharedPreferneces(Context context) {
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("BookListTypePref", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("bookListType", "default");
     }
 
     @Override
@@ -196,7 +215,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
             db.bookDao().insertBook(new Book(0, isbnNumber, title, subtitle, pageCount, summary, thumbnailUrl, 0));
 
-            int bookId = db.bookDao().getBook(isbnNumber).bookId;
+            int bookId = db.bookDao().getBookBasedOnIsbnNumber(isbnNumber).bookId;
 
             int authorId;
             for (String author : authors) {
@@ -242,7 +261,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         try {
             db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
             String isbn = getBookIsbnFromSharedPreferneces(context);
-            Book book = db.bookDao().getBook(isbn);
+            Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
             toolbar.setTitle(book.getTitle());
             List<Integer> genreIds = db.bookGenreDao().getGenreIdsOfBook(book.bookId);
             List<String> genreLabels = new ArrayList<>();
@@ -325,7 +344,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         TextView textview_book_summary = view.findViewById(R.id.textview_book_summary);
         String isbn = getBookIsbnFromSharedPreferneces(context);
-        Book book = db.bookDao().getBook(isbn);
+        Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
         if(book.getSummary().length() == 0){
             textview_book_summary.setText("Unavailable");
         } else {
@@ -337,7 +356,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         MyComparator myComparator = new MyComparator();
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         String isbn = getBookIsbnFromSharedPreferneces(context);
-        Book book = db.bookDao().getBook(isbn);
+        Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
         TextView textview_reviews = view.findViewById(R.id.textview_reviews);
         List<Review> reviews = db.reviewDao().getReviews(book.bookId);
         Collections.sort(reviews, myComparator);
@@ -364,7 +383,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     public void displayBookInformationInRatingTab(View view){
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         String isbn = getBookIsbnFromSharedPreferneces(context);
-        Book book = db.bookDao().getBook(isbn);
+        Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
         Rating ratings = db.ratingDao().getRating(book.getBookId());
 
         TextView textview_amazon_rating_breakdown_title = view.findViewById(R.id.textview_amazonratingbreakdown_title);
@@ -514,16 +533,16 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String isbn = getBookIsbnFromSharedPreferneces(context);
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        int bookId = db.bookDao().getBook(isbn).getBookId();
+        int bookId = db.bookDao().getBookBasedOnIsbnNumber(isbn).getBookId();
 
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
             //Update Status record
-            updateStatus(audit.getAuditId(), BookStatus.Like, db);
+            updateStatus(audit.getAuditId(), BookStatus.Liked, db);
 
         } else{
             //Create new Audit and status record
-            createAudit(userId, bookId, BookStatus.Like, db);
+            createAudit(userId, bookId, BookStatus.Liked, db);
         }
 
     }
@@ -533,7 +552,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String isbn = getBookIsbnFromSharedPreferneces(context);
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        int bookId = db.bookDao().getBook(isbn).getBookId();
+        int bookId = db.bookDao().getBookBasedOnIsbnNumber(isbn).getBookId();
 
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
@@ -557,29 +576,27 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String isbn = getBookIsbnFromSharedPreferneces(context);
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        int bookId = db.bookDao().getBook(isbn).getBookId();
+        int bookId = db.bookDao().getBookBasedOnIsbnNumber(isbn).getBookId();
 
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
             //Update Status record
-            updateStatus(audit.getAuditId(), BookStatus.Dislike, db);
+            updateStatus(audit.getAuditId(), BookStatus.Disliked, db);
 
         } else{
             //Create new Audit and status record
-            createAudit(userId, bookId, BookStatus.Dislike, db);
+            createAudit(userId, bookId, BookStatus.Disliked, db);
         }
 
     }
     public void updateStatus(int auditId,BookStatus bookStatus, AppDatabase db){
         String newStatus = bookStatus.toString();
         db.statusDao().updateStatusStatus(newStatus, auditId);
-        if(newStatus.equals("Dislike")){
+        if(newStatus.equals("Disliked")){
             db.statusDao().updateStatusReason(reasonForDislikingBook,auditId);
         }else{
             db.statusDao().updateStatusReason("",auditId);
         }
-
-        List<entities.Status> sttats = db.statusDao().getStatuses();
 
     }
     public void createAudit(int userId, int bookId, BookStatus bookStatus, AppDatabase db){
@@ -596,6 +613,75 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
 
     public enum BookStatus{
-        Like, Dislike, ReviewLater
+        Liked, Disliked, ReviewLater
+    }
+
+    //This method first gets the user id from the shared preference, it also gets the type of books from another shared preference file.
+    //Regarding that preference file, this will be updated based on whether the user decided to click the option to view books that were liked or books that needs reviewing
+    //Based on the book list type, it retrieves the books matching that type and returns this list to be loaded into the Recycler adapter
+    public List<Book> getBooksBasedOnStatus(){
+        UserController userController = new UserController();
+        books = new ArrayList<Book>();
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
+        int userId = userController.getUserIdFromSharedPreferneces(context);
+        String bookListType = getBookListTypeFromSharedPreferneces(context);
+        if(bookListType.equals(BookListType.Liked.toString())){
+            books = getLikedBooks(userId, db);
+        } else if (bookListType.equals(BookListType.NeedsReviewing.toString())){
+            books =getBooksThatNeedsReviewing(userId,db);
+        }
+        return books;
+    }
+
+    public List<Book> getLikedBooks(int userId, AppDatabase db){
+        List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
+        String auditStatus;
+        Book book;
+        int bookId;
+
+        //For each audit id, use it to get the Status from the Status entity and if it equals to "Liked" then add the audit it to the AuditIds list
+        for(int auditId : allAuditIdsBasedOnUserId){
+            auditStatus = db.statusDao().getStatus(auditId);
+            if(auditStatus.equals("Liked")){
+                auditIds.add(auditId);
+            }
+        }
+
+        //For each audit id in the updated list of audit ids with "liked" status, get the book id using that audit id and use that to get the book entity
+        for(int auditId : auditIds){
+            bookId = db.auditBookDao().getBookId(auditId);
+            book = db.bookDao().getBookBasedOnBookId(bookId);
+            books.add(book);
+        }
+
+        return books;
+    }
+
+    public List<Book> getBooksThatNeedsReviewing(int userId, AppDatabase db){
+        List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
+        String auditStatus;
+        Book book;
+        int bookId;
+
+        //For each audit id, use it to get the Status from the Status entity and if it equals to "ReviewLater" then add the audit it to the AuditIds list
+        for(int auditId : allAuditIdsBasedOnUserId){
+            auditStatus = db.statusDao().getStatus(auditId);
+            if(auditStatus.equals("ReviewLater")){
+                auditIds.add(auditId);
+            }
+        }
+
+        //For each audit id in the updated list of audit ids with "liked" status, get the book id using that audit id and use that to get the book entity
+        for(int auditId : auditIds){
+            bookId = db.auditBookDao().getBookId(auditId);
+            book = db.bookDao().getBookBasedOnBookId(bookId);
+            books.add(book);
+        }
+
+        return books;
+    }
+
+    public enum BookListType{
+        Liked, NeedsReviewing
     }
 }

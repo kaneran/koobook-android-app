@@ -4,6 +4,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import java.util.List;
+
 import entities.Audit;
 
 @Dao
@@ -17,4 +19,7 @@ public interface AuditDao {
 
     @Query("SELECT * FROM Audit WHERE user_userId = :userId AND book_bookId = :bookId")
     Audit getAudit(int userId, int bookId);
+
+    @Query("SELECT auditId FROM Audit WHERE user_userId = :userId")
+    List<Integer> getAuditIds(int userId);
 }

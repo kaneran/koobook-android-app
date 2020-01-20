@@ -91,7 +91,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
             @Override
             public void onClick(View v) {
                 LikeBookDialog likeBookDialog = new LikeBookDialog();
-                likeBookDialog.show(getFragmentManager(),"Like dialog");
+                likeBookDialog.show(getFragmentManager(),"Liked dialog");
             }
         });
 
@@ -107,7 +107,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
             @Override
             public void onClick(View v) {
                 DislikeBookDialog dislikeBookDialog = new DislikeBookDialog();
-                dislikeBookDialog.show(getFragmentManager(), "Dislike book dialog");
+                dislikeBookDialog.show(getFragmentManager(), "Disliked book dialog");
             }
         });
     }

@@ -3,7 +3,10 @@ package fragments;
 
 import android.arch.persistence.room.Room;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.TextView;
 import com.example.koobookandroidapp.R;
 
 import activities.LoginActivity;
+import controllers.BookController;
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
 import entities.User;
@@ -22,8 +26,11 @@ import entities.User;
 public class HomeFragment extends Fragment {
 
     LoginActivity loginActivity;
-
+    CardView cardview_books_liked;
+    CardView cardview_review_books;
     UserController userController;
+    BookController bookController;
+    BookListFragment bookListFragment;
     AppDatabase db;
 
     public HomeFragment() {
@@ -40,4 +47,30 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bookListFragment = new BookListFragment();
+        bookController = new BookController(view.getContext());
+        cardview_books_liked = view.findViewById(R.id.cardview_books_liked);
+        cardview_review_books = view.findViewById(R.id.cardview_review_books);
+
+        //If the user clicks the "Books Liked" option, then the book list type, being "Liked" will be saved in a preference file
+        //and the Booklist fragment will be dispayed using fragment manager
+        cardview_books_liked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bookController.storeBookListType(v.getContext(), BookController.BookListType.Liked);
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
+            }
+        });
+
+        cardview_review_books.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
+            }
+        });
+    }
 }

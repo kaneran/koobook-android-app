@@ -19,7 +19,7 @@ public class LikeBookDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         bookController = new BookController(getContext());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
-        builder.setTitle("Like the book?")
+        builder.setTitle("Liked the book?")
                 .setMessage("Are you sure you want to like the book?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
