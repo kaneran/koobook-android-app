@@ -1,10 +1,14 @@
 package adapters;
 
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +17,37 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import controllers.BookController;
 import dataaccess.setup.AppDatabase;
 import entities.Author;
 import entities.Book;
+import fragments.BookReviewFragment;
 
+//Acquired the knowledge to create this adapter class from https://www.youtube.com/watch?v=CTBiwKlO5IU&feature=youtu.be&t=2160
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
     List<Book> books;
     AppDatabase db;
     double overallAverageRating;
-    List<String> authors;
     Context context;
+    List<Integer> authorIds;
+    String authorName;
+    List<String> authorNames;
+    String authorsNamesConcatanated;
+    StringBuilder sb;
+    BookController bookController;
+    FragmentManager fragmentManager;
+    String isbn;
+    BookReviewFragment bookReviewFragment;
+    ImageView imageView;
+    int imageHeight;
+    int imageWidth;
+
     public BookAdapter(List<Book> books, Context context) {
         this.books = books;
         this.context = context;
@@ -41,12 +61,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookAdapter.ViewHolder holder, int position) {
-        List<Integer> authorIds;
-        String authorName;
-        List<String> authorNames;
-        String authorsNamesConcatanated;
-        StringBuilder sb;
+    public void onBindViewHolder(@NonNull BookAdapter.ViewHolder holder, final int position) {
+
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         //Get overall rating based on the book id which was retrieved by using the index from this method's argument to get the book entity from the book list
         overallAverageRating = db.ratingDao().getRating(books.get(position).getBookId()).getOverallAverageRating();
@@ -76,11 +92,38 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
             authorsNamesConcatanated = "Unavailable";
         }
 
-
         holder.textview_book_title.setText(books.get(position).getTitle());
-        Picasso.with(context).load(books.get(position).getThumbnailUrl()).into(holder.imageview_book_thumbnail);
+        if(books.get(position).getThumbnailUrl() != ""){
+            Picasso.with(context).load(books.get(position).getThumbnailUrl()).resize(200,400).centerInside().into(holder.imageview_book_thumbnail, new Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.i("Picasso", "onSuccess: TRUE");
+                }
+
+                @Override
+                public void onError() {
+                    Log.i("Picasso", "onError: TRUE");
+                }
+            });
+        }
+
         holder.textview_author.setText("Author: "+ authorsNamesConcatanated);
         holder.ratingbar_overall_average_rating.setRating((float)overallAverageRating);
+
+
+        //When one of the cardviews(rows) is clicked, the isbn is stored in the preference file and then the
+        // "Book review" page will be loaded and will use the stored isbn to display the relevent book information
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentManager = ((FragmentActivity)v.getContext()).getSupportFragmentManager();
+                bookReviewFragment = new BookReviewFragment();
+                bookController = new BookController(v.getContext());
+                isbn = books.get(position).getIsbnNumber();
+                bookController.storeBookIsbn(v.getContext(), isbn);
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+            }
+        });
     }
 
     @Override

@@ -7,12 +7,14 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -228,9 +230,10 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             for (String genre : genres) {
                 //Some of the genres retrieved from the google books api may contains only numbers
                 formattedGenre = genre.replace("[^A-Za-z]","");
+                //If the formated genre string contains nothing then that implies that the genre only contained numbers
                 if(!formattedGenre.matches("")){
-                    db.genreDao().insertGenre(new Genre(0, formattedGenre));
-                    genreId = db.genreDao().getGenreId(formattedGenre);
+                    db.genreDao().insertGenre(new Genre(0, genre));
+                    genreId = db.genreDao().getGenreId(genre);
                     db.bookGenreDao().insertBookGenre(new BookGenre(0, bookId, genreId));
                 }
             }
@@ -284,8 +287,18 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             TextView textview_overall_rating = view.findViewById(R.id.textview_overall_average_rating);
 
             if (!book.getThumbnailUrl().matches("")) {
-                //Credit to the creators of Picasso at https://square.github.io/picasso/
-                Picasso.with(context).load(book.getThumbnailUrl()).into(imageview_bookthumbnail);
+                //Credit to the creators of Picasso at https://square.github.io/picasso/ and Mahen from https://stackoverflow.com/questions/44113180/android-picasso-is-not-loading-image-when-i-use-fit for this solution
+                Picasso.with(context).load(book.getThumbnailUrl()).resize(300,450).centerInside().into(imageview_bookthumbnail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.i("Picasso", "onSuccess: TRUE");
+                    }
+
+                    @Override
+                    public void onError() {
+                        Log.i("Picasso", "onError: TRUE");
+                    }
+                });
             }
 
             if (book.getSubtitle().matches("")) {
@@ -619,16 +632,19 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     //This method first gets the user id from the shared preference, it also gets the type of books from another shared preference file.
     //Regarding that preference file, this will be updated based on whether the user decided to click the option to view books that were liked or books that needs reviewing
     //Based on the book list type, it retrieves the books matching that type and returns this list to be loaded into the Recycler adapter
-    public List<Book> getBooksBasedOnStatus(){
+    public List<Book> getBooksBasedOnStatus(Toolbar toolbar){
         UserController userController = new UserController();
         books = new ArrayList<Book>();
+        auditIds = new ArrayList<>();
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String bookListType = getBookListTypeFromSharedPreferneces(context);
         if(bookListType.equals(BookListType.Liked.toString())){
             books = getLikedBooks(userId, db);
+            toolbar.setTitle("Liked books");
         } else if (bookListType.equals(BookListType.NeedsReviewing.toString())){
             books =getBooksThatNeedsReviewing(userId,db);
+            toolbar.setTitle("Needs reviewing");
         }
         return books;
     }

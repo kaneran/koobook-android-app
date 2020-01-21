@@ -11,4 +11,5 @@
     <string name="loading_screen_msg">Fetching information about book</string>
     <string name="forgot_password"><u>Forgot password?</u></string>
     <string name="error_msg">Something went wrong while retrieving the books.</string>
+    <string name="no_books_msg">No books to display</string>
 </resources>
