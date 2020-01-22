@@ -12,4 +12,5 @@
     <string name="forgot_password"><u>Forgot password?</u></string>
     <string name="error_msg">Something went wrong while retrieving the books.</string>
     <string name="no_books_msg">No books to display</string>
+    <string name="search_error_msg">Please enter something in any of the text fields.</string>
 </resources>

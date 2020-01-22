@@ -40,6 +40,7 @@ import entities.Rating;
 import entities.Review;
 import extras.Helper;
 import extras.MyComparator;
+import fragments.BookListFragment;
 import fragments.BookReviewFragment;
 import fragments.ErrorFragment;
 
@@ -55,16 +56,21 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     List<Integer> auditIds;
     String reasonForDislikingBook;
     Context context;
+    String data;
+    boolean isMoreThanOneBook;
 
     public BookController(Context context) {
         this.context = context;
+        isMoreThanOneBook = false;
     }
+
 
     //Checks in room database to see if book exists
     public boolean checkIfBookExistsInDatabase(Context context) {
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         isbn = getBookIsbnFromSharedPreferneces(context);
         book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
+        data = "!isMoreThanOneBook"+isbn;
         return !(book == null);
     }
 
@@ -111,15 +117,26 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         try{
             BookReviewFragment bookReviewFragment = new BookReviewFragment();
             ErrorFragment errorFragment = new ErrorFragment();
-            boolean bookInformationreceived = receiveBookInformation(strings);
-            if (bookInformationreceived == true){
-                FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
-                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+            BookListFragment bookListFragment =  new BookListFragment();
+            FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
 
+            //If true then execute the method for retrieving the data for one book
+            //Otherwise, execute the method for retrieving the information of the books
+            if(isMoreThanOneBook == false){
+
+                boolean bookInformationreceived = receiveBookInformation(strings);
+                if (bookInformationreceived == true){
+                    fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+
+                } else{
+                    fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
+                }
             } else{
-                FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
-                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
+                receiveBookInformation(strings);
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
             }
+
+
             return true;
         } catch (Exception e){
 
@@ -133,27 +150,28 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     public boolean receiveBookInformation(String... strings){
         byte[] messageByte = new byte[1000];
         boolean end = false;
-        String bookDataString = "";
+        String receivedDataString = "";
         String fromReceiver = "";
         try{
-            String data;
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Socket clientSocket = new Socket("192.168.1.252",9876);
+            Socket clientSocket = new Socket("10.209.140.116",9876);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
-            //Send isbn number to the server
-            outToServer.writeBytes(isbn + "#");
+            //Send data(isbn or title+author to the server
+            outToServer.writeBytes(data + "#");
 
             //Receive the book data from the server
             while(!end){
                 int bytesRead = in.read(messageByte);
-                bookDataString += new String(messageByte, 0, bytesRead);
-                if(bookDataString.length()> 0){
+                receivedDataString += new String(messageByte, 0, bytesRead);
+                if(receivedDataString.contains("]d2C>^+")){
                     end = true;
                 }
 
             }
+
+            receivedDataString = receivedDataString.replace("]d2C>^+","");
             //reset the end boolean value and dataString value
             end = false;
 
@@ -174,12 +192,25 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                 }
             }
             clientSocket.close();
-            bookDataMap = EncodeBookData(bookDataString);
-            genres = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
-            authors = SplitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
-            reviews = SplitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
-            boolean bookInformationSaved = saveBookInformation(bookDataMap, authors, genres, reviews);
-            return bookInformationSaved;
+
+            //If it the retrieved data is for only one book then save it
+            //Otherwise, seperate the books information and put into a book list to passed into the BookAdapter
+            if(isMoreThanOneBook == false){
+                bookDataMap = decodeBookData(receivedDataString);
+                genres = splitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
+                authors = splitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
+                reviews = splitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
+                saveBookInformation(bookDataMap, authors, genres, reviews);
+            } else{
+                List<HashMap<BookData,String>> bookDataMaps = decodeBooksData(receivedDataString);
+                for(HashMap<BookData,String> bookDataMap: bookDataMaps){
+                    Book book = new Book(0,bookDataMap.get(BookData.Isbn),bookDataMap.get(BookData.Title),"",0,"",bookDataMap.get(BookData.ThumbnailUrl),0);
+                    books.add(book);
+                }
+
+            }
+
+            return true;
 
         } catch (Exception e){
             e.printStackTrace();
@@ -448,13 +479,60 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
     }
 
+    public void searchBook(String isbn, String title, String authorFullName){
+        BookReviewFragment bookReviewFragment = new BookReviewFragment();
+        FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+        if(!isbn.matches("")){
+            storeBookIsbn(context, isbn);
+            boolean bookExists = checkIfBookExistsInDatabase(context);
+            if(bookExists == false){
+                execute();
+            } else{
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+            }
+        } else if(!title.matches("") && !authorFullName.matches("")){
+            data = "!isMoreThanOneBook"+ title + " " + authorFullName;
+            execute();
+        } else if(!title.matches("")){
+            data = "isMoreThanOneBook"+title;
+            isMoreThanOneBook = true;
+            execute();
+        } else if(!authorFullName.matches("")){
+            data = "isMoreThanOneBook"+authorFullName;
+            isMoreThanOneBook = true;
+            execute();
+        } else{
+            //Display error message
+        }
+    }
 
+    //This method will split the concatanated string, containing all the books data where each group of book data is split by the "/" symbol, by each book and store it in a string list
+    public static ArrayList<String> splitBooksData(String booksData) {
+
+        char[] chars  = booksData.toCharArray();
+        ArrayList<String> arrayList = new ArrayList<String>();
+        StringBuilder sb = new StringBuilder();
+        for(int i =0; i<chars.length; i++) {
+
+            if(chars[i] == '|') {
+                arrayList.add(sb.toString());
+                sb.setLength(0);
+
+            }
+            else {
+                sb.append(chars[i]);
+            }
+
+        }
+
+        return arrayList;
+    }
 
 
 
     //If the current string built by the string builder is "*" then that means that the book source returned no data for that specific field.
     //Hence why I want to replace it with ""
-    public HashMap<BookData,String> EncodeBookData(String bookData) {
+    public HashMap<BookData,String> decodeBookData(String bookData) {
         char[] chars  = bookData.toCharArray();
         HashMap<BookData,String> bookDataMap = new HashMap<BookData,String>();
         StringBuilder sb = new StringBuilder();
@@ -514,7 +592,56 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         return bookDataMap;
     }
 
-    public static String[] SplitStringsAndPutIntoList(String str){
+    //This method will first split the string based on the books which were by separted by the "/" symbol.
+    //The output is a list of strings which contains the information for each book. Each string is then
+    //decoded and added to the hashmap whilst maintaing a list of hashmaps of the same type. This is returned by this method
+    public List<HashMap<BookData,String>> decodeBooksData(String receivedDataString) {
+
+        List<String> bookDataStrings = splitBooksData(receivedDataString);
+
+        List<HashMap<BookData,String>> bookDataMaps = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+        for(String bookDataString: bookDataStrings){
+            char[] chars = bookDataString.toCharArray();
+            int bookDataIndex = 0;
+            HashMap<BookData,String> bookDataMap = new HashMap<BookData,String>();
+            for(int i =0; i<chars.length; i++) {
+
+                if(chars[i] == '$') {
+                    bookDataIndex++;
+
+                    if(bookDataIndex ==1){
+                        bookDataMap.put(BookData.Title, sb.toString());
+                    } else if(bookDataIndex ==2){
+                        bookDataMap.put(BookData.Isbn, sb.toString());
+                    } else if(bookDataIndex == 3){
+                        bookDataMap.put(BookData.Authors, sb.toString());
+                    } else if(bookDataIndex == 4){
+                        bookDataMap.put(BookData.ThumbnailUrl, sb.toString());
+                    }
+                    sb.setLength(0);
+
+                    //If the end of the data string has been read then the remaining stirng in the stirng
+                    //builder is presumably the thumbnail url
+                } else if(i == (chars.length-1)){
+                    bookDataMap.put(BookData.ThumbnailUrl, sb.toString());
+                }
+                else {
+                    sb.append(chars[i]);
+
+                }
+
+            }
+            bookDataMaps.add(bookDataMap);
+
+        }
+
+        return bookDataMaps;
+    }
+
+
+    public static String[] splitStringsAndPutIntoList(String str){
         String[] stringArray = str.split("#",100);
 
         return stringArray;

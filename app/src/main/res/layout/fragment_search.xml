@@ -4,11 +4,111 @@
     android:layout_height="match_parent"
     tools:context="fragments.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Search" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:orientation="vertical"
+            android:layout_weight="0.6"
+            >
+
+            <ImageView
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_marginTop="50dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search_book_img" />
+
+            <TextView
+                android:paddingTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ISBN"
+                android:fontFamily="@font/arial_regular"
+                android:textColor="@color/charcoalBlack"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/edittext_isbn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:backgroundTint="@color/charcoalBlack"
+                android:textColor="@color/charcoalBlack"
+                android:inputType="textPersonName"
+                android:textSize="14dp"
+                />
+
+            <TextView
+                android:paddingTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:fontFamily="@font/arial_regular"
+                android:textColor="@color/charcoalBlack"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/edittext_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:backgroundTint="@color/charcoalBlack"
+                android:textColor="@color/charcoalBlack"
+                android:inputType="textPersonName"
+                android:textSize="14dp"
+                />
+
+            <TextView
+                android:paddingTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Author"
+                android:fontFamily="@font/arial_regular"
+                android:textColor="@color/charcoalBlack"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/edittext_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:backgroundTint="@color/charcoalBlack"
+                android:textColor="@color/charcoalBlack"
+                android:inputType="textPersonName"
+                android:textSize="14dp"
+                />
+
+            <TextView
+                android:id="@+id/textview_search_error_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/search_error_msg"
+                android:fontFamily="@font/arial_regular"
+                android:textColor="@color/pinkRed"
+                android:textSize="14dp"
+                android:visibility="invisible"/>
+
+
+            <Button
+                android:id="@+id/button_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/view_more_button"
+                android:fontFamily="@font/helvetic_neuva_condensed"
+                android:text="Search"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+
+        </LinearLayout>
+
 
 </FrameLayout>

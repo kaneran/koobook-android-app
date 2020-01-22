@@ -61,7 +61,7 @@ public class SqlServerDatabase {
         StrictMode.setThreadPolicy(policy);
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
-            String conUrl = "jdbc:jtds:sqlserver://192.168.1.252:1433;databaseName=Koobook_db;user=sa;password=admin;";
+            String conUrl = "jdbc:jtds:sqlserver://10.209.140.116:1433;databaseName=Koobook_db;user=sa;password=admin;";
             conn = DriverManager.getConnection(conUrl);
             return conn;
         } catch (Exception e) {
