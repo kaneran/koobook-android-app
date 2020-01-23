@@ -3,24 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.BookListFragment">
-
-
+    tools:context="fragments.SearchBookResultsFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_book_list"
+        android:id="@+id/recyclerview_search_book_results"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp">
+
+    </android.support.v7.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/textview_no_books_msg"
+        android:id="@+id/textview_no_search_results_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="invisible"
-        android:text="@string/no_books_msg"
+        android:text="@string/no_search_results_msg"
         android:textSize="18dp"
         android:textColor="@color/charcoalBlack"
         android:fontFamily="@font/helvetic_neuva_condensed"/>
 
 </FrameLayout>
+

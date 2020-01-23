@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +19,7 @@ import com.example.koobookandroidapp.R;
 
 import java.util.List;
 
-import adapters.BookListAdapter;
+import adapters.SearchResultsAdapter;
 import controllers.BookController;
 import entities.Book;
 
@@ -26,16 +27,18 @@ import entities.Book;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BookListFragment extends Fragment {
+public class SearchBookResultsFragment extends Fragment {
     BookController bookController;
     List<Book> books;
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
-    TextView textview_no_books_msg;
+    TextView textview_no_search_results_msg;
     Toolbar toolbar;
+    String isbn;
+    String title;
+    String author;
 
-
-    public BookListFragment() {
+    public SearchBookResultsFragment() {
         // Required empty public constructor
     }
 
@@ -44,7 +47,7 @@ public class BookListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_book_list, container, false);
+        return inflater.inflate(R.layout.fragment_search_book_results, container, false);
     }
 
     @Override
@@ -52,18 +55,18 @@ public class BookListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         bookController = new BookController(view.getContext());
         toolbar = getActivity().findViewById(R.id.toolbar);
-        books = bookController.getBooksBasedOnStatus(toolbar);
-        recyclerView = view.findViewById(R.id.recyclerview_book_list);
-        textview_no_books_msg = view.findViewById(R.id.textview_no_books_msg);
+        books = bookController.getBooksFromBooksDataString();
+        toolbar.setTitle("Search results: "+ books.size() +" books found");
+        recyclerView = view.findViewById(R.id.recyclerview_search_book_results);
+        textview_no_search_results_msg = view.findViewById(R.id.textview_no_search_results_msg);
+        adapter = new SearchResultsAdapter(books,getContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if(books.size() >0){
-            recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL));
-            adapter = new BookListAdapter(books,getContext());
-            recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(adapter);
+        if(!(books.size() ==0)){
+            textview_no_search_results_msg.setVisibility(View.INVISIBLE);
         } else{
-            textview_no_books_msg.setVisibility(View.VISIBLE);
+            textview_no_search_results_msg.setVisibility(View.VISIBLE);
         }
-
-
     }
 }

@@ -1,6 +1,5 @@
 package adapters;
 
-import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -25,12 +24,11 @@ import java.util.List;
 
 import controllers.BookController;
 import dataaccess.setup.AppDatabase;
-import entities.Author;
 import entities.Book;
 import fragments.BookReviewFragment;
 
 //Acquired the knowledge to create this adapter class from https://www.youtube.com/watch?v=CTBiwKlO5IU&feature=youtu.be&t=2160
-public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
+public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
     List<Book> books;
     AppDatabase db;
     double overallAverageRating;
@@ -48,20 +46,20 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
     int imageHeight;
     int imageWidth;
 
-    public BookAdapter(List<Book> books, Context context) {
+    public BookListAdapter(List<Book> books, Context context) {
         this.books = books;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public BookAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public BookListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.book_row, viewGroup,false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull BookListAdapter.ViewHolder holder, final int position) {
 
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         //Get overall rating based on the book id which was retrieved by using the index from this method's argument to get the book entity from the book list

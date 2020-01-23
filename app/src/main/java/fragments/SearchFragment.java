@@ -24,6 +24,7 @@ public class SearchFragment extends Fragment {
     TextView textview_search_error_msg;
     Button button_search;
     BookController bookController;
+    LoadingScreenFragment loadingScreenFragment;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -40,6 +41,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        loadingScreenFragment = new LoadingScreenFragment();
         edittext_isbn = view.findViewById(R.id.edittext_isbn);
         edittext_title = view.findViewById(R.id.edittext_title);
         edittext_author = view.findViewById(R.id.edittext_author);
@@ -51,7 +53,7 @@ public class SearchFragment extends Fragment {
                 String isbn = edittext_isbn.getText().toString();
                 String title = edittext_title.getText().toString();
                 String author = edittext_author.getText().toString();
-                bookController.searchBook(isbn,title,author);
+                bookController.searchBook(isbn, title, author);
             }
         });
     }

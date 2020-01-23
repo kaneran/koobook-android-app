@@ -44,7 +44,7 @@ public class LoadingScreenFragment extends Fragment {
         final FragmentManager fragmentManager = getFragmentManager();
         bookController = new BookController(getContext());
 
-        bookExists = bookController.checkIfBookExistsInDatabase(getContext());
+        bookExists = bookController.checkIfBookExistsInDatabaseUsingIsbn(getContext());
         if(bookExists == false){
             bookController.execute();
 
