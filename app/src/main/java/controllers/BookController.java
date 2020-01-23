@@ -452,7 +452,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                 //Credit to Gian from https://stackoverflow.com/questions/17516049/java-removing-numeric-values-from-string the solution for removing numeric values from a string
                 formattedGenres = genres.replaceAll("[^A-Za-z]","");
                 if(!formattedGenres.matches("")){
-                    textview_genres.setText(formattedGenres);
+                    textview_genres.setText(genres);
                 } else{
                     textview_genres.setText("Unavailable");
                 }
