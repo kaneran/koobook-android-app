@@ -44,9 +44,7 @@ public class VisualisationController {
         final BarDataSet barDataSet1 = new BarDataSet(getbarEntries(mData),"DataSet 1");
         final BarData barData = new BarData();
 
-        barDataSet1.setBarBorderWidth(1f);
-
-
+        barData.setBarWidth(0.1f);
         barData.addDataSet(barDataSet1);
         barChart.setData(barData);
 
@@ -97,10 +95,10 @@ public class VisualisationController {
     public ArrayList<BarEntry> getbarEntries(List<Pair<String,Integer>> data){
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         barEntries.add(new BarEntry(1, data.get(0).second));
-        barEntries.add(new BarEntry(2, data.get(1).second));
-        barEntries.add(new BarEntry(3, data.get(2).second));
-        barEntries.add(new BarEntry(4, data.get(3).second));
-        barEntries.add(new BarEntry(5, data.get(4).second));
+        barEntries.add(new BarEntry(2.1f, data.get(1).second));
+        barEntries.add(new BarEntry(3.2f, data.get(2).second));
+        barEntries.add(new BarEntry(4.3f, data.get(3).second));
+        barEntries.add(new BarEntry(5.4f, data.get(4).second));
         return barEntries;
     }
 }
