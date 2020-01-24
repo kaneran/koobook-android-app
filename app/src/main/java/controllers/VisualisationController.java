@@ -44,23 +44,29 @@ public class VisualisationController {
         final BarDataSet barDataSet1 = new BarDataSet(getbarEntries(mData),"DataSet 1");
         final BarData barData = new BarData();
 
+        barDataSet1.setBarBorderWidth(1f);
+
+
         barData.addDataSet(barDataSet1);
         barChart.setData(barData);
 
         barChart.getAxisRight().setEnabled(false);
+
         barChart.getDescription().setEnabled(false);
-        barChart.getXAxis().setCenterAxisLabels(true);
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        barChart.getXAxis().setGranularity(1f);
-        barChart.getXAxis().setGranularityEnabled(true);
+
+        barChart.getLegend().setEnabled(false);
+
+        barChart.getAxisLeft().setEnabled(false);
         barChart.getAxisLeft().setDrawGridLines(false);
         barChart.getXAxis().setDrawGridLines(false);
 
+        barChart.setScaleEnabled(false);
         barData.setBarWidth(barChart.getXAxis().getGridLineWidth());
-        barChart.getXAxis().setAxisMinimum(0);
-        //barChart.getXAxis().setAxisMinimum(0+barChart.getBarData().getBarWidth());
-        barChart.getAxisLeft().setAxisMinimum(0);
-        barChart.getAxisRight().setAxisMinimum(0);
+
+        barChart.getXAxis().setAxisMinimum(0.5f);
+        barChart.getXAxis().setEnabled(false);
+
         barChart.invalidate();
 
 
