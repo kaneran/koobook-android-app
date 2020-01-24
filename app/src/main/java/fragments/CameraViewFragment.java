@@ -108,7 +108,7 @@ public class CameraViewFragment extends Fragment {
                         @Override
                         public void run() {
                             cameraSource.stop();
-                            bookController = new BookController(getActivity().getApplicationContext());
+                            bookController = new BookController(getContext());
                             SoundEffect soundEffect = new SoundEffect();
                             soundEffect.play(getActivity().getApplicationContext());
                             Vibrator vibrator = (Vibrator) getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -116,7 +116,7 @@ public class CameraViewFragment extends Fragment {
                             //textview_scan_msg.setText(isbnCodes.valueAt(0).displayValue);
                             isbn = isbnCodes.valueAt(0).displayValue;
                             bookController.storeBookIsbn(getContext(), isbn);
-                            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, loadingScreenFragment).commit();
+                            bookController.searchBook(isbn,"","");
                         }
                     });
                 }

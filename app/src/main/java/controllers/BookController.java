@@ -1,7 +1,10 @@
 package controllers;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
@@ -10,8 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 import com.squareup.picasso.Callback;
@@ -29,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import activities.EnterOneTimePasswordActivity;
 import dataaccess.setup.AppDatabase;
 import entities.Audit;
 import entities.Author;
@@ -58,11 +64,14 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     Context context;
     String data;
     boolean isMoreThanOneBook;
+    ProgressDialog progressDialog;
+    boolean bookInformationreceived;
 
     public BookController(Context context) {
         this.context = context;
         isMoreThanOneBook = false;
         books = new ArrayList<Book>();
+        auditIds = new ArrayList<>();
     }
 
     public List<Book> getBooks() {
@@ -85,7 +94,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     //Checks in room database to see if book exists
     public boolean checkIfBookExistsInDatabaseUsingTitleAndAuthor(Context context, String title, String author) {
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
-        List<Book> books = db.bookDao().getBookBasedOnTitle("%"+title+"%");
+        List<Book> books = db.bookDao().getBookBasedOnTitle("%"+title.toLowerCase()+"%");
         if(books == null){
             return false;
         } else{
@@ -183,31 +192,40 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         return sharedPreferences.getString("bookListType", "default");
     }
 
+    //Load the progress dialog to keep the user informed that the book information is being retrieved
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog = ProgressDialog.show(context, "Fetching information about book", "Please wait", false, false);
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        BookReviewFragment bookReviewFragment = new BookReviewFragment();
+        ErrorFragment errorFragment = new ErrorFragment();
+        SearchBookResultsFragment searchBookResultsFragment =  new SearchBookResultsFragment();
+        FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+        super.onPostExecute(aBoolean);
+        progressDialog.dismiss();
+
+        if(isMoreThanOneBook == false){
+
+            if (bookInformationreceived == true){
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
+
+            } else{
+                //fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
+            }
+        } else{
+            fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchBookResultsFragment).commit();
+        }
+    }
+
     @Override
     protected Boolean doInBackground(String... strings) {
         try{
-            BookReviewFragment bookReviewFragment = new BookReviewFragment();
-            ErrorFragment errorFragment = new ErrorFragment();
-            SearchBookResultsFragment searchBookResultsFragment =  new SearchBookResultsFragment();
-            FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
 
-            //If true then execute the method for retrieving the data for one book
-            //Otherwise, execute the method for retrieving the information of the books
-            if(isMoreThanOneBook == false){
-
-                boolean bookInformationreceived = receiveBookInformation(strings);
-                if (bookInformationreceived == true){
-                    fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
-
-                } else{
-                    fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
-                }
-            } else{
-                receiveBookInformation(strings);
-                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchBookResultsFragment).commit();
-            }
-
-
+            bookInformationreceived = receiveBookInformation(strings);
             return true;
         } catch (Exception e){
 
@@ -287,8 +305,33 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             return true;
 
         } catch (Exception e){
-            e.printStackTrace();
-            return false;
+            if(!receivedDataString.matches("")){
+                //If it the retrieved data is for only one book then save it
+                //Otherwise, seperate the books information and put into a book list to passed into the BookListAdapter
+                if(isMoreThanOneBook == false){
+                    bookDataMap = decodeBookData(receivedDataString);
+
+                    //If the user searched for the book without entering the isbn then we need to save the retireved Isbn
+                    storeBookIsbn(context,bookDataMap.get(BookData.Isbn));
+
+                    //A final check to see if the book already corresponds to a book record in the Room database
+                    if(checkIfBookExistsInDatabaseUsingIsbn(context) == false){
+                        genres = splitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
+                        authors = splitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
+                        reviews = splitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
+                        saveBookInformation(bookDataMap, authors, genres, reviews);
+                    }
+                } else{
+                    storeBooksDataString(context, receivedDataString);
+
+                }
+
+                return true;
+
+            } else {
+                e.printStackTrace();
+                return false;
+            }
         }
 
     }
@@ -539,43 +582,51 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         TextView textview_four_to_five_star_rating_percentage = view.findViewById(R.id.textview_fourtofivestarratingpercentage);
         TextView textview_one_star_rating_percentage = view.findViewById(R.id.textview_onestarratingpercentage);
 
-        ratingbar_amazon_average_rating.setRating((float)ratings.getAmazonAverageRating());
-        if(ratings.getAmazonAverageRating() == 0){
+        if(ratings != null) {
+            ratingbar_amazon_average_rating.setRating((float) ratings.getAmazonAverageRating());
+            if (ratings.getAmazonAverageRating() == 0) {
+                textview_amazon_average_rating.setText("");
+            } else {
+                textview_amazon_average_rating.setText("(" + (float) ratings.getAmazonAverageRating() + ")");
+            }
+            ratingbar_googlebooks_average_rating.setRating((float) ratings.getGoogleBooksAverageRating());
+            if (ratings.getGoogleBooksAverageRating() == 0) {
+                textview_googlebooks_average_rating.setText("");
+            } else {
+                textview_googlebooks_average_rating.setText("(" + (float) ratings.getGoogleBooksAverageRating() + ")");
+            }
+
+            ratingbar_goodreads_average_rating.setRating((float) ratings.getGoodreadsAverageRating());
+            if (ratings.getGoodreadsAverageRating() == 0) {
+                textview_goodreads_average_rating.setText("");
+            } else {
+                textview_goodreads_average_rating.setText("(" + (float) ratings.getGoodreadsAverageRating() + ")");
+            }
+
+            if (ratings.getAmazonReviewsCount() == 0) {
+                textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown");
+            } else {
+                textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown (" + ratings.getAmazonReviewsCount() + " reviews)");
+            }
+            int fourToFiveStarRatingPercentage = ratings.getAmazonFiveStarRatingPercentage() + ratings.getAmazonFourStarRatingPercentage();
+            if (fourToFiveStarRatingPercentage == 0) {
+                textview_four_to_five_star_rating_percentage.setText("Unavailable");
+            } else {
+                textview_four_to_five_star_rating_percentage.setText(fourToFiveStarRatingPercentage + "%");
+            }
+            if (ratings.getAmazonOneStarRatingPercentage() == 0) {
+                textview_one_star_rating_percentage.setText("Unavailable");
+            } else {
+                textview_one_star_rating_percentage.setText(ratings.getAmazonOneStarRatingPercentage() + "%");
+            }
+        } else{
             textview_amazon_average_rating.setText("");
-        } else{
-            textview_amazon_average_rating.setText("("+(float)ratings.getAmazonAverageRating()+ ")");
-        }
-        ratingbar_googlebooks_average_rating.setRating((float)ratings.getGoogleBooksAverageRating());
-        if(ratings.getGoogleBooksAverageRating() == 0){
-            textview_googlebooks_average_rating.setText("");
-        } else{
-            textview_googlebooks_average_rating.setText("("+(float)ratings.getGoogleBooksAverageRating()+ ")");
-        }
-
-        ratingbar_goodreads_average_rating.setRating((float)ratings.getGoodreadsAverageRating());
-        if(ratings.getGoodreadsAverageRating() == 0){
             textview_goodreads_average_rating.setText("");
-        } else{
-            textview_goodreads_average_rating.setText("("+(float)ratings.getGoodreadsAverageRating()+ ")");
-        }
-
-        if(ratings.getAmazonReviewsCount()==0){
+            textview_googlebooks_average_rating.setText("");
             textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown");
-        } else{
-            textview_amazon_rating_breakdown_title.setText("Amazon rating breakdown ("+ ratings.getAmazonReviewsCount() +" reviews)");
-        }
-        int fourToFiveStarRatingPercentage = ratings.getAmazonFiveStarRatingPercentage() + ratings.getAmazonFourStarRatingPercentage();
-        if(fourToFiveStarRatingPercentage == 0){
             textview_four_to_five_star_rating_percentage.setText("Unavailable");
-        } else{
-            textview_four_to_five_star_rating_percentage.setText(fourToFiveStarRatingPercentage+"%");
-        }
-        if(ratings.getAmazonOneStarRatingPercentage() == 0){
             textview_one_star_rating_percentage.setText("Unavailable");
-        } else{
-            textview_one_star_rating_percentage.setText(ratings.getAmazonOneStarRatingPercentage()+ "%");
         }
-
     }
 
     public void searchBook(String isbn, String title, String authorFullName){
@@ -865,7 +916,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     //Based on the book list type, it retrieves the books matching that type and returns this list to be loaded into the Recycler adapter
     public List<Book> getBooksBasedOnStatus(Toolbar toolbar){
         UserController userController = new UserController();
-        auditIds = new ArrayList<>();
+
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String bookListType = getBookListTypeFromSharedPreferneces(context);

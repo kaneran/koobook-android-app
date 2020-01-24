@@ -40,4 +40,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:15.0.0'
     implementation files('libs/activation.jar')
     implementation "com.squareup.picasso:picasso:2.4.0"
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

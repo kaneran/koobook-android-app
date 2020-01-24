@@ -28,9 +28,12 @@ public class HomeFragment extends Fragment {
     LoginActivity loginActivity;
     CardView cardview_books_liked;
     CardView cardview_review_books;
+    CardView cardview_my_preferences;
+    CardView cardview_statistics;
     UserController userController;
     BookController bookController;
     BookListFragment bookListFragment;
+    StatisticsFragment statisticsFragment;
     AppDatabase db;
 
     public HomeFragment() {
@@ -51,9 +54,12 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bookListFragment = new BookListFragment();
+        statisticsFragment = new StatisticsFragment();
         bookController = new BookController(view.getContext());
         cardview_books_liked = view.findViewById(R.id.cardview_books_liked);
         cardview_review_books = view.findViewById(R.id.cardview_review_books);
+        cardview_statistics = view.findViewById(R.id.cardview_statistics);
+        cardview_my_preferences = view.findViewById(R.id.cardview_my_preferences);
 
         //If the user clicks the "Books Liked" option, then the book list type, being "Liked" will be saved in a preference file
         //and the Booklist fragment will be dispayed using fragment manager
@@ -70,6 +76,13 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
                 getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
+            }
+        });
+
+        cardview_statistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, statisticsFragment).commit();
             }
         });
     }

@@ -14,7 +14,7 @@ public interface BookDao {
     @Query("SELECT * FROM Book WHERE isbnNumber = :isbnNumber")
     Book getBookBasedOnIsbnNumber(String isbnNumber);
 
-    @Query("SELECT * FROM Book WHERE title like :title")
+    @Query("SELECT * FROM Book WHERE LOWER(title) like :title")
     List<Book> getBookBasedOnTitle(String title);
 
     @Query("SELECT * FROM Book WHERE bookId = :bookId")

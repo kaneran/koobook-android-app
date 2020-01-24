@@ -2,6 +2,7 @@ package adapters;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +26,7 @@ import java.util.List;
 import controllers.BookController;
 import dataaccess.setup.AppDatabase;
 import entities.Book;
+import entities.Rating;
 import fragments.BookReviewFragment;
 
 //Acquired the knowledge to create this adapter class from https://www.youtube.com/watch?v=CTBiwKlO5IU&feature=youtu.be&t=2160
@@ -63,7 +65,12 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
 
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         //Get overall rating based on the book id which was retrieved by using the index from this method's argument to get the book entity from the book list
-        overallAverageRating = db.ratingDao().getRating(books.get(position).getBookId()).getOverallAverageRating();
+        Rating rating = db.ratingDao().getRating(books.get(position).getBookId());
+        if(rating != null) {
+            overallAverageRating = rating.getOverallAverageRating();
+        } else{
+            overallAverageRating = 0;
+        }
         //Get authors based on the book id which was retrieved by using the index from this method's argument to get the book entity from the book list
         authorIds = db.bookAuthorDao().getAuthorIdsOfBook(books.get(position).getBookId());
         authorNames = new ArrayList<>();
@@ -91,7 +98,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         }
 
         holder.textview_book_title.setText(books.get(position).getTitle());
-        if(books.get(position).getThumbnailUrl() != ""){
+        if(!books.get(position).getThumbnailUrl().matches("")){
             Picasso.with(context).load(books.get(position).getThumbnailUrl()).resize(200,400).centerInside().into(holder.imageview_book_thumbnail, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -103,6 +110,11 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
                     Log.i("Picasso", "onError: TRUE");
                 }
             });
+        } else{
+            holder.imageview_book_thumbnail.getLayoutParams().height= 400;
+            holder.imageview_book_thumbnail.getLayoutParams().width = 200;
+            holder.imageview_book_thumbnail.requestLayout();
+
         }
 
         holder.textview_author.setText("Author: "+ authorsNamesConcatanated);
@@ -122,6 +134,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
                 fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
             }
         });
+
+
     }
 
     @Override
