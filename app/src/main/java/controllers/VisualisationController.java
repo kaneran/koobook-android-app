@@ -51,19 +51,26 @@ public class VisualisationController {
         final List<Pair<String, Integer>> mData = data;
         if((data.size()==1)){
             barChart.setNoDataText("Nothing insightful to show");
-        } else {
-
-            helper = new Helper();
-
-
+        } else if(data.size()>1) {
             BarDataSet barDataSet1 = new BarDataSet(getBarEntries(data, true), "");
-            barDataSet1.setColor(Color.parseColor("#00416C"));
-            barDataSet1.setValueTextColor(Color.parseColor("#00416C"));
-
             BarDataSet barDataSet2 = new BarDataSet(getBarEntries(data, false), "");
-            barDataSet2.setColor(Color.parseColor("#2196F3"));
-            barDataSet2.setValueTextColor(Color.parseColor("#2196F3"));
+
             barData = new BarData();
+            //If the top 2 data values have the same frequency then make all bar entires the same colour
+            if(data.get(0).second.equals(data.get(1).second)){
+                barDataSet1.setColor(Color.parseColor("#72b3e8"));
+                barDataSet1.setValueTextColor(Color.parseColor("#72b3e8"));
+
+                barDataSet2.setColor(Color.parseColor("#72b3e8"));
+                barDataSet2.setValueTextColor(Color.parseColor("#72b3e8"));
+            } else{
+                barDataSet1.setColor(Color.parseColor("#00416C"));
+                barDataSet1.setValueTextColor(Color.parseColor("#00416C"));
+
+                barDataSet2.setColor(Color.parseColor("#72b3e8"));
+                barDataSet2.setValueTextColor(Color.parseColor("#72b3e8"));
+            }
+
 
             if (barSelectedTitle.equals("Genre selected: ")) {
                 textview_bar_selected.setText("Tap on one of the bars to view the genre");
@@ -101,6 +108,7 @@ public class VisualisationController {
 
             barChart.setScaleEnabled(false);
             barData.setBarWidth(barChart.getXAxis().getGridLineWidth());
+
 
             barChart.getXAxis().setAxisMinimum(0.5f);
             barChart.getXAxis().setEnabled(false);
