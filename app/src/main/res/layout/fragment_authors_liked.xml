@@ -91,8 +91,8 @@
 
                 <ImageView
                     android:id="@+id/imageview_view_more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:src="@drawable/view_more_icon"
                     android:layout_marginLeft="20dp"
                     android:visibility="invisible"/>

@@ -63,7 +63,7 @@ public class VisualisationController {
             BarDataSet barDataSet2 = new BarDataSet(getBarEntries(data, false), "");
             barDataSet2.setColor(Color.parseColor("#2196F3"));
             barDataSet2.setValueTextColor(Color.parseColor("#2196F3"));
-            barData = new BarData(barDataSet1, barDataSet2);
+            barData = new BarData();
 
             if (barSelectedTitle.equals("Genre selected: ")) {
                 textview_bar_selected.setText("Tap on one of the bars to view the genre");
@@ -112,6 +112,9 @@ public class VisualisationController {
             barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, Highlight h) {
+
+
+
                     int barEntryIndex = Math.round(e.getX());
                     //barEntryIndex--;
                     String columnName = "";
@@ -132,6 +135,11 @@ public class VisualisationController {
                     if (imageview_view_more != null) {
                         imageview_view_more.setVisibility(View.VISIBLE);
                     }
+
+                    //If the chart being display is for the genres of the authors books, then hide the "View more" button
+                    if (barSelectedTitle.equals("Genre selected: ")) {
+                        imageview_view_more.setVisibility(View.INVISIBLE);
+                    }
                 }
 
                 @Override
@@ -143,11 +151,12 @@ public class VisualisationController {
 
     }
 
-    public void updateVisualisation(BarChart barChart, final TextView textview_bar_selected, final String barSelectedTitle, final ImageView imageview_view_more,final  ImageView imageview_go_back, List<Pair<String,Integer>> data){
+    public void updateVisualisation(BarChart barChart, final TextView textview_bar_selected, final String barSelectedTitle, final ImageView imageview_view_more,final  ImageView imageview_go_back, TextView textview_go_back, List<Pair<String,Integer>> data){
         barData.removeDataSet(0);
         barData.removeDataSet(1);
         imageview_view_more.setVisibility(View.INVISIBLE);
         imageview_go_back.setVisibility(View.VISIBLE);
+        textview_go_back.setVisibility(View.VISIBLE);
         if(data.size() <2){
             barChart.setVisibility(View.INVISIBLE);
             textview_bar_selected.setText("Nothing to show");
@@ -159,6 +168,7 @@ public class VisualisationController {
             } else if (barSelectedTitle.equals("Author selected: ")) {
                 textview_bar_selected.setText("Tap on one of the bars to view the author");
                 imageview_go_back.setVisibility(View.INVISIBLE);
+                textview_go_back.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -175,10 +185,8 @@ public class VisualisationController {
             }
 
         } else{
-            int x = 1;
-            for(int i=0; i< data.size(); i++){
-                barEntries.add(new BarEntry(x, data.get(i).second));
-            }
+            barEntries.add(new BarEntry(1, data.get(0).second));
+
         }
 
         return barEntries;

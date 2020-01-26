@@ -82,7 +82,7 @@ public class AuthorsLikedFragment extends Fragment {
                 data = genreController.getTopGenresOfBooksWrittenByAuthorAndLikedByUser(author);
                 textview_most_liked_author.setText(genreController.getMostLikedGenreText(data));
                 textview_authors_liked_barchart_title.setText("Genres of "+author+"'s books you liked");
-                visualisationController.updateVisualisation(barChart, textview_most_liked_author_selected,"Genre selected: ", imageview_view_more,imageview_go_back, data);
+                visualisationController.updateVisualisation(barChart, textview_most_liked_author_selected,"Genre selected: ", imageview_view_more,imageview_go_back,textview_go_back, data);
             }
         });
 
