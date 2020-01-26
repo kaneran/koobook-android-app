@@ -74,9 +74,6 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         auditIds = new ArrayList<>();
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
 
     public void setBooks(List<Book> books) {
         this.books = books;
@@ -921,30 +918,42 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String bookListType = getBookListTypeFromSharedPreferneces(context);
         if(bookListType.equals(BookListType.Liked.toString())){
-            books = getLikedBooks(userId, db);
+            books = getBooks(userId, db, BookStatus.Liked, null);
             toolbar.setTitle("Liked books");
         } else if (bookListType.equals(BookListType.NeedsReviewing.toString())){
-            books =getBooksThatNeedsReviewing(userId,db);
+            books = getBooks(userId,db, BookStatus.ReviewLater, null);
             toolbar.setTitle("Needs reviewing");
         }
         return books;
     }
 
-    public List<Book> getLikedBooks(int userId, AppDatabase db){
+    public List<Book> getBooks(int userId, AppDatabase db, BookStatus bookStatus, DislikedBookReason dislikedBookReason){
         List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
         String auditStatus;
+        String auditReason;
         Book book;
         int bookId;
 
-        //For each audit id, use it to get the Status from the Status entity and if it equals to "Liked" then add the audit it to the AuditIds list
-        for(int auditId : allAuditIdsBasedOnUserId){
-            auditStatus = db.statusDao().getStatus(auditId);
-            if(auditStatus.equals("Liked")){
-                auditIds.add(auditId);
+
+        //If the book status is disliked then only the audits id that satisify the reason for disliking a book is added to the list
+        if(bookStatus.equals(BookStatus.Disliked)){
+            for (int auditId : allAuditIdsBasedOnUserId) {
+                auditReason = db.statusDao().getReason(auditId);
+                if (auditReason.equals(dislikedBookReason.toString())) {
+                    auditIds.add(auditId);
+                }
+            }
+        }else {
+            //For each audit id, use it to get the Status from the Status entity and if it equals to "Liked" then add the audit it to the AuditIds list
+            for (int auditId : allAuditIdsBasedOnUserId) {
+                auditStatus = db.statusDao().getStatus(auditId);
+                if (auditStatus.equals(bookStatus.toString())) {
+                    auditIds.add(auditId);
+                }
             }
         }
 
-        //For each audit id in the updated list of audit ids with "liked" status, get the book id using that audit id and use that to get the book entity
+        //For each audit id in the updated list of audit ids with a specific audit status, get the book id using that audit id and use that to get the book entity
         for(int auditId : auditIds){
             bookId = db.auditBookDao().getBookId(auditId);
             book = db.bookDao().getBookBasedOnBookId(bookId);
@@ -954,31 +963,25 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         return books;
     }
 
-    public List<Book> getBooksThatNeedsReviewing(int userId, AppDatabase db){
-        List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
-        String auditStatus;
-        Book book;
-        int bookId;
+    //Takes a list of Books as its arguments and returns a another list of books which only contains books that were written by a given author
+    public List<Book> getLikedBooksWrittenByAuthor(String author, List<Book> books){
+        List<Book> likedBooksWrittenByAuthor = new ArrayList<>();
+        db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
 
-        //For each audit id, use it to get the Status from the Status entity and if it equals to "ReviewLater" then add the audit it to the AuditIds list
-        for(int auditId : allAuditIdsBasedOnUserId){
-            auditStatus = db.statusDao().getStatus(auditId);
-            if(auditStatus.equals("ReviewLater")){
-                auditIds.add(auditId);
+        int authorId = db.authorDao().getAuthorId(author);
+        for(Book book: books){
+            BookAuthor bookAuthor = db.bookAuthorDao().getBookAuthor(authorId, book.getBookId());
+            if(bookAuthor != null){
+                likedBooksWrittenByAuthor.add(book);
             }
         }
-
-        //For each audit id in the updated list of audit ids with "liked" status, get the book id using that audit id and use that to get the book entity
-        for(int auditId : auditIds){
-            bookId = db.auditBookDao().getBookId(auditId);
-            book = db.bookDao().getBookBasedOnBookId(bookId);
-            books.add(book);
-        }
-
-        return books;
+        return likedBooksWrittenByAuthor;
     }
 
     public enum BookListType{
-        Liked, NeedsReviewing
+        Liked, NeedsReviewing, Disliked
+    }
+    public enum DislikedBookReason{
+        Genre, LostInterests
     }
 }

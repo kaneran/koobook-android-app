@@ -37,12 +37,21 @@ public class AuthorController {
     }
 
     public List<Pair<String,Integer>> getMostLikedAuthors(){
-     books = bookController.getLikedBooks(userId, db);
+     books = bookController.getBooks(userId, db, BookController.BookStatus.Liked, null);
      List<String> authorNamesFromLikedBooks = getAuthorNamesOfBooks(books);
      HashMap<String, Integer> mostLikedAuthorHashMap = helper.getOccurencesOfStringList(authorNamesFromLikedBooks);
      Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostLikedAuthorHashMap);
      List<Pair<String,Integer>> topFiveMostLikedAuthors = helper.getTopPairs(sortedHashMapByIntegerValue);
      return topFiveMostLikedAuthors;
+    }
+
+    //If the first two authors have the same value then set the text value to reflect this
+    public String getMostLikedAuthorText(List<Pair<String,Integer>> data){
+        if(data.get(0).second.equals(data.get(1).second)){
+            return "Undetermined";
+        } else{
+            return data.get(0).first;
+        }
     }
 
 
@@ -58,6 +67,14 @@ public class AuthorController {
 
         authors.removeAll(Arrays.asList(""));
         return authors;
+    }
+
+    public int getAuthorBookCount(List<Pair<String,Integer>> data){
+        int count= 0 ;
+        for(Pair<String,Integer> dataPair: data){
+            count+= dataPair.second;
+        }
+        return count;
     }
 
 

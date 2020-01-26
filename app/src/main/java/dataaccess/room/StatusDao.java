@@ -20,6 +20,9 @@ public interface StatusDao {
     @Query("SELECT status FROM Status WHERE audit_auditId = :auditId")
     String getStatus(int auditId);
 
+    @Query("SELECT reason FROM Status WHERE audit_auditId = :auditId")
+    String getReason(int auditId);
+
     @Query("UPDATE Status SET status= :newStatus WHERE audit_auditId = :auditId")
     void updateStatusStatus(String newStatus, int auditId);
 

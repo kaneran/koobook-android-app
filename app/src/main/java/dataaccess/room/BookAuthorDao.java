@@ -17,6 +17,9 @@ public interface BookAuthorDao {
     @Query("SELECT book_bookId FROM BookAuthor WHERE author_authorId = :authorId")
     List<Integer> getAuthorsBookIds(int authorId);
 
+    @Query("SELECT * FROM BookAuthor WHERE author_authorId = :authorId AND book_bookId = :bookId")
+    BookAuthor getBookAuthor(int authorId, int bookId);
+
     @Insert
     void insertBookAuthor(BookAuthor... bookAuthor);
 }

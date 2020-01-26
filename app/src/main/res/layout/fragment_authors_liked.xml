@@ -12,13 +12,14 @@
 
         <LinearLayout
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="75dp"
+            android:layout_marginBottom="55dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center">
 
             <TextView
+                android:id="@+id/textview_authors_liked_main_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Most liked author"
@@ -37,6 +38,26 @@
                 android:fontFamily="@font/arial_regular"
                 android:textSize="24dp" />
 
+            <ImageView
+                android:id="@+id/imageview_go_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/go_back_icon"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:id="@+id/textview_go_back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Go back"
+                android:gravity="center"
+                android:textSize="14dp"
+                android:fontFamily="@font/arial_regular"
+                android:visibility="invisible"/>
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -46,6 +67,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textview_authors_liked_barchart_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
