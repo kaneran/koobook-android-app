@@ -23,8 +23,8 @@ public class DislikeBookDialog extends AppCompatDialogFragment {
         choices[1]= "Lost interest";
         bookController = new BookController(getContext());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
-        builder.setTitle("Why dislike this book?")
-                .setMessage("Choose one option")
+        builder.setTitle("Disiked the book?")
+                .setMessage("Are you sure you want to dislike the book?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

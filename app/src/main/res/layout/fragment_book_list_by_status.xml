@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.BookListFragment">
+    tools:context="fragments.BookListByStatusFragment">
 
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_book_list"
+        android:id="@+id/recyclerview_book_list_by_status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/textview_no_books_msg"
+        android:id="@+id/textview_no_books_with_status_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"

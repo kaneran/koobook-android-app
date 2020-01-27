@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,12 +77,16 @@ public class VisualisationController {
                 textview_bar_selected.setText("Tap on one of the bars to view the genre");
                 barData.removeDataSet(0);
                 barChart.invalidate();
-                imageview_go_back.setVisibility(View.VISIBLE);
+
+
             } else {
                 textview_bar_selected.setText("Tap on one of the bars to view the author");
                 barData.removeDataSet(0);
                 barChart.invalidate();
-                imageview_go_back.setVisibility(View.INVISIBLE);
+
+                if(imageview_go_back != null){
+                    imageview_go_back.setVisibility(View.INVISIBLE);
+                }
             }
 
 
@@ -145,8 +150,14 @@ public class VisualisationController {
                     }
 
                     //If the chart being display is for the genres of the authors books, then hide the "View more" button
-                    if (barSelectedTitle.equals("Genre selected: ")) {
+                    //The go back button being null will indicate which Fragment page I am in i.e the fragment that displays the most like genres overall
+                    //or te fragment that displays the most liked genres based on a given author
+                    if (barSelectedTitle.equals("Genre selected: ") && imageview_go_back != null) {
                         imageview_view_more.setVisibility(View.INVISIBLE);
+                    } else if(barSelectedTitle.equals("Genre selected: ") && imageview_go_back == null){
+                        if(imageview_view_more != null) {
+                            imageview_view_more.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
 

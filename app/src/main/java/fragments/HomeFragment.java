@@ -1,7 +1,6 @@
 package fragments;
 
 
-import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
@@ -18,7 +16,6 @@ import activities.LoginActivity;
 import controllers.BookController;
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
-import entities.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,7 +29,7 @@ public class HomeFragment extends Fragment {
     CardView cardview_statistics;
     UserController userController;
     BookController bookController;
-    BookListFragment bookListFragment;
+    BookListByStatusFragment bookListByStatusFragment;
     StatisticsFragment statisticsFragment;
     AppDatabase db;
 
@@ -53,7 +50,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookListFragment = new BookListFragment();
+        bookListByStatusFragment = new BookListByStatusFragment();
         statisticsFragment = new StatisticsFragment();
         bookController = new BookController(view.getContext());
         cardview_books_liked = view.findViewById(R.id.cardview_books_liked);
@@ -67,7 +64,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.Liked);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
             }
         });
 
@@ -75,7 +72,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListFragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
             }
         });
 

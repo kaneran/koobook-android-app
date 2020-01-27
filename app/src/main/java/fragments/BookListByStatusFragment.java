@@ -26,7 +26,7 @@ import entities.Book;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BookListFragment extends Fragment {
+public class BookListByStatusFragment extends Fragment {
     BookController bookController;
     List<Book> books;
     RecyclerView recyclerView;
@@ -35,7 +35,7 @@ public class BookListFragment extends Fragment {
     Toolbar toolbar;
 
 
-    public BookListFragment() {
+    public BookListByStatusFragment() {
         // Required empty public constructor
     }
 
@@ -44,7 +44,7 @@ public class BookListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_book_list, container, false);
+        return inflater.inflate(R.layout.fragment_book_list_by_status, container, false);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class BookListFragment extends Fragment {
         bookController = new BookController(view.getContext());
         toolbar = getActivity().findViewById(R.id.toolbar);
         books = bookController.getBooksBasedOnStatus(toolbar);
-        recyclerView = view.findViewById(R.id.recyclerview_book_list);
-        textview_no_books_msg = view.findViewById(R.id.textview_no_books_msg);
+        recyclerView = view.findViewById(R.id.recyclerview_book_list_by_status);
+        textview_no_books_msg = view.findViewById(R.id.textview_no_books_with_status_msg);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         if(books.size() >0){
             recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL));

@@ -240,7 +240,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         String fromReceiver = "";
         try{
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Socket clientSocket = new Socket("192.168.1.252",9876);
+            Socket clientSocket = new Socket("10.209.141.166",9876);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
@@ -830,11 +830,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
             //Update Status record
-            updateStatus(audit.getAuditId(), BookStatus.Liked, db);
+            updateStatus(audit.getAuditId(), BookStatus.Liked,"", db);
 
         } else{
             //Create new Audit and status record
-            createAudit(userId, bookId, BookStatus.Liked, db);
+            createAudit(userId, bookId, BookStatus.Liked,"", db);
         }
 
     }
@@ -849,11 +849,10 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
             //Update Status record
-            updateStatus(audit.getAuditId(), BookStatus.ReviewLater, db);
-
+            updateStatus(audit.getAuditId(), BookStatus.ReviewLater,"", db);
         } else{
             //Create new Audit and status record
-            createAudit(userId, bookId, BookStatus.ReviewLater, db);
+            createAudit(userId, bookId, BookStatus.ReviewLater, "", db);
         }
     }
 
@@ -873,15 +872,15 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         Audit audit = db.auditDao().getAudit(userId,bookId);
         if (audit != null){
             //Update Status record
-            updateStatus(audit.getAuditId(), BookStatus.Disliked, db);
+            updateStatus(audit.getAuditId(), BookStatus.Disliked,reasonForDislikingBook, db);
 
         } else{
             //Create new Audit and status record
-            createAudit(userId, bookId, BookStatus.Disliked, db);
+            createAudit(userId, bookId, BookStatus.Disliked, reasonForDislikingBook, db);
         }
 
     }
-    public void updateStatus(int auditId,BookStatus bookStatus, AppDatabase db){
+    public void updateStatus(int auditId,BookStatus bookStatus,String reason, AppDatabase db){
         String newStatus = bookStatus.toString();
         db.statusDao().updateStatusStatus(newStatus, auditId);
         if(newStatus.equals("Disliked")){
@@ -891,16 +890,16 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
 
     }
-    public void createAudit(int userId, int bookId, BookStatus bookStatus, AppDatabase db){
+    public void createAudit(int userId, int bookId, BookStatus bookStatus,String reason, AppDatabase db){
         db.auditDao().insertAudit(new Audit(0, userId, bookId));
         int auditId = db.auditDao().getAudit(userId,bookId).getAuditId();
-        createStatus(auditId, bookStatus, db);
+        createStatus(auditId, bookStatus, reason, db);
     }
 
-    public void createStatus(int auditId, BookStatus bookStatus, AppDatabase db){
+    public void createStatus(int auditId, BookStatus bookStatus, String reason, AppDatabase db){
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
         String status = bookStatus.toString();
-        db.statusDao().insertStatus(new entities.Status(0,auditId,status,timeStamp,""));
+        db.statusDao().insertStatus(new entities.Status(0,auditId,status,timeStamp,reason));
     }
 
 
@@ -936,7 +935,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
 
         //If the book status is disliked then only the audits id that satisify the reason for disliking a book is added to the list
-        if(bookStatus.equals(BookStatus.Disliked)){
+        if(bookStatus.equals(BookStatus.Disliked) && dislikedBookReason != null){
             for (int auditId : allAuditIdsBasedOnUserId) {
                 auditReason = db.statusDao().getReason(auditId);
                 if (auditReason.equals(dislikedBookReason.toString())) {

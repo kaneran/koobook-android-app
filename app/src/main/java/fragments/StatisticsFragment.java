@@ -27,6 +27,9 @@ public class StatisticsFragment extends Fragment {
     CardView cardview_genres_liked;
     CardView cardview_genres_disliked;
     AuthorsLikedFragment authorsLikedFragment;
+    AuthorsDislikedFragment authorsDislikedFragment;
+    GenresLikedFragment genresLikedFragment;
+    GenresDislikedFragment genresDislikedFragment;
     public StatisticsFragment() {
         // Required empty public constructor
     }
@@ -44,6 +47,9 @@ public class StatisticsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         authorsLikedFragment = new AuthorsLikedFragment();
+        authorsDislikedFragment = new AuthorsDislikedFragment();
+        genresLikedFragment = new GenresLikedFragment();
+        genresDislikedFragment = new GenresDislikedFragment();
         cardview_authors_liked = view.findViewById(R.id.cardview_authors_liked);
         cardview_authors_disliked = view.findViewById(R.id.cardview_authors_disliked);
         cardview_genres_liked = view.findViewById(R.id.cardview_genres_liked);
@@ -56,7 +62,26 @@ public class StatisticsFragment extends Fragment {
             }
         });
 
-        AuthorController authorController = new AuthorController(getContext());
-        List<Pair<String,Integer>> pairs = authorController.getMostLikedAuthors();
+        cardview_genres_liked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, genresLikedFragment).commit();
+            }
+        });
+
+        cardview_authors_disliked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, authorsDislikedFragment).commit();
+            }
+        });
+
+        cardview_genres_disliked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, genresDislikedFragment).commit();
+            }
+        });
+
     }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.TextViewCompat;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +39,7 @@ public class AuthorsLikedFragment extends Fragment {
     VisualisationController visualisationController;
     AuthorsLikedFragment authorsLikedFragment;
     List<Pair<String,Integer>> data;
-    int authorBookCount;
+
 
 
     public AuthorsLikedFragment() {
@@ -71,7 +70,7 @@ public class AuthorsLikedFragment extends Fragment {
         genreController = new GenreController(getContext());
         visualisationController = new VisualisationController(getContext());
         data = authorController.getMostLikedAuthors();
-        textview_most_liked_author.setText(authorController.getMostLikedAuthorText(data));
+        textview_most_liked_author.setText(authorController.getTopAuthorFromPairData(data));
         visualisationController.displayVisualisation(barChart, textview_most_liked_author_selected,"Author selected: ", imageview_view_more,imageview_go_back, data);
 
         imageview_view_more.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +79,7 @@ public class AuthorsLikedFragment extends Fragment {
                 String author = visualisationController.getSelectedBarLabelFromSharedPreferneces(getContext());
                 textview_authors_liked_main_title.setText("Most liked genre written by \n" + author);
                 data = genreController.getTopGenresOfBooksWrittenByAuthorAndLikedByUser(author);
-                textview_most_liked_author.setText(genreController.getMostLikedGenreText(data));
+                textview_most_liked_author.setText(genreController.getTopGenreFromPairData(data));
                 textview_authors_liked_barchart_title.setText("Genres of "+author+"'s books you liked");
                 visualisationController.updateVisualisation(barChart, textview_most_liked_author_selected,"Genre selected: ", imageview_view_more,imageview_go_back,textview_go_back, data);
             }

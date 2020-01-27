@@ -45,8 +45,19 @@ public class AuthorController {
      return topFiveMostLikedAuthors;
     }
 
+
+    public List<Pair<String,Integer>> getMostDislikedAuthors(){
+        books = bookController.getBooks(userId, db, BookController.BookStatus.Disliked, null);
+        List<String> authorNamesFromLikedBooks = getAuthorNamesOfBooks(books);
+        HashMap<String, Integer> mostDislikedAuthorHashMap = helper.getOccurencesOfStringList(authorNamesFromLikedBooks);
+        Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostDislikedAuthorHashMap);
+        List<Pair<String,Integer>> topFiveMostDislikedAuthors = helper.getTopPairs(sortedHashMapByIntegerValue);
+        return topFiveMostDislikedAuthors;
+    }
+
+
     //If the first two authors have the same value then set the text value to reflect this
-    public String getMostLikedAuthorText(List<Pair<String,Integer>> data){
+    public String getTopAuthorFromPairData(List<Pair<String,Integer>> data){
         if(data.get(0).second.equals(data.get(1).second)){
             return "Undetermined";
         } else{

@@ -46,6 +46,24 @@ public class GenreController {
 
     }
 
+    public List<Pair<String,Integer>> getMostDislikedGenres(){
+        books = bookController.getBooks(userId, db, BookController.BookStatus.Disliked, BookController.DislikedBookReason.Genre);
+        List<String> genresFromDislikedBooks = getGenresOfBooks(books);
+        HashMap<String, Integer> mostDislikedGenreHashMap = helper.getOccurencesOfStringList(genresFromDislikedBooks);
+        Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostDislikedGenreHashMap);
+        List<Pair<String,Integer>> topFiveMostDislikedGenres = helper.getTopPairs(sortedHashMapByIntegerValue);
+        return topFiveMostDislikedGenres;
+    }
+
+    public List<Pair<String,Integer>> getMostLikedGenres(){
+        books = bookController.getBooks(userId, db, BookController.BookStatus.Liked, null);
+        List<String> genresFromLikedBooks = getGenresOfBooks(books);
+        HashMap<String, Integer> mostLikedGenreHashMap = helper.getOccurencesOfStringList(genresFromLikedBooks);
+        Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostLikedGenreHashMap);
+        List<Pair<String,Integer>> topFiveMostLikedGenres = helper.getTopPairs(sortedHashMapByIntegerValue);
+        return topFiveMostLikedGenres;
+    }
+
     public List<String> getGenresOfBooks(List<Book> books){
         for(Book book: books){
 
@@ -58,7 +76,7 @@ public class GenreController {
         return genres;
     }
 
-    public String getMostLikedGenreText(List<Pair<String,Integer>> data){
+    public String getTopGenreFromPairData(List<Pair<String,Integer>> data){
         if(data.size() == 1){
             return "Undetermined";
 
