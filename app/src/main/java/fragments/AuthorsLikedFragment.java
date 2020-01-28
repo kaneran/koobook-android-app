@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import controllers.VisualisationController;
  * A simple {@link Fragment} subclass.
  */
 public class AuthorsLikedFragment extends Fragment {
+    Toolbar toolbar;
     BarChart barChart;
     TextView textview_authors_liked_main_title;
     TextView textview_most_liked_author;
@@ -57,6 +59,7 @@ public class AuthorsLikedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar = getActivity().findViewById(R.id.toolbar);
         authorsLikedFragment = new AuthorsLikedFragment();
         barChart = view.findViewById(R.id.barchart_most_liked_author);
         textview_authors_liked_main_title = view.findViewById(R.id.textview_authors_liked_main_title);
@@ -69,6 +72,9 @@ public class AuthorsLikedFragment extends Fragment {
         authorController = new AuthorController(getContext());
         genreController = new GenreController(getContext());
         visualisationController = new VisualisationController(getContext());
+
+        toolbar.setTitle("Most liked authors");
+
         data = authorController.getMostLikedAuthors();
         textview_most_liked_author.setText(authorController.getTopAuthorFromPairData(data));
         visualisationController.displayVisualisation(barChart, textview_most_liked_author_selected,"Author selected: ", imageview_view_more,imageview_go_back, data);

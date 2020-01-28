@@ -1,10 +1,8 @@
 package controllers;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
@@ -13,10 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 import com.squareup.picasso.Callback;
@@ -34,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import activities.EnterOneTimePasswordActivity;
 import dataaccess.setup.AppDatabase;
 import entities.Audit;
 import entities.Author;
@@ -917,22 +912,26 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         int userId = userController.getUserIdFromSharedPreferneces(context);
         String bookListType = getBookListTypeFromSharedPreferneces(context);
         if(bookListType.equals(BookListType.Liked.toString())){
-            books = getBooks(userId, db, BookStatus.Liked, null);
+            books = getBooksUsingStatus(userId, db, BookStatus.Liked, null);
             toolbar.setTitle("Liked books");
         } else if (bookListType.equals(BookListType.NeedsReviewing.toString())){
-            books = getBooks(userId,db, BookStatus.ReviewLater, null);
+            books = getBooksUsingStatus(userId,db, BookStatus.ReviewLater, null);
             toolbar.setTitle("Needs reviewing");
         }
         return books;
     }
 
-    public List<Book> getBooks(int userId, AppDatabase db, BookStatus bookStatus, DislikedBookReason dislikedBookReason){
-        List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
-        String auditStatus;
-        String auditReason;
-        Book book;
+    public List<Book> getBooksUsingStatus(int userId, AppDatabase db, BookStatus bookStatus, DislikedBookReason dislikedBookReason){
+        List<Book> books = new ArrayList<>();
+        List<Integer> auditIds = new ArrayList<>();
+        List<Integer> allAuditIdsBasedOnUserId = null;
+
+        String auditStatus ="";
+        String auditReason = "";
+        Book book = null;
         int bookId;
 
+        allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
 
         //If the book status is disliked then only the audits id that satisify the reason for disliking a book is added to the list
         if(bookStatus.equals(BookStatus.Disliked) && dislikedBookReason != null){
@@ -959,6 +958,23 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             books.add(book);
         }
 
+        return books;
+    }
+
+    public List<Book> getBooksBasedOnGenre(int userId, String genre){
+        List<Integer> allAuditIdsBasedOnUserId = db.auditDao().getAuditIds(userId);
+        List<Book> books = new ArrayList<>();
+        for(int auditId : allAuditIdsBasedOnUserId){
+            int bookId = db.auditBookDao().getBookId(auditId);
+            Book book = db.bookDao().getBookBasedOnBookId(bookId);
+            List<Integer> genreIds = db.bookGenreDao().getGenreIdsOfBook(bookId);
+            for(int genreId: genreIds){
+                String genreLabel = db.genreDao().getGenreLabel(genreId);
+                if(genreLabel.equals(genre)){
+                    books.add(book);
+                }
+            }
+        }
         return books;
     }
 

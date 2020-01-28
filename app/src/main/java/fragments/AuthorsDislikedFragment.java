@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import controllers.VisualisationController;
  * A simple {@link Fragment} subclass.
  */
 public class AuthorsDislikedFragment extends Fragment {
+    Toolbar toolbar;
     BarChart barChart;
     TextView textview_authors_disliked_main_title;
     TextView textview_most_disliked_author;
@@ -48,6 +50,7 @@ public class AuthorsDislikedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar = getActivity().findViewById(R.id.toolbar);
         barChart = view.findViewById(R.id.barchart_most_disliked_author);
         textview_authors_disliked_main_title = view.findViewById(R.id.textview_authors_disliked_main_title);
         textview_most_disliked_author = view.findViewById(R.id.textview_most_disliked_author);
@@ -55,6 +58,7 @@ public class AuthorsDislikedFragment extends Fragment {
         textview_authors_disliked_barchart_title = view.findViewById(R.id.textview_authors_disliked_barchart_title);
         authorController = new AuthorController(getContext());
         visualisationController = new VisualisationController(getContext());
+        toolbar.setTitle("Most disliked authors");
         data = authorController.getMostDislikedAuthors();
         textview_most_disliked_author.setText(authorController.getTopAuthorFromPairData(data));
         visualisationController.displayVisualisation(barChart, textview_most_disliked_author_selected,"Author selected: ", null,null, data);

@@ -6,11 +6,12 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import dataaccess.setup.AppDatabase;
 import entities.Book;
-import entities.Genre;
 import extras.Helper;
 
 public class GenreController {
@@ -35,7 +36,7 @@ public class GenreController {
     }
 
     public List<Pair<String, Integer>> getTopGenresOfBooksWrittenByAuthorAndLikedByUser(String author) {
-        books = bookController.getBooks(userId, db, BookController.BookStatus.Liked,null);
+        books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Liked,null);
         books = bookController.getLikedBooksWrittenByAuthor(author, books);
 
         List<String> genresFromLikedBooksWrittenByAuthor = getGenresOfBooks(books);
@@ -47,7 +48,8 @@ public class GenreController {
     }
 
     public List<Pair<String,Integer>> getMostDislikedGenres(){
-        books = bookController.getBooks(userId, db, BookController.BookStatus.Disliked, BookController.DislikedBookReason.Genre);
+        BookController bookController = new BookController(context);
+        List<Book> books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Disliked, BookController.DislikedBookReason.Genre);
         List<String> genresFromDislikedBooks = getGenresOfBooks(books);
         HashMap<String, Integer> mostDislikedGenreHashMap = helper.getOccurencesOfStringList(genresFromDislikedBooks);
         Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostDislikedGenreHashMap);
@@ -56,7 +58,8 @@ public class GenreController {
     }
 
     public List<Pair<String,Integer>> getMostLikedGenres(){
-        books = bookController.getBooks(userId, db, BookController.BookStatus.Liked, null);
+        BookController bookController = new BookController(context);
+        List<Book> books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Liked, null);
         List<String> genresFromLikedBooks = getGenresOfBooks(books);
         HashMap<String, Integer> mostLikedGenreHashMap = helper.getOccurencesOfStringList(genresFromLikedBooks);
         Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostLikedGenreHashMap);
@@ -76,6 +79,11 @@ public class GenreController {
         return genres;
     }
 
+    public List<String> getUniqueGenres(List<String> genres){
+        Set<String> uniqueGenres= new HashSet<>(genres);
+        return new ArrayList<String>(uniqueGenres);
+    }
+
     public String getTopGenreFromPairData(List<Pair<String,Integer>> data){
         if(data.size() == 1){
             return "Undetermined";
@@ -89,6 +97,16 @@ public class GenreController {
 
         }
 
+    }
+
+    public String getMostLikedGenre(){
+        List<Pair<String,Integer>> data = getMostLikedGenres();
+        return getTopGenreFromPairData(data);
+    }
+
+    public String getMostDislikedGenre(){
+        List<Pair<String,Integer>> data = getMostDislikedGenres();
+        return getTopGenreFromPairData(data);
     }
 
 }

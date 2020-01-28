@@ -101,6 +101,17 @@ public class Helper {
 
     }
 
+    //This will only return the list where all values are valid i.e not containing numbers
+    public List<String> getValidValuesFromList(List<String> list){
+        List<String> validList = new ArrayList<>();
+        for(String string: list){
+            if(!string.matches(".*\\d.*")){
+                validList.add(string);
+            }
+        }
+        return validList;
+    }
+
 
 
 }

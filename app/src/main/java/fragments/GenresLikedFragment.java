@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import controllers.VisualisationController;
  * A simple {@link Fragment} subclass.
  */
 public class GenresLikedFragment extends Fragment {
+    Toolbar toolbar;
     BarChart barChart;
     TextView textview_genres_liked_main_title;
     TextView textview_most_liked_genre;
@@ -53,6 +55,7 @@ public class GenresLikedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar = getActivity().findViewById(R.id.toolbar);
         bookController = new BookController(getContext());
         barChart = view.findViewById(R.id.barchart_most_liked_genre);
         textview_genres_liked_main_title = view.findViewById(R.id.textview_genres_liked_main_title);
@@ -62,6 +65,7 @@ public class GenresLikedFragment extends Fragment {
         imageview_find_more_books = view.findViewById(R.id.imageview_find_more_books);
         genreController = new GenreController(getContext());
         visualisationController = new VisualisationController(getContext());
+        toolbar.setTitle("Most liked genres");
         data = genreController.getMostLikedGenres();
         textview_most_liked_genre.setText(genreController.getTopGenreFromPairData(data));
         visualisationController.displayVisualisation(barChart, textview_most_liked_genre_selected,"Genre selected: ", imageview_find_more_books,null, data);

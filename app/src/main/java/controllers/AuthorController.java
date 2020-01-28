@@ -2,7 +2,6 @@ package controllers;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import dataaccess.setup.AppDatabase;
-import entities.Author;
 import entities.Book;
 import extras.Helper;
 
@@ -37,7 +35,7 @@ public class AuthorController {
     }
 
     public List<Pair<String,Integer>> getMostLikedAuthors(){
-     books = bookController.getBooks(userId, db, BookController.BookStatus.Liked, null);
+     books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Liked, null);
      List<String> authorNamesFromLikedBooks = getAuthorNamesOfBooks(books);
      HashMap<String, Integer> mostLikedAuthorHashMap = helper.getOccurencesOfStringList(authorNamesFromLikedBooks);
      Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostLikedAuthorHashMap);
@@ -47,7 +45,7 @@ public class AuthorController {
 
 
     public List<Pair<String,Integer>> getMostDislikedAuthors(){
-        books = bookController.getBooks(userId, db, BookController.BookStatus.Disliked, null);
+        books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Disliked, null);
         List<String> authorNamesFromLikedBooks = getAuthorNamesOfBooks(books);
         HashMap<String, Integer> mostDislikedAuthorHashMap = helper.getOccurencesOfStringList(authorNamesFromLikedBooks);
         Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostDislikedAuthorHashMap);
@@ -80,12 +78,14 @@ public class AuthorController {
         return authors;
     }
 
-    public int getAuthorBookCount(List<Pair<String,Integer>> data){
-        int count= 0 ;
-        for(Pair<String,Integer> dataPair: data){
-            count+= dataPair.second;
-        }
-        return count;
+    public String getMostLikedAuthor(){
+        List<Pair<String, Integer>> data = getMostLikedAuthors();
+        return getTopAuthorFromPairData(data);
+    }
+
+    public String getMostDislikedAuthor(){
+        List<Pair<String, Integer>> data = getMostDislikedAuthors();
+        return getTopAuthorFromPairData(data);
     }
 
 

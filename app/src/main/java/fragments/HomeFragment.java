@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.example.koobookandroidapp.R;
 
 import activities.LoginActivity;
+import activities.MainActivity;
 import controllers.BookController;
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
@@ -31,6 +32,7 @@ public class HomeFragment extends Fragment {
     BookController bookController;
     BookListByStatusFragment bookListByStatusFragment;
     StatisticsFragment statisticsFragment;
+    SummaryFragment summaryFragment;
     AppDatabase db;
 
     public HomeFragment() {
@@ -52,6 +54,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         bookListByStatusFragment = new BookListByStatusFragment();
         statisticsFragment = new StatisticsFragment();
+        summaryFragment = new SummaryFragment();
         bookController = new BookController(view.getContext());
         cardview_books_liked = view.findViewById(R.id.cardview_books_liked);
         cardview_review_books = view.findViewById(R.id.cardview_review_books);
@@ -64,7 +67,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.Liked);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).addToBackStack(null).commit();
+                MainActivity.toolbar_title = "Home";
             }
         });
 
@@ -72,14 +76,24 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).addToBackStack(null).commit();
+                MainActivity.toolbar_title = "Home";
             }
         });
 
         cardview_statistics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, statisticsFragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, statisticsFragment).addToBackStack(null).commit();
+                MainActivity.toolbar_title = "Home";
+            }
+        });
+
+        cardview_my_preferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, summaryFragment).addToBackStack(null).commit();
+                MainActivity.toolbar_title = "Home";
             }
         });
     }

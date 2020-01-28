@@ -20,4 +20,12 @@
         <item name="android:colorAccent">#0AAEEF</item>
     </style>
 
+    <!--Credit to reVerse from https://stackoverflow.com/questions/37108954/android-spinner-underline-color -->
+    <style name="ThemeSpinner">
+        <!-- Color when pressed -->
+        <item name="colorAccent">@color/navyBlue</item>
+        <!-- Default color for the dropdown arrow and line -->
+        <item name="colorControlNormal">@color/lightBlue</item>
+    </style>
+
 </resources>
