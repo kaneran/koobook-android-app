@@ -163,6 +163,61 @@
                 android:textSize="16dp" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/background1"
+            android:gravity="left"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/helvetic_neuva_condensed"
+                android:padding="5dp"
+                android:text="Positive things said about the books you liked:"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/textview_summary_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/arial_regular"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+
+
+        </LinearLayout>
+
+            <Button
+                android:id="@+id/button_get_definition_of_book"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Click to get definition"
+                android:textAllCaps="false"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/helvetic_neuva_condensed"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:background="@drawable/view_more_button"/>
+
+
 
 
     </LinearLayout>

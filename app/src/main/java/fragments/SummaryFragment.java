@@ -1,6 +1,7 @@
 package fragments;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 import controllers.AuthorController;
 import controllers.GenreController;
+import controllers.ReviewsController;
 import entities.Book;
 
 
@@ -27,10 +30,14 @@ import entities.Book;
  * A simple {@link Fragment} subclass.
  */
 public class SummaryFragment extends Fragment {
-    TextView textview_most_liked_genre, textview_most_disliked_genre, textview_most_liked_author, textview_most_disliked_author;
+    TextView textview_most_liked_genre, textview_most_disliked_genre, textview_most_liked_author, textview_most_disliked_author, textview_reviews;
     AuthorController authorController;
     GenreController genreController;
+    ReviewsController reviewsController;
     Toolbar toolbar;
+    ProgressDialog progressDialog;
+    List<String> reviews;
+    Button button_get_definition_of_book;
     public SummaryFragment() {
         // Required empty public constructor
     }
@@ -44,16 +51,19 @@ public class SummaryFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         toolbar = getActivity().findViewById(R.id.toolbar);
         textview_most_liked_genre = view.findViewById(R.id.textview_summary_most_liked_genre);
         textview_most_disliked_genre = view.findViewById(R.id.textview_summary_most_disliked_genre);
         textview_most_liked_author = view.findViewById(R.id.textview_summary_most_liked_author);
         textview_most_disliked_author = view.findViewById(R.id.textview_summary_most_disliked_author);
+        textview_reviews = view.findViewById(R.id.textview_summary_reviews);
+        button_get_definition_of_book = view.findViewById(R.id.button_get_definition_of_book);
 
         authorController = new AuthorController(view.getContext());
         genreController = new GenreController(view.getContext());
+        reviewsController = new ReviewsController(view.getContext());
 
         toolbar.setTitle("Summary");
 
@@ -75,5 +85,29 @@ public class SummaryFragment extends Fragment {
         textview_most_disliked_genre.setText(genreController.getTopGenreFromPairData(mostDislikedGenreData));
         textview_most_liked_author.setText(authorController.getTopAuthorFromPairData(mostLikedAuthorData));
         textview_most_disliked_author.setText(authorController.getTopAuthorFromPairData(mostDislikedAuthorData));
+
+        button_get_definition_of_book.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StringBuilder sb = new StringBuilder();
+                reviewsController.execute();
+                while(reviewsController.getPositiveReviewsList() == null){
+                    //Do nothing until it returns a list of reviews or an empty list
+
+                }
+                reviews = reviewsController.getPositiveReviewsList();
+                if(reviews.size()>0) {
+                    for (String review : reviews) {
+                        sb.append(review + "\n\n");
+                    }
+
+                    textview_reviews.setText(sb.toString());
+                } else{
+                    textview_reviews.setText("Unavailable");
+                }
+                button_get_definition_of_book.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 }
