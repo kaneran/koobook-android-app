@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +35,7 @@ public class SearchBookResultsFragment extends Fragment {
     RecyclerView.Adapter adapter;
     TextView textview_no_search_results_msg;
     Toolbar toolbar;
+    TextView textview_toolbar_title;
     String isbn;
     String title;
     String author;
@@ -54,9 +56,11 @@ public class SearchBookResultsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bookController = new BookController(view.getContext());
-        toolbar = getActivity().findViewById(R.id.toolbar);
+        textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         books = bookController.getBooksFromBooksDataString();
-        toolbar.setTitle("Search results: "+ books.size() +" books found");
+        toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        textview_toolbar_title.setText("Search results: "+ books.size() +" books found");
         recyclerView = view.findViewById(R.id.recyclerview_search_book_results);
         textview_no_search_results_msg = view.findViewById(R.id.textview_no_search_results_msg);
         adapter = new SearchResultsAdapter(books,getContext());

@@ -3,11 +3,14 @@ package controllers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.koobookandroidapp.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -24,12 +27,14 @@ import java.util.List;
 
 import extras.Helper;
 import extras.MyValueFormatter;
+import fragments.AuthorsLikedFragment;
 
 //Followed tutorial https://www.youtube.com/watch?v=aPkkhLWofv0 by Sarthi Technology to create the barchart was invovled using the Github library published by Mike Phil
 
 //Credit to Sarthi Technology https://www.youtube.com/watch?v=Bd76zMHdrDE to correctly position the x axis labels
 
 public class VisualisationController {
+    AuthorsLikedFragment authorsLikedFragment;
     Helper helper;
     List<String> formattedColumns;
     Context context;
@@ -41,8 +46,15 @@ public class VisualisationController {
         this.context = context;
         authorController = new AuthorController(context);
         genreController = new GenreController(context);
+        authorsLikedFragment = new AuthorsLikedFragment();
 
     }
+
+    public void restoreOriginalDataVisualisation(){
+        FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, authorsLikedFragment).commit();
+    }
+
 
     //This method will initialise the barchart and display it with the data being passed in
     //Note that the image view being passed in will only apply

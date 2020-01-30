@@ -47,6 +47,7 @@ public class CameraViewFragment extends Fragment {
     BookController bookController;
     String isbn;
 
+
     public CameraViewFragment() {
         // Required empty public constructor
     }

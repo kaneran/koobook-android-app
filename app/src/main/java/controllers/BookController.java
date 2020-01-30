@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import dataaccess.setup.AppDatabase;
 import entities.Audit;
@@ -67,6 +68,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         isMoreThanOneBook = false;
         books = new ArrayList<Book>();
         auditIds = new ArrayList<>();
+        db = Room.databaseBuilder(context, AppDatabase.class, "production").allowMainThreadQueries().build();
     }
 
 
@@ -198,6 +200,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         SearchBookResultsFragment searchBookResultsFragment =  new SearchBookResultsFragment();
         FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
         super.onPostExecute(aBoolean);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        }catch (Exception e){
+            
+        }
         progressDialog.dismiss();
 
         if(isMoreThanOneBook == false){
@@ -206,7 +213,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                 fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
 
             } else{
-                //fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, errorFragment).commit();
             }
         } else{
             fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchBookResultsFragment).commit();
@@ -231,11 +238,12 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     public boolean receiveBookInformation(String... strings){
         byte[] messageByte = new byte[1000];
         boolean end = false;
+        boolean success = false;
         String receivedDataString = "";
         String fromReceiver = "";
         try{
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Socket clientSocket = new Socket("10.209.141.166",9876);
+            Socket clientSocket = new Socket("192.168.1.252",9876);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
@@ -277,27 +285,35 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             //If it the retrieved data is for only one book then save it
             //Otherwise, seperate the books information and put into a book list to passed into the BookListAdapter
             if(isMoreThanOneBook == false){
-                bookDataMap = decodeBookData(receivedDataString);
+                String formattedDataString = receivedDataString.replace("#","").replace("$","").replace("*","");
+                if(!formattedDataString.matches("")) {
+                    bookDataMap = decodeBookData(receivedDataString);
 
-                //If the user searched for the book without entering the isbn then we need to save the retireved Isbn
-                storeBookIsbn(context,bookDataMap.get(BookData.Isbn));
+                    //If the user searched for the book without entering the isbn then we need to save the retireved Isbn
+                    storeBookIsbn(context, bookDataMap.get(BookData.Isbn));
 
-                //A final check to see if the book already corresponds to a book record in the Room database
-                if(checkIfBookExistsInDatabaseUsingIsbn(context) == false){
-                    genres = splitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
-                    authors = splitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
-                    reviews = splitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
-                    saveBookInformation(bookDataMap, authors, genres, reviews);
+                    //A final check to see if the book already corresponds to a book record in the Room database
+                    if (checkIfBookExistsInDatabaseUsingIsbn(context) == false) {
+                        genres = splitStringsAndPutIntoList(bookDataMap.get(BookData.Genres));
+                        authors = splitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
+                        reviews = splitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
+                        saveBookInformation(bookDataMap, authors, genres, reviews);
+                        success = true;
+                    }
+                } else{
+                    success = false;
                 }
             } else{
                 storeBooksDataString(context, receivedDataString);
+                success = true;
 
             }
 
-            return true;
+
 
         } catch (Exception e){
-            if(!receivedDataString.matches("")){
+            String formattedDataString = receivedDataString.replace("#","").replace("$","").replace("*","");
+            if(!formattedDataString.matches("")){
                 //If it the retrieved data is for only one book then save it
                 //Otherwise, seperate the books information and put into a book list to passed into the BookListAdapter
                 if(isMoreThanOneBook == false){
@@ -312,9 +328,11 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                         authors = splitStringsAndPutIntoList(bookDataMap.get(BookData.Authors));
                         reviews = splitStringsAndPutIntoList(bookDataMap.get(BookData.AmazonReviews));
                         saveBookInformation(bookDataMap, authors, genres, reviews);
+                        success = true;
                     }
                 } else{
                     storeBooksDataString(context, receivedDataString);
+                    success = true;
 
                 }
 
@@ -322,10 +340,10 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
             } else {
                 e.printStackTrace();
-                return false;
+                success = false;
             }
         }
-
+        return success;
     }
 
     //This method will retrieve the data string, containing all the brief information of 10 books, and use it to split such that we have the data string for each book.
@@ -425,12 +443,27 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
     }
 
-    public void displayBookInformation(View view, FragmentManager fragmentManager, Toolbar toolbar){
+    public void displayBookInformation(View view, FragmentManager fragmentManager, TextView textview_toolbar_title){
         try {
             db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
             String isbn = getBookIsbnFromSharedPreferneces(context);
             Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
-            toolbar.setTitle(book.getTitle());
+            //If the title is long then only display the first five words from it to be displayed on the screen
+            if(book.getTitle().split(" ").length>5){
+                String trimmedTitle = "";
+                String[] initalWords = book.getTitle().split(" ");
+                for(int i=0; i<6; i++){
+                    if(i == 5) {
+                        trimmedTitle += initalWords[i];
+                    } else{
+                        trimmedTitle += initalWords[i] + " ";
+                    }
+                }
+                trimmedTitle+= "...";
+                textview_toolbar_title.setText(trimmedTitle);
+            } else{
+                textview_toolbar_title.setText(book.getTitle());
+            }
             List<Integer> genreIds = db.bookGenreDao().getGenreIdsOfBook(book.bookId);
             List<String> genreLabels = new ArrayList<>();
             for (int i = 0; i < genreIds.size(); i++) {
@@ -622,6 +655,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     }
 
     public void searchBook(String isbn, String title, String authorFullName){
+        boolean dataRetrieved;
         BookReviewFragment bookReviewFragment = new BookReviewFragment();
         FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
         if(!isbn.matches("")){
@@ -905,7 +939,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
     //This method first gets the user id from the shared preference, it also gets the type of books from another shared preference file.
     //Regarding that preference file, this will be updated based on whether the user decided to click the option to view books that were liked or books that needs reviewing
     //Based on the book list type, it retrieves the books matching that type and returns this list to be loaded into the Recycler adapter
-    public List<Book> getBooksBasedOnStatus(Toolbar toolbar){
+    public List<Book> getBooksBasedOnStatus(TextView toolbar_title){
         UserController userController = new UserController();
 
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
@@ -913,10 +947,10 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         String bookListType = getBookListTypeFromSharedPreferneces(context);
         if(bookListType.equals(BookListType.Liked.toString())){
             books = getBooksUsingStatus(userId, db, BookStatus.Liked, null);
-            toolbar.setTitle("Liked books");
+            toolbar_title.setText("Liked books");
         } else if (bookListType.equals(BookListType.NeedsReviewing.toString())){
             books = getBooksUsingStatus(userId,db, BookStatus.ReviewLater, null);
-            toolbar.setTitle("Needs reviewing");
+            toolbar_title.setText("Needs reviewing");
         }
         return books;
     }
@@ -952,12 +986,19 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
 
         //For each audit id in the updated list of audit ids with a specific audit status, get the book id using that audit id and use that to get the book entity
+        books = getBooksFromAuditIds(auditIds);
+
+        return books;
+    }
+
+    public List<Book> getBooksFromAuditIds(List<Integer> auditIds){
+        List<Book> books = new ArrayList<>();
+        //For each audit id in the updated list of audit ids with a specific audit status, get the book id using that audit id and use that to get the book entity
         for(int auditId : auditIds){
-            bookId = db.auditBookDao().getBookId(auditId);
+            int bookId = db.auditBookDao().getBookId(auditId);
             book = db.bookDao().getBookBasedOnBookId(bookId);
             books.add(book);
         }
-
         return books;
     }
 

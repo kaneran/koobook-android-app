@@ -1,14 +1,22 @@
 package fragments;
 
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
@@ -17,24 +25,25 @@ import activities.MainActivity;
 import controllers.BookController;
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
+import extras.Helper;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment {
 
-    LoginActivity loginActivity;
-    CardView cardview_books_liked;
-    CardView cardview_review_books;
-    CardView cardview_my_preferences;
-    CardView cardview_statistics;
-    UserController userController;
+    LinearLayout library_layout;
+    LinearLayout preferences_layout;
+    LinearLayout dots_layout;
+    ImageView imageview_camera;
+    ImageView imageview_search;
+    Animation anim;
     BookController bookController;
-    BookListByStatusFragment bookListByStatusFragment;
-    StatisticsFragment statisticsFragment;
-    SummaryFragment summaryFragment;
+    SearchFragment searchFragment;
+    CameraViewFragment cameraViewFragment;
     AppDatabase db;
-
+    private TextView[] dots;
+    Helper helper;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -52,49 +61,48 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookListByStatusFragment = new BookListByStatusFragment();
-        statisticsFragment = new StatisticsFragment();
-        summaryFragment = new SummaryFragment();
+
+        cameraViewFragment = new CameraViewFragment();
+        searchFragment = new SearchFragment();
         bookController = new BookController(view.getContext());
-        cardview_books_liked = view.findViewById(R.id.cardview_books_liked);
-        cardview_review_books = view.findViewById(R.id.cardview_review_books);
-        cardview_statistics = view.findViewById(R.id.cardview_statistics);
-        cardview_my_preferences = view.findViewById(R.id.cardview_my_preferences);
-
-        //If the user clicks the "Books Liked" option, then the book list type, being "Liked" will be saved in a preference file
-        //and the Booklist fragment will be dispayed using fragment manager
-        cardview_books_liked.setOnClickListener(new View.OnClickListener() {
+        imageview_camera = view.findViewById(R.id.imageview_camera);
+        imageview_search = view.findViewById(R.id.imageview_search);
+        library_layout = view.findViewById(R.id.library_layout);
+        dots_layout = view.findViewById(R.id.home_dot_layout);
+        preferences_layout = view.findViewById(R.id.preferences_layout);
+        anim = AnimationUtils.loadAnimation(getContext(), R.anim.scale);
+        imageview_camera.startAnimation(anim);
+        addDotsIndicator();
+        imageview_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bookController.storeBookListType(v.getContext(), BookController.BookListType.Liked);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).addToBackStack(null).commit();
-                MainActivity.toolbar_title = "Home";
+                getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, cameraViewFragment).commit();
             }
         });
 
-        cardview_review_books.setOnClickListener(new View.OnClickListener() {
+        imageview_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).addToBackStack(null).commit();
-                MainActivity.toolbar_title = "Home";
+                getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, searchFragment).commit();
             }
         });
 
-        cardview_statistics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, statisticsFragment).addToBackStack(null).commit();
-                MainActivity.toolbar_title = "Home";
-            }
-        });
-
-        cardview_my_preferences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, summaryFragment).addToBackStack(null).commit();
-                MainActivity.toolbar_title = "Home";
-            }
-        });
     }
+
+    public void addDotsIndicator(){
+        dots = new TextView[3];
+        for(int i =0; i< dots.length; i++){
+            dots[i] = new TextView(getContext());
+            dots[i].setText(Html.fromHtml("&#8226"));
+            dots[i].setTextSize(35);
+            if(i==1) {
+                dots[i].setTextColor(getResources().getColor(R.color.white));
+            } else{
+                dots[i].setTextColor(getResources().getColor(R.color.greyBlue));
+            }
+            dots_layout.addView(dots[i]);
+        }
+    }
+
+
 }

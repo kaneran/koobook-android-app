@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 
@@ -31,6 +32,7 @@ import dialogs.ReviewBookLaterDialog;
 public class BookReviewFragment extends Fragment implements RatingTabFragment.OnFragmentInteractionListener, BriefSummaryTabFragment.OnFragmentInteractionListener, ReviewsTabFragment.OnFragmentInteractionListener{
 
     TabLayout tabLayout;
+    TextView textview_toolbar_title;
     Toolbar toolbar;
     Button button_like;
     Button button_reviewlater;
@@ -54,10 +56,12 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
 
         BookController bookController = new BookController(getContext());
         toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         button_like = getView().findViewById(R.id.button_like);
         button_reviewlater = getView().findViewById(R.id.button_reviewlater);
         button_dislike = getView().findViewById(R.id.button_dislike);
-        bookController.displayBookInformation(view, getFragmentManager(),toolbar);
+        bookController.displayBookInformation(view, getFragmentManager(),textview_toolbar_title);
         tabLayout = getView().findViewById(R.id.tablayout);
 
         tabLayout.addTab(tabLayout.newTab().setText("Brief"));

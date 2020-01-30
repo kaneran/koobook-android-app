@@ -1,6 +1,13 @@
 package extras;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.text.Html;
 import android.util.Pair;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.example.koobookandroidapp.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +118,8 @@ public class Helper {
         }
         return validList;
     }
+
+
 
 
 

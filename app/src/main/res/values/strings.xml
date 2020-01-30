@@ -17,4 +17,5 @@
     <string name="statistics_msg">Click on one of the options to receive an insight of your book preferences</string>
     <string name="author_barchart_interaction_msg">Tap on one of the bars to view the author</string>
     <string name="genre_barchart_interaction_msg">Tap on one of the bars to view the genre</string>
+    <string name="about_section">This purpose of Koobook is to provide you with relevent information about a given book which will help you make efficient decision on wehther you like a book or not.When you find a book that you want to get information for, you have the option to scan the books ISBN or manually enter the ISBN number.</string>
 </resources>

@@ -20,6 +20,6 @@ public interface AuditDao {
     @Query("SELECT * FROM Audit WHERE user_userId = :userId AND book_bookId = :bookId")
     Audit getAudit(int userId, int bookId);
 
-    @Query("SELECT auditId FROM Audit WHERE user_userId = :userId")
+    @Query("SELECT auditId FROM Audit WHERE user_userId = :userId ORDER BY auditId DESC")
     List<Integer> getAuditIds(int userId);
 }

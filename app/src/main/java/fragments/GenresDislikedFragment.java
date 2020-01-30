@@ -26,7 +26,7 @@ import controllers.VisualisationController;
  * A simple {@link Fragment} subclass.
  */
 public class GenresDislikedFragment extends Fragment {
-    Toolbar toolbar;
+    TextView textview_toolbar_title;
     BarChart barChart;
     TextView textview_genres_disliked_main_title;
     TextView textview_most_disliked_genre;
@@ -52,7 +52,7 @@ public class GenresDislikedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        toolbar = getActivity().findViewById(R.id.toolbar);
+        textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         bookController = new BookController(getContext());
         barChart = view.findViewById(R.id.barchart_most_disliked_genre);
         textview_genres_disliked_main_title = view.findViewById(R.id.textview_genres_disliked_main_title);
@@ -61,7 +61,7 @@ public class GenresDislikedFragment extends Fragment {
         textview_genres_disliked_barchart_title = view.findViewById(R.id.textview_genres_disliked_barchart_title);
         genreController = new GenreController(getContext());
         visualisationController = new VisualisationController(getContext());
-        toolbar.setTitle("Most disliked genres");
+        textview_toolbar_title.setText("Most disliked genres");
         data = genreController.getMostDislikedGenres();
         textview_most_disliked_genre.setText(genreController.getTopGenreFromPairData(data));
         visualisationController.displayVisualisation(barChart, textview_most_disliked_genre_selected,"Genre selected: ", null,null, data);

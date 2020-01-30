@@ -34,7 +34,7 @@ public class SummaryFragment extends Fragment {
     AuthorController authorController;
     GenreController genreController;
     ReviewsController reviewsController;
-    Toolbar toolbar;
+    TextView textview_toolbar_title;
     ProgressDialog progressDialog;
     List<String> reviews;
     Button button_get_definition_of_book;
@@ -53,7 +53,7 @@ public class SummaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        toolbar = getActivity().findViewById(R.id.toolbar);
+        textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         textview_most_liked_genre = view.findViewById(R.id.textview_summary_most_liked_genre);
         textview_most_disliked_genre = view.findViewById(R.id.textview_summary_most_disliked_genre);
         textview_most_liked_author = view.findViewById(R.id.textview_summary_most_liked_author);
@@ -65,7 +65,7 @@ public class SummaryFragment extends Fragment {
         genreController = new GenreController(view.getContext());
         reviewsController = new ReviewsController(view.getContext());
 
-        toolbar.setTitle("Summary");
+        textview_toolbar_title.setText("Summary");
 
         List<Pair<String,Integer>> mostLikedGenreData = new ArrayList<>();
         List<Pair<String,Integer>> mostDislikedGenreData = new ArrayList<>();

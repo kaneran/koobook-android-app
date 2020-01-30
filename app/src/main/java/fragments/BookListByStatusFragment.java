@@ -46,7 +46,7 @@ public class BookListByStatusFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     TextView textview_no_books_msg;
-    Toolbar toolbar;
+    TextView textview_toolbar_title;
     Spinner spinner;
     List<String> spinnerOptions;
     int userId;
@@ -72,11 +72,11 @@ public class BookListByStatusFragment extends Fragment {
         userController = new UserController();
         userId = userController.getUserIdFromSharedPreferneces(view.getContext());
         helper = new Helper();
-        toolbar = getActivity().findViewById(R.id.toolbar);
+        textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         spinner = view.findViewById(R.id.spinner);
         spinnerOptions = new ArrayList<>();
         spinnerOptions.add("Genre");
-        books = bookController.getBooksBasedOnStatus(toolbar);
+        books = bookController.getBooksBasedOnStatus(textview_toolbar_title);
 
         genres = genreController.getGenresOfBooks(books);
         genres = genreController.getUniqueGenres(genres);
