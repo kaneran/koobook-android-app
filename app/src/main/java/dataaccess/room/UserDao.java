@@ -13,21 +13,18 @@ import entities.User;
 public interface UserDao {
 
     @Insert
-    void insertUserAccont(User... user);
+    void insertUserAccount(User... user);
 
     @Query("SELECT userId FROM User where email = :email")
     public int getUserId(String email);
 
-    @Query("SELECT firstName FROM User where userId = :userId")
-    public String getUsersName(int userId);
 
     @Query("SELECT * FROM User where email = :email")
     public User getUser(String email);
 
 
-    @Query("SELECT * FROM User")
-    public List<User> test();
-
+    @Query("UPDATE User SET email= :email WHERE userId=4")
+    public void updateUserEmail(String email);
 
 }
 

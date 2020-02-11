@@ -97,7 +97,7 @@
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recently scanned books"
+                android:text="Recent books"
                 android:textColor="@color/charcoalBlack"
                 android:textSize="18dp"
                 android:textStyle="bold"

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.koobookandroidapp.R;
 
 import controllers.UserController;
+import extras.Helper;
 import extras.JavaMail;
 
 public class EnterOneTimePasswordActivity extends AppCompatActivity {
@@ -29,15 +30,17 @@ public class EnterOneTimePasswordActivity extends AppCompatActivity {
 
     public void nextButtonClicked(View v){
         UserController userController = new UserController();
+        Helper helper = new Helper();
         oneTimePasswordEntered = edittext_onetimepassword.getText().toString();
 
         //Validate one time password first
-        oneTimePasswordValidated = userController.checkEditTextFieldNonEmpty(edittext_onetimepassword, textview_onetimepassword_error_msg, false);
+        oneTimePasswordValidated = helper.checkEditTextFieldNonEmpty(edittext_onetimepassword, textview_onetimepassword_error_msg, false);
 
         if(oneTimePasswordValidated == true){
             //reset boolean value
             oneTimePasswordValidated = false;
             String actualOneTimePassword = userController.getOneTimePasswordFromSharedPreferneces(this);
+            //Check if the entered one time password matches the actual one time password
             oneTimePasswordValidated = userController.validateOneTimePassword(edittext_onetimepassword,textview_onetimepassword_error_msg,actualOneTimePassword);
             if(oneTimePasswordValidated == true){
 

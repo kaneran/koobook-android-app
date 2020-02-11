@@ -13,6 +13,7 @@ import com.example.koobookandroidapp.R;
 import java.util.ArrayList;
 
 import controllers.UserController;
+import extras.Helper;
 import extras.JavaMail;
 
 public class ResetPasswordActivity extends AppCompatActivity {
@@ -38,18 +39,22 @@ public class ResetPasswordActivity extends AppCompatActivity {
         passwords = new ArrayList<>();
     }
 
-    //Validate that both fields are non empty. If that passes then check if they match then encrpyted the new password
-    // and update the relevent user record in the database to include this new password
+
+    //Update the relevant user record in the database to include this new password
     public void resetButtonClicked(View v){
       UserController userController = new UserController();
-      passwordValidated = userController.checkEditTextFieldNonEmpty(edittext_password, textview_password_error_msg, false);
-      confirmPasswordValidated = userController.checkEditTextFieldNonEmpty(edittext_confirmPassword, textview_passwords_error_msg, false);
+        Helper helper = new Helper();
+        //Validate that both password fields are non empty.
+      passwordValidated = helper.checkEditTextFieldNonEmpty(edittext_password, textview_password_error_msg, false);
+      confirmPasswordValidated = helper.checkEditTextFieldNonEmpty(edittext_confirmPassword, textview_passwords_error_msg, false);
 
+      //If that passes then check if they match.
       if(passwordValidated && confirmPasswordValidated){
           passwords.add(edittext_password);
           passwords.add(edittext_confirmPassword);
           passwordsValidated = userController.checkIfPasswordsMatch(passwords, textview_passwords_error_msg,true);
 
+          //If yes then encrpyt the new password and use it to update the original password
           if(passwordsValidated == true){
               String newPassword = edittext_password.getText().toString();
               user_id = userController.getUserIdFromSharedPreferneces(this);

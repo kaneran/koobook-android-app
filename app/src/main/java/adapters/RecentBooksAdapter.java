@@ -3,6 +3,7 @@ package adapters;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.CardView;
@@ -11,10 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-
-import android.widget.TextView;
 
 import com.example.koobookandroidapp.R;
 import com.squareup.picasso.Callback;
@@ -25,10 +23,9 @@ import java.util.List;
 import controllers.BookController;
 import dataaccess.setup.AppDatabase;
 import entities.Book;
+import fragments.BookReviewFragment;
 
-
-//Acquired the knowledge to create this adapter class from https://www.youtube.com/watch?v=CTBiwKlO5IU&feature=youtu.be&t=2160
-public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.ViewHolder> {
+public class RecentBooksAdapter extends RecyclerView.Adapter<RecentBooksAdapter.ViewHolder>{
     List<Book> books;
     Book book;
     AppDatabase db;
@@ -36,25 +33,27 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
     BookController bookController;
     FragmentManager fragmentManager;
     String isbn;
+    BookReviewFragment bookReviewFragment;
+    BottomNavigationView bottomNavigationView;
 
-
-    public SearchResultsAdapter(List<Book> books, Context context) {
+    public RecentBooksAdapter(List<Book> books, Context context, BottomNavigationView bottomNavigationView) {
         this.books = books;
         this.context = context;
+        this.bottomNavigationView = bottomNavigationView;
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
     }
 
     @NonNull
     @Override
-    public SearchResultsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.search_result_book, viewGroup,false);
-        return new ViewHolder(view);
+    public RecentBooksAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recently_scanned_book, viewGroup,false);
+        return new RecentBooksAdapter.ViewHolder(view);
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull SearchResultsAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecentBooksAdapter.ViewHolder holder, final int position) {
         book = books.get(position);
-        holder.textview_book_title.setText(book.getTitle());
 
         //Check if the book has a valid thumbnail url, if it does not then override the thumbnail url string to be that of the default thumbnail url
         String bookThumbnailUrl = book.getThumbnailUrl();
@@ -75,39 +74,21 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         });
 
 
-        //I stored all the authors of the book into the subtitle attribute for the book such that it was easier to access it, please refer to line 368 in the book controller
-        //The subtitle in this case would've been empty anyway so I just used it to access it in this class
-        String author = book.getSubtitle();
-        if(!(author.length()>3)){
-            author = "Author(s) unavailable";
-        }
-        holder.textview_author.setText(author);
-
-
-        //When one of the cardviews(rows) is clicked, the isbn is stored in the preference file and then checked to see if the book information has already been saved in the databas
+        //When one of the cardviews(rows) is clicked, the isbn is stored in the preference file and then checked to see if the book information has already been saved in the database
         // if its not then it work with the desktop application to collect all the relevent book information and then retirieving and displaying into the Book review screen
         // "Book review" page will be loaded and will use the stored isbn to display the relevent book information
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadBookDataIntoBookReviewPage(v, position);
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
+                fragmentManager = ((FragmentActivity)v.getContext()).getSupportFragmentManager();
+                bookReviewFragment = new BookReviewFragment();
+                bookController = new BookController(v.getContext());
+                isbn = books.get(position).getIsbnNumber();
+                bookController.storeBookIsbn(v.getContext(), isbn);
+                fragmentManager.beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookReviewFragment).commit();
             }
         });
-
-        holder.button_book_row_view_more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadBookDataIntoBookReviewPage(v, position);
-            }
-        });
-    }
-
-    public void loadBookDataIntoBookReviewPage(View v, int position){
-        fragmentManager = ((FragmentActivity)v.getContext()).getSupportFragmentManager();
-        bookController = new BookController(v.getContext());
-        isbn = books.get(position).getIsbnNumber();
-        bookController.storeBookIsbn(v.getContext(), isbn);
-        bookController.searchBook(isbn,"","");
     }
 
     @Override
@@ -116,18 +97,14 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView textview_book_title, textview_author;
         ImageView imageview_book_thumbnail;
         CardView cardView;
-        Button button_book_row_view_more;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textview_book_title = itemView.findViewById(R.id.textview_search_result_book_title);
-            textview_author = itemView.findViewById(R.id.textview_search_result_book_authors);
-            imageview_book_thumbnail = itemView.findViewById(R.id.imageview_search_result_book_thumbnail);
-            cardView = itemView.findViewById(R.id.cardview_id);
-            button_book_row_view_more = itemView.findViewById(R.id.button_book_row_view_more);
+
+            imageview_book_thumbnail = itemView.findViewById(R.id.imageview_recently_scanned_book_img);
+            cardView = itemView.findViewById(R.id.cardview_recently_scanned_book);
         }
     }
 }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.example.koobookandroidapp.R;
 
@@ -21,7 +22,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
 
         textview_welcome_msg = findViewById(R.id.textview_welcome_msg);
 

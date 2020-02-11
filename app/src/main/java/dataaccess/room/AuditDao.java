@@ -1,6 +1,7 @@
 package dataaccess.room;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -22,4 +23,8 @@ public interface AuditDao {
 
     @Query("SELECT auditId FROM Audit WHERE user_userId = :userId ORDER BY auditId DESC")
     List<Integer> getAuditIds(int userId);
+
+
+    @Delete
+    void deleteAudit(Audit audit);
 }

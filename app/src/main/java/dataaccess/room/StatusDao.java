@@ -1,6 +1,7 @@
 package dataaccess.room;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -17,6 +18,9 @@ public interface StatusDao {
     @Query("SELECT * FROM Status")
     List<Status> getStatuses();
 
+    @Query("SELECT * FROM Status WHERE audit_auditId = :auditId")
+    Status getStatusUsingAuditId(int auditId);
+
     @Query("SELECT status FROM Status WHERE audit_auditId = :auditId")
     String getStatus(int auditId);
 
@@ -28,5 +32,8 @@ public interface StatusDao {
 
     @Query("UPDATE Status SET reason= :reason WHERE audit_auditId = :auditId")
     void updateStatusReason(String reason, int auditId);
+
+    @Delete
+    void deleteStatus(Status status);
 
 }

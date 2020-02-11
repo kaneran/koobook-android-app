@@ -41,13 +41,14 @@ public class JavaMail extends AsyncTask<Void,Void,Void> {
         this.message = message;
     }
 
+    //While the Async task is being execute, the progress dialog will be displyed to inform the user that an email is being send to them
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         progressDialog = ProgressDialog.show(context, "Sending one time password to your email", "Please wait", false, false);
     }
 
-    //Display email sent notification and display the "Reset Password" activity
+    //After the Async task has been executed, close the dialog, display "email sent" notification and display the "Reset Password" activity
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
@@ -80,7 +81,7 @@ public class JavaMail extends AsyncTask<Void,Void,Void> {
         });
 
         //Create message object using the session
-        //Set the message's properties and transport it
+        //Set the message's properties and transport(send) it
         try{
             MimeMessage mimeMessage = new MimeMessage(session);
             mimeMessage.setFrom(new InternetAddress(Utils.EMAIL));

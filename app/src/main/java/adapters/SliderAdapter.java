@@ -6,10 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import fragments.HomeFragment;
 import fragments.LibraryFragment;
-import fragments.MainSlider;
 
-import fragments.AboutFragment;
-import fragments.SearchFragment;
 import fragments.StatisticsFragment;
 
 public class SliderAdapter extends FragmentPagerAdapter {
@@ -18,6 +15,7 @@ public class SliderAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
+    //This allows the user to slide between the 3 different fragments
     @Override
     public Fragment getItem(int position) {
         switch (position){

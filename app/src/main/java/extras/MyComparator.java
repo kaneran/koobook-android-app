@@ -13,6 +13,7 @@ public class MyComparator implements Comparator<Review> {
         super();
     }
 
+    //This works by compare the length of two given reviews which are passed into the method's arguments and returns the difference between the two in terms of length.
     public int compare(Review r1, Review r2) {
         int dist1 = Math.abs(r1.getReview().length());
         int dist2 = Math.abs(r2.getReview().length());

@@ -4,6 +4,7 @@ package fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,7 @@ import controllers.AuthorController;
  * A simple {@link Fragment} subclass.
  */
 public class StatisticsFragment extends Fragment {
+    BottomNavigationView bottomNavigationView;
     TextView[] dots;
     LinearLayout dots_layout;
     TextView textview_toolbar_title;
@@ -56,6 +58,7 @@ public class StatisticsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation_view);
         textview_toolbar_title = getActivity().findViewById(R.id.toolbar_title);
         authorsLikedFragment = new AuthorsLikedFragment();
         authorsDislikedFragment = new AuthorsDislikedFragment();
@@ -76,6 +79,7 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, authorsLikedFragment).addToBackStack(null).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
                 MainActivity.toolbar_title ="Statistics";
             }
         });
@@ -84,6 +88,7 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, genresLikedFragment).addToBackStack(null).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
                 MainActivity.toolbar_title ="Statistics";
             }
         });
@@ -92,6 +97,7 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, authorsDislikedFragment).addToBackStack(null).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
                 MainActivity.toolbar_title ="Statistics";
             }
         });
@@ -100,6 +106,7 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, genresDislikedFragment).addToBackStack(null).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
                 MainActivity.toolbar_title ="Statistics";
             }
         });
@@ -107,11 +114,13 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, summaryFragment).addToBackStack(null).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
             }
         });
 
     }
 
+    //This method creates three horizontal dots and adds that to the view of the dot layout(linear layout). One of the dots is color differently to create the impression that the user can slide between the different pages.
     public void addDotsIndicator(){
         dots = new TextView[3];
         for(int i =0; i< dots.length; i++){

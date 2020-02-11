@@ -1,6 +1,7 @@
 package dataaccess.room;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -19,6 +20,12 @@ public interface BookAuthorDao {
 
     @Query("SELECT * FROM BookAuthor WHERE author_authorId = :authorId AND book_bookId = :bookId")
     BookAuthor getBookAuthor(int authorId, int bookId);
+
+    @Query("SELECT * FROM BookAuthor WHERE book_bookId = :bookId")
+    List<BookAuthor> getBookAuthorsUsingBookId(int bookId);
+
+    @Delete
+    void deleteBookAuthor(BookAuthor bookAuthor);
 
     @Insert
     void insertBookAuthor(BookAuthor... bookAuthor);

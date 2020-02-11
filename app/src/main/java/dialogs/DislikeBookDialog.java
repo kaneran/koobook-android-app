@@ -16,6 +16,8 @@ public class DislikeBookDialog extends AppCompatDialogFragment {
     BookController bookController;
     String[] choices;
 
+    //This creates the dialog to allow the user to confirm on whether they intentionally disliked the book. If the user selects "Yes" from the dialog then another dialog will appear which prompt the user
+    //to select the reason in why the disliked the book. If the user instead selected "No" then the dialog will close.
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         choices = new String[2];

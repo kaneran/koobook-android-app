@@ -15,6 +15,9 @@ import controllers.BookController;
 public class LikeBookDialog extends AppCompatDialogFragment {
     BookController bookController;
 
+    //This methods creates the dialog to allow the user to confirm on whether the intentionally liked the book. If the user selects "Yes" from the dialog then the Book controller is used to
+    //execute workflow for liking the book which involves create/updating certain tables in the Room database. After it executes the workflow then a toast message is displayed to notify the user
+    //that the book has been liked. If user instead selected "No" then the dialog will close without any effects made in the Room database.
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         bookController = new BookController(getContext());

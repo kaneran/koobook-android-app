@@ -1,6 +1,7 @@
 package dataaccess.room;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -28,4 +29,7 @@ public interface BookDao {
 
     @Query("SELECT isbnNumber FROM Book WHERE bookId = :bookId")
     String getIsbnNumber(int bookId);
+
+    @Delete
+    void deleteBook(Book book);
 }

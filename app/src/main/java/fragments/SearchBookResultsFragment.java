@@ -36,9 +36,6 @@ public class SearchBookResultsFragment extends Fragment {
     TextView textview_no_search_results_msg;
     Toolbar toolbar;
     TextView textview_toolbar_title;
-    String isbn;
-    String title;
-    String author;
 
     public SearchBookResultsFragment() {
         // Required empty public constructor

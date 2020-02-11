@@ -27,7 +27,7 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
     UserController userController;
     Context context;
     ProgressDialog progressDialog;
-    List<String> positiveReviews =null;
+    List<String> positiveReviews;
 
   public List<String> getPositiveReviewsList(){
       return positiveReviews;
@@ -40,26 +40,41 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         bookController = new BookController(context);
         userController = new UserController();
+        positiveReviews = null;
     }
 
+    //Displays progress dialog while the execution of the Async task commences to inform the user that they need to wait
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         progressDialog = ProgressDialog.show(context, "Fetching positive reviews", "Please wait", false, false);
     }
 
+    //After the Async task executes, the progress dialog closes
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         progressDialog.dismiss();
     }
 
+    //The execution of the Async task involves retrieving the positive reviews from the C# server console application
     @Override
     protected Boolean doInBackground(String... strings) {
-        boolean reviewsCollected = getPositiveReviews();
-        return reviewsCollected;
+      try {
+          boolean reviewsCollected = getPositiveReviews();
+          return reviewsCollected;
+      } catch(Exception e){
+          e.printStackTrace();
+          return false;
+      }
     }
 
+    //This method works by collecting all the reviews of the books liked by the user. All the reviews  were all concatanted as a string whilst using the "$" to separate each review.
+    //It also appended the "#" to the end of this string to tell the server that they have read the entire string and no longer need to wait. It then connects to the C# server console application (Book review manager)
+    // via a TCP socket. After connecting,it sends this string and the server will perform text sentiment analysis to distinguish between the positive and negative reviews. It server then sends the positive reviews to the client(Android app).
+    //In addition, the server also sends an arbitrary string "]d2C>^+" to inform the client that it was received all the data from the server. After the client receives all the data, it removes the sub string "]d2C>^+" and proceeds
+    //to do te partial handshake with the server to close connection. After closing connection, it extracts(decodes) the positive reviews from the retrieved data string and Returns true. If an exception occurs
+    //during the method's main execution then simply return false and initialise the list of positve reviews to be an empty list to avoid null exceptions.
     public boolean getPositiveReviews(){
         byte[] messageByte = new byte[1000];
         boolean end = false;
@@ -68,13 +83,13 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
         String data = getReviewsBasedOnBooksLikedByUser();
         try{
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Socket clientSocket = new Socket("192.168.1.252",9877);
+            Socket clientSocket = new Socket("10.209.140.70",9875);
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
 
             //Send data(reviews) to the server
-            outToServer.writeBytes(data );
+            outToServer.writeBytes(data);
 
             //Receive the book data from the server
             while(!end){
@@ -112,6 +127,7 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
             return true;
         } catch (Exception e){
             e.printStackTrace();
+            String message = e.getMessage();
             positiveReviews = new ArrayList<>();
             return false;
         }
@@ -124,7 +140,7 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
     public String getReviewsBasedOnBooksLikedByUser(){
         StringBuilder sb = new StringBuilder();
         int userId = userController.getUserIdFromSharedPreferneces(context);
-        List<Book> books = bookController.getBooksUsingStatus(userId, db, BookController.BookStatus.Liked,null);
+        List<Book> books = bookController.getBooksUsingStatus(userId,BookController.BookStatus.Liked,null);
         for(Book book: books){
             List<Review> rviews = db.reviewDao().getReviews(book.getBookId());
             for(Review rview: rviews){
@@ -138,6 +154,9 @@ public class ReviewsController extends AsyncTask<String, Void, Boolean>  {
         return sb.toString();
     }
 
+    //This method works by replacing the "$"s with "#" within the string that was passed into the method's argument. It then splits the string by using the "#" which ulimately Returns a string list
+    //contains the individual reviews. If there are more than 3 reviews then add the first 5 reviews to the newly initialised list of reviews. Otherwise, add all the reviews to the list. The method then
+    //Returns this list of reviews
     public List<String> decodeReviewsDataString(String reviewsDataString){
 
         String[] reviews = reviewsDataString.replace("$","#").split("#");

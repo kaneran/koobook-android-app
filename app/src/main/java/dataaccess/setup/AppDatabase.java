@@ -65,18 +65,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract AuthorDao authorDao();
     public abstract BookAuthorDao bookAuthorDao();
     public abstract AuditBookDao auditBookDao();
-    public abstract BookReviewDao bookReviewDao();
     public abstract RatingDao ratingDao();
-    public abstract AuditStatusDao auditStatusDao();
     public abstract StatusDao statusDao();
     public abstract AuditDao auditDao();
     public abstract GenreDao genreDao();
     public abstract BookGenreDao bookGenreDao();
-    public abstract UserAuditDao userAuditDao();
-    public abstract BookRatingDao bookRatingDao();
     public abstract BookDao bookDao();
-    public abstract ColorDao colorDao();
     public abstract ReviewDao reviewDao();
-    public abstract BookColorDao bookColorDao();
 
 }

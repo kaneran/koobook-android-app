@@ -61,7 +61,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
         button_like = getView().findViewById(R.id.button_like);
         button_reviewlater = getView().findViewById(R.id.button_reviewlater);
         button_dislike = getView().findViewById(R.id.button_dislike);
-        bookController.displayBookInformation(view, getFragmentManager(),textview_toolbar_title);
+        bookController.displayBookInformation(view,textview_toolbar_title);
         tabLayout = getView().findViewById(R.id.tablayout);
 
         tabLayout.addTab(tabLayout.newTab().setText("Brief"));
@@ -74,6 +74,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
         viewPager.setAdapter(adapter);
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
+        //This listener will deal with events where the user selects a different tab.
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

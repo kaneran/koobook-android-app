@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,7 @@ import com.example.koobookandroidapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapters.RecentlyScannedBooksAdapter;
+import adapters.RecentBooksAdapter;
 import controllers.BookController;
 import controllers.UserController;
 import dataaccess.setup.AppDatabase;
@@ -31,12 +32,13 @@ import entities.Book;
  * A simple {@link Fragment} subclass.
  */
 public class LibraryFragment extends Fragment {
+    BottomNavigationView bottomNavigationView;
     TextView[] dots;
     LinearLayout dots_layout;
     RecyclerView recyclerView;
     LinearLayout layout_books_that_needs_reviewing;
     LinearLayout layout_books_liked;
-    RecentlyScannedBooksAdapter recentlyScannedBooksAdapter;
+    RecentBooksAdapter recentlyScannedBooksAdapter;
     BookController bookController;
     UserController userController;
     AppDatabase db;
@@ -64,6 +66,7 @@ public class LibraryFragment extends Fragment {
         layout_books_that_needs_reviewing = view.findViewById(R.id.layout_books_that_needs_reviewing);
         db = Room.databaseBuilder(view.getContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         recyclerView = view.findViewById(R.id.recyclerview_recently_scanned_books);
+        bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation_view);
 
         int userId = userController.getUserIdFromSharedPreferneces(view.getContext());
         List<Integer> auditIds = db.auditDao().getAuditIds(userId);
@@ -76,7 +79,7 @@ public class LibraryFragment extends Fragment {
                 recentBooks.add(books.get(i));
             }
         }
-        recentlyScannedBooksAdapter = new RecentlyScannedBooksAdapter(recentBooks, view.getContext());
+        recentlyScannedBooksAdapter = new RecentBooksAdapter(recentBooks, view.getContext(), bottomNavigationView);
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
         recyclerView.setAdapter(recentlyScannedBooksAdapter);
 
@@ -85,6 +88,7 @@ public class LibraryFragment extends Fragment {
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.Liked);
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
             }
         });
 
@@ -93,10 +97,12 @@ public class LibraryFragment extends Fragment {
             public void onClick(View v) {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
+                bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
             }
         });
     }
 
+    //This method creates three horizontal dots and adds that to the view of the dot layout(linear layout). One of the dots is color differently to create the impression that the user can slide between the different pages.
     public void addDotsIndicator(){
         dots = new TextView[3];
         for(int i =0; i< dots.length; i++){

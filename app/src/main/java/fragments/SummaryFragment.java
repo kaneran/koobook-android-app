@@ -35,7 +35,6 @@ public class SummaryFragment extends Fragment {
     GenreController genreController;
     ReviewsController reviewsController;
     TextView textview_toolbar_title;
-    ProgressDialog progressDialog;
     List<String> reviews;
     Button button_get_definition_of_book;
     public SummaryFragment() {
@@ -91,13 +90,15 @@ public class SummaryFragment extends Fragment {
             public void onClick(View v) {
                 StringBuilder sb = new StringBuilder();
                 reviewsController.execute();
+
                 while(reviewsController.getPositiveReviewsList() == null){
-                    //Do nothing until it returns a list of reviews or an empty list
+                    //Do nothing until it Returns a list of reviews or an empty list
 
                 }
                 reviews = reviewsController.getPositiveReviewsList();
                 if(reviews.size()>0) {
                     for (String review : reviews) {
+                        //This are 2 lines between each review to ensure adequate spacing
                         sb.append(review + "\n\n");
                     }
 

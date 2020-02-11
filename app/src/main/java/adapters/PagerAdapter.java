@@ -17,6 +17,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         this.noOfTabs = noOfTabs;
     }
 
+    //Setup the fragment to be loaded into the View holder based on the tab selected
     @Override
     public Fragment getItem(int position) {
         switch (position){

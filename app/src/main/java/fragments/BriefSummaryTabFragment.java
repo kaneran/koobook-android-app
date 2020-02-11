@@ -21,9 +21,6 @@ import controllers.BookController;
  */
 public class BriefSummaryTabFragment extends Fragment {
 
-    TextView textview_reviews;
-    String[] reviews;
-
     public BriefSummaryTabFragment() {
         // Required empty public constructor
     }

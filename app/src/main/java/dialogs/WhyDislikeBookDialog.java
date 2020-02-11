@@ -17,6 +17,9 @@ public class WhyDislikeBookDialog extends AppCompatDialogFragment {
     String[] choices;
     String selectedChoice;
 
+    //This methods creates the dialog to prompt the user to provide a reason for disliking a book. If the user selects an option and clicks "OK" on the dialog then the Book controller is used to
+    //execute workflow for disliking the book which involves passing the selected option into the method that executes this workflow. The execution of the workflow involves create/updating certain tables in
+    //the Room database. After it executes the workflow then a toast message is displayed to notify the user that the book has been disliked.
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         choices = new String[]{"Didn't like the genre","Lost interest"};

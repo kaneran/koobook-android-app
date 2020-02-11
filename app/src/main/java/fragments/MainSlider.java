@@ -24,8 +24,8 @@ import adapters.SliderAdapter;
  * A simple {@link Fragment} subclass.
  */
 public class MainSlider extends Fragment {
-    ViewPager viewPager;
-
+    public static ViewPager viewPager;
+    public static FragmentManager fragmentManager;
 
     SliderAdapter sliderAdapter;
 
@@ -46,10 +46,9 @@ public class MainSlider extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewPager = view.findViewById(R.id.slideviewpager);
+        fragmentManager = getChildFragmentManager();
 
-
-        FragmentManager fm = getFragmentManager();
-        sliderAdapter = new SliderAdapter(getChildFragmentManager());
+        sliderAdapter = new SliderAdapter(fragmentManager);
         viewPager.setAdapter(sliderAdapter);
         viewPager.setCurrentItem(1);
     }

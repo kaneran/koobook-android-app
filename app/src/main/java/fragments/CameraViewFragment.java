@@ -43,7 +43,6 @@ public class CameraViewFragment extends Fragment {
     CameraSource cameraSource;
     TextView textview_scan_msg;
     BarcodeDetector barcodeDetector;
-    LoadingScreenFragment loadingScreenFragment;
     BookController bookController;
     String isbn;
 
@@ -56,9 +55,6 @@ public class CameraViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadingScreenFragment = new LoadingScreenFragment();
-
-        final FragmentManager fragmentManager = getFragmentManager();
 
         surfaceView = getView().findViewById(R.id.camera_view);
 
@@ -99,7 +95,8 @@ public class CameraViewFragment extends Fragment {
             }
 
 
-            //This overriden method will store the data retrieved from what was scanned (ISBN number)
+            //This overriden method will detect the barcode and store the ISBN number it in a shared preference file for future use. After storing it,
+            //the Book Controller is used to search the book using the detected ISBN number.
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> isbnCodes = detections.getDetectedItems();
@@ -114,7 +111,6 @@ public class CameraViewFragment extends Fragment {
                             soundEffect.play(getActivity().getApplicationContext());
                             Vibrator vibrator = (Vibrator) getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1000);
-                            //textview_scan_msg.setText(isbnCodes.valueAt(0).displayValue);
                             isbn = isbnCodes.valueAt(0).displayValue;
                             bookController.storeBookIsbn(getContext(), isbn);
                             bookController.searchBook(isbn,"","");

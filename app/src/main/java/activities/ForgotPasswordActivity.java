@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.example.koobookandroidapp.R;
 
 import controllers.UserController;
+import extras.Helper;
 import extras.JavaMail;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
@@ -29,10 +30,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     public void nextButtonClicked(View v){
         UserController userController = new UserController();
+        Helper helper = new Helper();
         email = edittext_email.getText().toString();
 
         //Validate email first
-        emailValidated = userController.checkEditTextFieldNonEmpty(edittext_email, textview_email_error_msg, false);
+        emailValidated = helper.checkEditTextFieldNonEmpty(edittext_email, textview_email_error_msg, false);
 
         if(emailValidated == true){
             oneTimePassword = userController.generateOneTimePassword();
@@ -40,7 +42,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             userController.storeUserId(this, Integer.parseInt(user_id));
             userController.storeOneTimePassword(this, oneTimePassword);
 
-            //Send mail using the one time password
+            //Send email using the one time password
             JavaMail javaMail = new JavaMail(this, email, "Koobook authentication", "Please use the following One Time Password(OTP): "+oneTimePassword);
             javaMail.execute();
         }

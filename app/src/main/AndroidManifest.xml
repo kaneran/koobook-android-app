@@ -27,14 +27,13 @@
 
         <activity android:name="activities.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name="activities.SplashActivity" />
+        <activity android:name="activities.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name="activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan">
+
 
         </activity>
         <activity
@@ -46,11 +45,11 @@
         <activity
             android:name="activities.StartActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
-
-
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
