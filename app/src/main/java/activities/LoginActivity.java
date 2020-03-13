@@ -25,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
     boolean userIdStored;
     AppDatabase db;
     int userId;
-    User user;
 
 
     @Override
@@ -66,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
             //Generate notification and navigate to the main activity if the login process was successful
             //Store the userId for future use i.e Getting the liked books based on that userId
             if(loginSuccessful == true){
-                user = db.userDao().getUser(edittext_email.getText().toString());
                 userId = db.userDao().getUserId(edittext_email.getText().toString());
                 userIdStored = userController.storeUserId(getApplicationContext(),userId);
                 if(userIdStored == true){

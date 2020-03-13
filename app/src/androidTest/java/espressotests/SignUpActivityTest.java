@@ -78,19 +78,19 @@ public class SignUpActivityTest {
 
         onView(withId(R.id.textview_firstname_error_msg)).check(matches(isDisplayed()));
         onView(withId(R.id.textview_firstname_error_msg)).check(matches(withText("Invalid first name")));
-
     }
 
     @Test
     public void signUpWithInvalidEmail(){
         String invalidEmail = "TestUser123";
 
+        //Enter invalid email in text field
         onView(withId(R.id.edittext_email)).perform(typeText(invalidEmail), closeSoftKeyboard());
         onView(withId(R.id.sign_up_btn)).perform(click());
 
+        //Check if the correct error message was displayed
         onView(withId(R.id.textview_email_error_msg)).check(matches(isDisplayed()));
         onView(withId(R.id.textview_email_error_msg)).check(matches(withText("Invalid email")));
-
     }
 
     @Test

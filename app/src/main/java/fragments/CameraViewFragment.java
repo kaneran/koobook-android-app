@@ -101,7 +101,6 @@ public class CameraViewFragment extends Fragment {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> isbnCodes = detections.getDetectedItems();
                 if(isbnCodes.size() != 0){
-
                     textview_scan_msg.post(new Runnable() {
                         @Override
                         public void run() {

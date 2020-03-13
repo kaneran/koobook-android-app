@@ -98,7 +98,7 @@ public class SummaryFragment extends Fragment {
                 reviews = reviewsController.getPositiveReviewsList();
                 if(reviews.size()>0) {
                     for (String review : reviews) {
-                        //This are 2 lines between each review to ensure adequate spacing
+                        //Have are 2 lines between each review to ensure adequate spacing
                         sb.append(review + "\n\n");
                     }
 

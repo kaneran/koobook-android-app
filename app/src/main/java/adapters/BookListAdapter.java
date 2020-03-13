@@ -52,6 +52,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         db = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
     }
 
+    //Load the
     @NonNull
     @Override
     public BookListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

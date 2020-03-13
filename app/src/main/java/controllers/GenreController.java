@@ -78,9 +78,14 @@ public class GenreController {
     //to get the top 5 genres which have the highest frequency value and this Returns a List of Pair where each Pair contains a string which holds the genre label
     //and an integer which holds the frequency value. This list is returned from this method.
     public List<Pair<String,Integer>> getMostLikedGenres(){
+        //Get liked books by user
         BookController bookController = new BookController(context);
         List<Book> books = bookController.getBooksUsingStatus(userId, BookController.BookStatus.Liked, null);
+
+        //Get genres from the books
         List<String> genresFromLikedBooks = getGenresOfBooks(books);
+
+        //Get top genres along with its frequency value   i.e  James Patterson, 23
         HashMap<String, Integer> mostLikedGenreHashMap = helper.getOccurencesOfStringList(genresFromLikedBooks);
         Object[] sortedHashMapByIntegerValue = helper.sortHashMapBasedOnKeyValue(mostLikedGenreHashMap);
         List<Pair<String,Integer>> topFiveMostLikedGenres = helper.getTopPairs(sortedHashMapByIntegerValue);

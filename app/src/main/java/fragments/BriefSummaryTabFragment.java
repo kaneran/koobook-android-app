@@ -20,6 +20,12 @@ import controllers.BookController;
  * A simple {@link Fragment} subclass.
  */
 public class BriefSummaryTabFragment extends Fragment {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        BookController bookController = new BookController(getContext());
+        bookController.displayBookInformationInBriefSummaryTab(view);
+    }
 
     public BriefSummaryTabFragment() {
         // Required empty public constructor
@@ -33,12 +39,7 @@ public class BriefSummaryTabFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_brief_summary_tab, container, false);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        BookController bookController = new BookController(getContext());
-        bookController.displayBookInformationInBriefSummaryTab(view);
-    }
+
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

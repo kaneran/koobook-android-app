@@ -1,5 +1,6 @@
 package controllers;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import dataaccess.setup.AppDatabase;
 import dataaccess.sqlserver.SqlServerDatabase;
 import extras.Helper;
 
@@ -20,6 +22,7 @@ public class UserController {
     EditText editText_password;
     EditText editText_confirmedPassword;
     SqlServerDatabase ssd;
+    AppDatabase db;
     boolean passwordsMatch;
     ColorController colorController;
     BlowfishController blowfishController;
@@ -44,7 +47,7 @@ public class UserController {
 
         if(passwordsValidated == true){
 
-            //Check if passwords match
+            //Check if passwords does not match
             if (!editText_password.getText().toString().matches(editText_confirmedPassword.getText().toString())) {
                 passwordDoesNotMatchTextView.setText(R.string.passwords_does_not_match);
                 passwordDoesNotMatchTextView.setVisibility(View.VISIBLE);
@@ -99,6 +102,8 @@ public class UserController {
 
         }
     }
+
+
 
     //This method works by executing an statement to insert a new record,using the data from the method's arguments, into the User table in the Sql server database. If statement was successfully executed
     //then the method will return true. If an exception was thrown during the main execution then it will return false.
@@ -225,8 +230,10 @@ public class UserController {
     //setting the background tint colour to be red and the TextView is modified by getting it to display the message "Username or password or both were incorrectly entered or the account does not exist. Please check and try again."
     //and making it visible. After the modifications, the method Returns false.  If the userId retrieved was null then the same modification process will occur for the TextView and EditText elements(passed into the method's arguments) and Returns false.
     public boolean login(EditText editText_email, EditText editText_password, TextView textview_login_failed_msg) {
+        //Get values from edit text elements
         String email = editText_email.getText().toString();
         String password = editText_password.getText().toString();
+
         String userId = getUserIdFromSqlServerDatabase(email);
 
         //Checks if the account, with email, exists
@@ -235,12 +242,12 @@ public class UserController {
             String encryptedPassword = getEncryptedPasswordFromSqlServerDatabase(userId);
             String decryptedPassword = blowfishController.decrypt(encryptedPassword, blowfishKey);
 
-
             if (decryptedPassword.equals(password)) {
 
                 return true;
 
             } else {
+                //Make the outline color for both text fields to be red
                 helper.editMessageProperties(editText_email, textview_login_failed_msg,
                         "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
                         ColorController.Colors.RED, true);
@@ -248,6 +255,7 @@ public class UserController {
                 return false;
             }
         } else {
+            //Make the outline color for both text fields to be red
             helper.editMessageProperties(editText_email, textview_login_failed_msg,
                     "Username or password or both were incorrectly entered or the account does not exist. Please check and try again.",
                     ColorController.Colors.RED, true);
@@ -277,9 +285,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-
         }
-
     }
 
 

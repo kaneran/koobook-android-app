@@ -142,10 +142,10 @@ public class VisualisationController {
             barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, Highlight h) {
-
-                    
+                    //Get x axis value of the selected bar
                     int barEntryIndex = Math.round(e.getX());
                     String columnName = "";
+                    //Use x axis value to get the genre/author label
                     if (barEntryIndex == 1) {
                         columnName = mData.get(0).first;
                     } else if (barEntryIndex == 3) {
@@ -158,8 +158,12 @@ public class VisualisationController {
                         columnName = mData.get(4).first;
                     }
 
+                    //Store genre/author label in preference file
                     storeSelectedBarLabel(context, columnName);
+
+                    //Update textview to show the label that the user selected
                     textview_bar_selected.setText(barSelectedTitle + columnName);
+
                     if (imageview_view_more != null) {
                         imageview_view_more.setVisibility(View.VISIBLE);
                     }

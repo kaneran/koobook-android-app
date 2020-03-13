@@ -17,7 +17,6 @@ public class SplashActivity extends AppCompatActivity {
     TextView textview_welcome_msg;
     private static int splashTimeOut= 5000;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
-        }, splashTimeOut);
+        }, 5000);
 
         anim = AnimationUtils.loadAnimation(this,R.anim.splash_anim);
         textview_welcome_msg.startAnimation(anim);

@@ -63,7 +63,7 @@ public class JavaMail extends AsyncTask<Void,Void,Void> {
     @Override
     protected Void doInBackground(Void... voids) {
 
-        //Configure properties for Outlook
+        //Configure properties for Gmail
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");

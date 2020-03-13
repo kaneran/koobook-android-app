@@ -52,8 +52,10 @@ public class BlowfishController {
     }
 
     //Source -  http://javaprogramming.language-tutorial.com/2012/10/encryption-using-bouncy-castle-api.html for the blowfish implementation
-    //This method works by initialising the engine, cipher and the key. It then proceeds to convert the plain text to a byte array and then the cipher is used to encrypt the plain text
-    //to cipher text which is encoded using Base64 and returned from the method
+    //This method works by initialising the engine, cipher and the key. It then
+    //proceeds to convert the plain text to a byte array and then the cipher is
+    //used to encrypt the plain text to cipher text which is encoded using Base64
+    //and returned from the method
     public String encrypt(String plainText, String encryptionKey) {
         PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(engine);
         KeyParameter key = new KeyParameter(encryptionKey.getBytes());
@@ -65,11 +67,9 @@ public class BlowfishController {
             cipher.doFinal(out, len1);
         } catch (CryptoException e) {
             e.printStackTrace();
-
         }
         String cipherText = new String(Base64.encode(out));
         return cipherText;
-
     }
 
     //The initialisation process remaining the same for the engine, key and cipher. However, this time, the cipher text which is taken from the methods argument is decoded into Base64
