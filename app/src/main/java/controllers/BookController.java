@@ -391,7 +391,22 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
                 //I stored the authors into the subtitle attribute of the book such that I can easily bind it from the Search results adpater class, note that this list will not be stored in the Room database
                 Book book = new Book(0, bookDataMap.get(BookData.Isbn), bookDataMap.get(BookData.Title), formatetedAuthor, 0, "", bookDataMap.get(BookData.ThumbnailUrl), 0);
-                books.add(book);
+
+                //Check if book has already been seen by user
+                Book duplicateBook = db.bookDao().getBookBasedOnIsbnNumber(book.getIsbnNumber());
+                boolean bookExistInRoomDatabase = (duplicateBook != null);
+
+                if(bookExistInRoomDatabase != true){
+                    books.add(book);
+                } else{
+                    int userId = userController.getUserIdFromSharedPreferneces(context);
+                    int bookId = duplicateBook.getBookId();
+                    boolean userSeenBook = (db.auditBookDao().getAudit(userId,bookId) != null);
+                    if(userSeenBook != true){
+                        books.add(book);
+                    }
+                }
+
             }
         } return books;
     }
