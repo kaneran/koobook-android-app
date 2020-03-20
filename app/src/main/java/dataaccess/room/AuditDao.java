@@ -27,4 +27,7 @@ public interface AuditDao {
 
     @Delete
     void deleteAudit(Audit audit);
+
+    @Query("SELECT user_userId FROM Audit WHERE auditId = :auditId")
+    int getUserId(int auditId);
 }

@@ -23,6 +23,7 @@ import entities.BookGenre;
 import entities.Genre;
 import entities.Rating;
 import entities.Review;
+import extras.ContentBasedRecommender;
 import extras.Helper;
 import fragments.*;
 
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, mainSlider).commit();
+
+        ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender(getApplicationContext());
+        contentBasedRecommender.recommendBooks(23);
 
         //int userId = db.userDao().getUserId("test@city.ac.uk");
         //userController.storeUserId(this, userId);
