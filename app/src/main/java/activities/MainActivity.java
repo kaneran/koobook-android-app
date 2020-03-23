@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, mainSlider).commit();
 
         ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender(getApplicationContext());
-        contentBasedRecommender.recommendBooks(23);
+        contentBasedRecommender.recommendBooks(1);
 
         //int userId = db.userDao().getUserId("test@city.ac.uk");
         //userController.storeUserId(this, userId);
@@ -208,7 +208,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
 
             case R.id.navigation_search:
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchFragment).commit();
+                //getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchFragment).commit();
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, new DiscoverNewBooksFragment()).commit();
                 textview_toolbar_title.setText("Search book(s)");
                 return true;
 
