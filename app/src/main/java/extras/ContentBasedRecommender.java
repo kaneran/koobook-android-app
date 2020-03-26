@@ -4,12 +4,13 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-import controllers.BookController;
-import controllers.UserController;
 import dataaccess.setup.AppDatabase;
 import entities.Audit;
 import entities.Book;
@@ -18,9 +19,11 @@ import entities.Status;
 public class ContentBasedRecommender {
     AppDatabase db;
     Context context;
+    Helper helper;
     public ContentBasedRecommender(Context context) {
         this.context = context;
         db = Room.databaseBuilder(context, AppDatabase.class, "production").allowMainThreadQueries().build();
+        helper = new Helper();
     }
 
     public void insertDummyData(){
@@ -99,23 +102,20 @@ public class ContentBasedRecommender {
                 }
     }
 
-    public List<Book> recommendBooks(int userId){
+    public Object[] recommendBooks(int userId){
         List<Integer> bookIds = new ArrayList<>();
         List<String> uniqueGenres = new ArrayList<>();
         double[][] bookGenreArr;
         double[][] userProfileArr;
         int[][] bookUserArr;
-        int[] bookTotalAttributeArr;
+        int[] bookTotalAttributesArr;
         double[] dfArr;
         double[] idfArr;
         double[][] predUserArr;
         HashMap<Integer,Integer> bookIdRowIndexHashmap = new HashMap<>();
         HashMap<String, Integer> genreColumnIndexHashmap = new HashMap<>();
-        List<Book> recommendedBooks = new ArrayList<>();
+        HashMap<Book, Integer> recommendedBooks;
 
-        //insertDummyData();
-        //insertDummyData();
-        //insertDummyData();
 
         //Get all books that all users have interacted with
 
@@ -152,10 +152,6 @@ public class ContentBasedRecommender {
             }
         }
 
-        bookGenreArr = new double[bookIds.size()][uniqueGenres.size()];
-        bookUserArr = new int[bookIds.size()][userIds.size()];
-        bookTotalAttributeArr = new int[bookIds.size()];
-
         //Populate Hashmap which maps each book id to a row in the Book Genre 2d array
         int count= 1;
         for(int bId: bookIds){
@@ -172,6 +168,46 @@ public class ContentBasedRecommender {
 
 
         //Populate the book genre array
+        bookGenreArr = populateBookGenreArrayWithBinaryRepresentations(bookIds, bookIdRowIndexHashmap, uniqueGenres, genreColumnIndexHashmap);
+
+        //Populate the book user array
+        bookUserArr = populateBookUserArrayWithBinaryRepresentations(bookIds,bookIdRowIndexHashmap, userIds);
+
+        //Populate Total attributes array
+        bookTotalAttributesArr = populateTotalAttributesArray(bookIds,bookIdRowIndexHashmap);
+
+
+        //Populate the DF(Document Frequency) array
+        dfArr = populateDFArray(bookIds, bookIdRowIndexHashmap, uniqueGenres, genreColumnIndexHashmap, bookGenreArr);
+
+
+        //Normalise each cell value in the BookGenre array
+        bookGenreArr = normaliseValuesInBookGenreArray(bookIds, bookIdRowIndexHashmap, uniqueGenres, bookTotalAttributesArr, bookGenreArr);
+
+
+
+        //Generate User profiles
+        userProfileArr = generateUserProfiles(bookIds, bookIdRowIndexHashmap, uniqueGenres, genreColumnIndexHashmap, userIds, bookGenreArr, bookUserArr);
+
+        //Populate IDF(Inverse Document Frequency) array
+        idfArr = populateIDFArray(bookIds, uniqueGenres, genreColumnIndexHashmap, dfArr);
+
+        //Initialise PredUser array and populate it with the predictions
+
+        //Compute predictions  which used the User profile array and Book Genre array to predict which books will be similar to a user's taste
+        predUserArr = computePredictions(bookIds, bookIdRowIndexHashmap, uniqueGenres, genreColumnIndexHashmap , userIds, idfArr, userProfileArr, bookGenreArr);
+
+        //Get the most relevant books for user
+        recommendedBooks = getBookRecommendations(bookIds, bookIdRowIndexHashmap, predUserArr, userId);
+
+
+        //Sort the books based on the page count
+        Object[] sortedBooks = sortHashMapBasedOnPageCount(recommendedBooks);
+        return sortedBooks;
+    }
+
+    public double[][] populateBookGenreArrayWithBinaryRepresentations(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap, List<String> uniqueGenres, HashMap<String, Integer> genreColumnIndexHashmap){
+        double[][] bookGenreArr = new double[bookIds.size()][uniqueGenres.size()];
         for(int bookId: bookIds){
             int bookIndex = bookIdRowIndexHashmap.get(bookId);
             bookIndex--;
@@ -184,7 +220,8 @@ public class ContentBasedRecommender {
                 int genreIndex = genreColumnIndexHashmap.get(uniqueGenre);
                 genreIndex--;
                 //Check if given genre is contained in given book
-                if(bookGenresIds.contains(genreIndex)){
+                int genreId = db.genreDao().getGenreId(uniqueGenre);
+                if(bookGenresIds.contains(genreId)){
                     bookGenreArr[bookIndex][genreIndex] = 1;
                 } else{
                     bookGenreArr[bookIndex][genreIndex] = 0;
@@ -193,8 +230,11 @@ public class ContentBasedRecommender {
             }
 
         }
+        return bookGenreArr;
+    }
 
-        //Populate the book user array
+    public int[][] populateBookUserArrayWithBinaryRepresentations(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap, List<Integer> userIds){
+        int[][] bookUserArr = new int[bookIds.size()][userIds.size()];
         for(int bookId: bookIds){
             List<Integer> mUserIds = new ArrayList<>();
 
@@ -221,21 +261,12 @@ public class ContentBasedRecommender {
                     } else if (status.equals("NeedsReviewing")) {
                         bookUserArr[bookIndex][mUserId] = 0;
                     }
-                } else{
-                    int[] options = new int[3];
-                    options[0]= 0;
-                    options[1]= 1;
-                    options[2]= -1;
-                    Random random = new Random();
-                    int x = random.nextInt(2);
-                    bookUserArr[bookIndex][mUserId] = options[x];
                 }
             }
-
-            //Now deal with the user who did not interact with the given book
+            //Now deal with users who did not interact with the given book
             for(int nUserId: userIds){
 
-                //Check if user itneracted with book( i.e there is no audit record for user id/book id pair_
+                //Check if user itneracted with book( i.e there is no audit record for user id/book id pair
                 if(!mUserIds.contains(nUserId)){
                     nUserId--;
                     bookUserArr[bookIndex][nUserId] = 0;
@@ -243,8 +274,12 @@ public class ContentBasedRecommender {
             }
 
         }
+        return bookUserArr;
+    }
 
-        //Populate Total attributes array
+
+    public int[] populateTotalAttributesArray(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap){
+        int[] bookTotalAttributesArr = new int[bookIds.size()];
         //For each row in the BookGenre array
         for(int bookId: bookIds){
             int totalAttributeValue = 0;
@@ -254,18 +289,20 @@ public class ContentBasedRecommender {
             bookIndex--;
 
             List<Integer> genreIds = db.bookGenreDao().getGenreIdsOfBook(bookId);
-            bookTotalAttributeArr[bookIndex] = genreIds.size();
-         }
+            bookTotalAttributesArr[bookIndex] = genreIds.size();
+        }
+        return bookTotalAttributesArr;
+    }
 
-        //Initialise the DF array
-        dfArr = new double[uniqueGenres.size()];
+    public double[] populateDFArray(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap, List<String> uniqueGenres, HashMap<String, Integer> genreColumnIndexHashmap, double[][] bookGenreArr){
+        double[] dfArr = new double[uniqueGenres.size()];
 
         //For each unique genre
         for(String genre : uniqueGenres){
             double sum = 0;
             int columnIndex = genreColumnIndexHashmap.get(genre);
             columnIndex--;
-            //for each row
+            //for each row in the BookGenre array
             for(int bookId: bookIds){
                 int bookIndex = bookIdRowIndexHashmap.get(bookId);
                 bookIndex--;
@@ -275,30 +312,31 @@ public class ContentBasedRecommender {
             dfArr[columnIndex] = sum;
             //DOES NOT WORK, ALL VALUES ARE 0...
         }
+        return dfArr;
+    }
 
-
-
-
-
-        //Normalise each cell value in the BookGenre array
+    public double[][] normaliseValuesInBookGenreArray(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap, List<String> uniqueGenres, int[] bookTotalAttributesArr, double[][] bookGenreArr){
         //For each row in the BookGenre array
         for(int bookId: bookIds){
             int bookIndex = bookIdRowIndexHashmap.get(bookId);
             bookIndex--;
-            int total_attribute_value = bookTotalAttributeArr[bookIndex];
+            int total_attribute_value = bookTotalAttributesArr[bookIndex];
 
             //For each column in the row
             for(int i=0; i< uniqueGenres.size(); i++){
 
                 //Get cell value
                 double cell_value = bookGenreArr[bookIndex][i];
-                double normalized_cell_value = (cell_value / Math.sqrt(total_attribute_value));
-                bookGenreArr[bookIndex][i] = normalized_cell_value;
+                double normalised_cell_value = (cell_value / Math.sqrt(total_attribute_value));
+                bookGenreArr[bookIndex][i] = normalised_cell_value;
             }
         }
+        return bookGenreArr;
+    }
 
+    public double[][] generateUserProfiles(List<Integer> bookIds, HashMap<Integer, Integer> bookIdRowIndexHashmap, List<String> uniqueGenres, HashMap<String, Integer> genreColumnIndexHashmap, List<Integer> userIds, double[][] bookGenreArr, int[][] bookUserArr){
         //Initialise User Profiles
-        userProfileArr = new double[userIds.size()][uniqueGenres.size()];
+        double[][] userProfileArr = new double[userIds.size()][uniqueGenres.size()];
 
         //For each user row in UserProfileArray
         for(int mUserId : userIds){
@@ -322,9 +360,11 @@ public class ContentBasedRecommender {
             }
 
         }
+        return userProfileArr;
+    }
 
-        //Initialise IDF array
-        idfArr = new double[uniqueGenres.size()];
+    public double[] populateIDFArray(List<Integer> bookIds, List<String> uniqueGenres, HashMap<String, Integer> genreColumnIndexHashmap, double[] dfArr){
+        double[] idfArr = new double[uniqueGenres.size()];
 
         //For each column in the IDF array
         for(String genre: uniqueGenres){
@@ -338,10 +378,11 @@ public class ContentBasedRecommender {
             }
             idfArr[columnIndex] = idfValue;
         }
+        return idfArr;
+    }
 
-
-        //Initialise PredUser array and populate it with the predictions
-        predUserArr = new double[bookIds.size()][userIds.size()];
+    public double[][] computePredictions(List<Integer> bookIds, HashMap<Integer,Integer> bookIdRowIndexHashmap, List<String> uniqueGenres, HashMap<String, Integer> genreColumnIndexHashmap, List<Integer> userIds, double[] idfArr, double[][] userProfileArr, double[][] bookGenreArr){
+        double[][] predUserArr = new double[bookIds.size()][userIds.size()];
         //For each user
         for(int uId : userIds){
             uId--;
@@ -371,8 +412,12 @@ public class ContentBasedRecommender {
                 predUserArr[bookIndex][uId] = weighted_score_for_book;
             }
         }
+        return predUserArr;
+    }
 
-        //Get the most relevent books for user
+    public HashMap<Book, Integer> getBookRecommendations(List<Integer> bookIds, HashMap<Integer,Integer> bookIdRowIndexHashmap, double[][] predUserArr, int userId){
+        HashMap<Book, Integer> bookPageCountHashMap = new HashMap<>();
+        Random random = new Random();
         for(int bookId : bookIds){
             int bookIndex = bookIdRowIndexHashmap.get(bookId);
             bookIndex--;
@@ -383,12 +428,41 @@ public class ContentBasedRecommender {
 
                 if(audit == null){
                     Book book = db.bookDao().getBookBasedOnBookId(bookId);
-                    recommendedBooks.add(book);
+
+                    //This part would get the first digit of the page count value and append it with a random number
+                    //This update value would be used to sort the hashmap based on this. This was done to ensure that each category of books
+                    //based on page number(0-100, 101-200 etc) were randomly ordered within each category
+
+                    //First get the first digit from the page count value, thanks to Jordan Allan from https://stackoverflow.com/questions/2967898/retrieving-the-first-digit-of-a-number/40436181
+                    int value = Integer.parseInt(Integer.toString(book.getPageCount()).substring(0, 1));
+
+
+                    String randomNumber = Integer.toString(random.nextInt(9));
+
+                    //If the page count is 0 then simply add the random number along with tbe Book entity to the Hashmap
+                    if(value == 0){
+                        bookPageCountHashMap.put(book, Integer.parseInt(randomNumber));
+                    } else{
+                        //Append value with random int and add this value along with the Book entity to the hashmap
+                        String nValue = Integer.toString(value);
+                        nValue += randomNumber;
+                        bookPageCountHashMap.put(book, Integer.parseInt(nValue));
+                    }
+
                 }
             }
         }
-        return recommendedBooks;
+        return bookPageCountHashMap;
     }
 
-
+    public Object[] sortHashMapBasedOnPageCount(HashMap<Book, Integer> bookPageCountHashMap){
+            Object[] a = bookPageCountHashMap.entrySet().toArray();
+            Arrays.sort(a, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    return ((Map.Entry<Book, Integer>) o2).getValue()
+                            .compareTo(((Map.Entry<Book, Integer>) o1).getValue());
+                }
+            });
+            return a;
+    }
 }

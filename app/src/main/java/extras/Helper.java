@@ -95,6 +95,7 @@ public class Helper {
         return a;
     }
 
+
     //This method works by checking whether the length of the object array(passed into the method's arguments) is less than 6. If it is then it iterates through each object. Otherwise, it will iterate through the first 5 objects.
     //In either case, each object being access through the for loops are used to gets the author name and number of occurences. These two values are then used to create a new Pair which is then added to the list of pairs. After
     //iterating through all the objects then the list of pairs are returned by this method.

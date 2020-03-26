@@ -8,10 +8,14 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
 import com.squareup.picasso.Callback;
@@ -28,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import dataaccess.setup.AppDatabase;
@@ -36,6 +41,7 @@ import entities.Author;
 import entities.Book;
 import entities.BookAuthor;
 import entities.BookGenre;
+import entities.Color;
 import entities.Genre;
 import entities.Rating;
 import entities.Review;
@@ -327,7 +333,6 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             }
 
 
-
         }
         //If an exception is thrown then still try to format and save the book information
         catch (Exception e){
@@ -424,6 +429,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             int pageCount = helper.convertStringToInt(bookDataMap.get(BookData.PageCount));
             String summary = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.Description));
             String thumbnailUrl = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.ThumbnailUrl));
+            String dominantColor = helper.checkIfBookDataAttributeNull(bookDataMap.get(BookData.DominantColor));
             double amazonAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.AmazonAverageRating));
             double googleBooksAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.GoogleBooksAverageRating));
             double goodreadsAverageRating = helper.convertStringToDouble(bookDataMap.get(BookData.GoodreadsAverageRating));
@@ -440,6 +446,9 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
             //Insert book into room database
             db.bookDao().insertBook(new Book(0, isbnNumber, title, subtitle, pageCount, summary, thumbnailUrl, 0));
             int bookId = db.bookDao().getBookBasedOnIsbnNumber(isbnNumber).bookId;
+
+            //Use book id to insert new record in Color table
+            db.colorDao().insertColor(new Color(0, bookId,"",dominantColor));
 
             //Use book id from previously stored book record and use it to iterate through each author and insert a Author row into the room database
             int authorId;
@@ -500,7 +509,7 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
 
     //In the top half of the "Book review" page(excluding the tabs), all the book information will be displayed into the relevent text views which
     //were accessed using the View was is the argument this this method.
-    public void displayBookInformation(View view, TextView textview_toolbar_title){
+    public void displayBookInformationInBookReviewPage(View view, TextView textview_toolbar_title){
         try {
             Book book = getBookUsingIsbnFromSharedPreferences();
             //If the title is long then only display the first five words from it to be displayed on the screen
@@ -748,6 +757,40 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
     }
 
+    public void displayBookInformationInRecommendedBooksPage(View view){
+        Book book = getBookUsingIsbnFromSharedPreferences();
+
+        ImageView imageview_recommended_book_thumbnail = view.findViewById(R.id.imageview_recommended_book_thumbnail);
+        TextView textview_title_of_selected_book = view.findViewById(R.id.textview_title_of_selected_book);
+
+        //Check if the book has a valid thumbnail url, if it does not then override the thumbnail url string to be that of the default thumbnail url
+        String bookThumbnailUrl = book.getThumbnailUrl();
+        if(bookThumbnailUrl.matches("")){
+            bookThumbnailUrl = "https://i.gyazo.com/a1b02a68b87056cb4469a6bcb6785932.png";
+        }
+        //Use picasso to download the image using the url and load it into the image view
+        Picasso.with(context).load(bookThumbnailUrl).resize(200,400).centerInside().into(imageview_recommended_book_thumbnail, new Callback() {
+            @Override
+            public void onSuccess() {
+                Log.i("Picasso", "onSuccess: TRUE");
+            }
+
+            @Override
+            public void onError() {
+                Log.i("Picasso", "onError: TRUE");
+            }
+        });
+
+        textview_title_of_selected_book.setText(book.getTitle());
+
+        //Display custom toast message
+        Toast toast = new Toast(context);
+        toast.setView(view);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0,0);
+        toast.show();
+    }
+
     public Book getBookUsingIsbnFromSharedPreferences(){
         String isbn = getBookIsbnFromSharedPreferences(context);
         Book book = db.bookDao().getBookBasedOnIsbnNumber(isbn);
@@ -894,6 +937,8 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
                         bookDataMap.put(BookData.PageCount, sb.toString());
                     case 18:
                         bookDataMap.put(BookData.ThumbnailUrl, sb.toString());
+                    case 19:
+                        bookDataMap.put(BookData.DominantColor, sb.toString());
                 }
                 sb.setLength(0);
 
@@ -975,7 +1020,8 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         AmazonReviewsCount,
         Genres,
         PageCount,
-        ThumbnailUrl
+        ThumbnailUrl,
+        DominantColor
     }
 
     //This methods works by retrieving the previously stored user Id and isbn from the shared preference file
@@ -1228,5 +1274,20 @@ public class BookController extends AsyncTask<String, Void, Boolean> {
         }
         return topBooks;
     }
+
+    //This was used to store the book and an integer value to tell the NewBooksAdpater on which books to display its thumbnail for.
+    //I.e if the integer was 0 then the adapter would not display the books thumbnail and 1 does the opposite. This method sets the default integer values for all books
+    public HashMap<Book, Integer> getBookIntegerHashMap(Object[] books){
+        HashMap<Book, Integer> bookIntegerHashMap = new HashMap<>();
+
+        for(int i = 0; i<books.length; i++){
+            Book book = ((Map.Entry<Book, Integer>) books[i]).getKey();
+
+            //Use Book with default integer value to insert record in hashmap
+            bookIntegerHashMap.put(book,0);
+        }
+        return bookIntegerHashMap;
+    }
+
 
 }

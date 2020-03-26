@@ -41,4 +41,6 @@ dependencies {
     implementation files('libs/activation.jar')
     implementation "com.squareup.picasso:picasso:2.4.0"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.google.android:flexbox:0.3.0-alpha3'
+    implementation 'com.android.support:palette-v7:28.0.0'
 }

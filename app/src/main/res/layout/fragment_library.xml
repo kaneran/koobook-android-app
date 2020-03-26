@@ -92,6 +92,29 @@
                     android:fontFamily="@font/arial_regular"/>
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/layout_book_recommendations"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/book_recommendations_icon"/>
+
+                <TextView
+                    android:paddingLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book recommendations"
+                    android:textColor="@color/charcoalBlack"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/arial_regular"/>
+            </LinearLayout>
+
             <TextView
                 android:paddingTop="20dp"
                 android:paddingLeft="5dp"

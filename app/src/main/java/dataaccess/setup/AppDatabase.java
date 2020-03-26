@@ -72,5 +72,5 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract BookGenreDao bookGenreDao();
     public abstract BookDao bookDao();
     public abstract ReviewDao reviewDao();
-
+    public abstract ColorDao colorDao();
 }

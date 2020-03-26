@@ -1,14 +1,11 @@
 package activities;
 
 import android.arch.persistence.room.Room;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -23,7 +20,6 @@ import entities.BookGenre;
 import entities.Genre;
 import entities.Rating;
 import entities.Review;
-import extras.ContentBasedRecommender;
 import extras.Helper;
 import fragments.*;
 
@@ -66,8 +62,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getSupportActionBar().setTitle("");
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, mainSlider).commit();
 
-        ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender(getApplicationContext());
-        contentBasedRecommender.recommendBooks(1);
+
 
         //int userId = db.userDao().getUserId("test@city.ac.uk");
         //userController.storeUserId(this, userId);
@@ -208,11 +203,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
 
             case R.id.navigation_search:
-                //getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchFragment).commit();
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, new DiscoverNewBooksFragment()).commit();
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, searchFragment).commit();
                 textview_toolbar_title.setText("Search book(s)");
                 return true;
-
         }
         return false;
     }

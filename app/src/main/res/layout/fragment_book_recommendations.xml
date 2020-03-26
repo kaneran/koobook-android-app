@@ -3,20 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.DiscoverNewBooksFragment">
+    tools:context="fragments.BookRecommendationsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book recommendations"
+            android:gravity="center"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:textSize="28dp"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/recyclerview_new_books"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
 
         </android.support.v7.widget.RecyclerView>
+
+
     </LinearLayout>
+
+
 
 </FrameLayout>

@@ -38,11 +38,13 @@ public class LibraryFragment extends Fragment {
     RecyclerView recyclerView;
     LinearLayout layout_books_that_needs_reviewing;
     LinearLayout layout_books_liked;
+    LinearLayout layout_book_recommendations;
     RecentBooksAdapter recentlyScannedBooksAdapter;
     BookController bookController;
     UserController userController;
     AppDatabase db;
     BookListByStatusFragment bookListByStatusFragment;
+    BookRecommendationsFragment bookRecommendationsFragment;
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -61,9 +63,11 @@ public class LibraryFragment extends Fragment {
         bookController = new BookController(view.getContext());
         userController = new UserController();
         bookListByStatusFragment = new BookListByStatusFragment();
+        bookRecommendationsFragment = new BookRecommendationsFragment();
         layout_books_liked = view.findViewById(R.id.layout_liked_books);
         dots_layout = view.findViewById(R.id.library_dot_layout);
         layout_books_that_needs_reviewing = view.findViewById(R.id.layout_books_that_needs_reviewing);
+        layout_book_recommendations = view.findViewById(R.id.layout_book_recommendations);
         db = Room.databaseBuilder(view.getContext(), AppDatabase.class, "production").allowMainThreadQueries().build();
         recyclerView = view.findViewById(R.id.recyclerview_recently_scanned_books);
         bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation_view);
@@ -98,6 +102,13 @@ public class LibraryFragment extends Fragment {
                 bookController.storeBookListType(v.getContext(), BookController.BookListType.NeedsReviewing);
                 getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookListByStatusFragment).commit();
                 bottomNavigationView.getMenu().setGroupCheckable(0,false, true);
+            }
+        });
+
+        layout_book_recommendations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getParentFragment().getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, bookRecommendationsFragment).commit();
             }
         });
     }

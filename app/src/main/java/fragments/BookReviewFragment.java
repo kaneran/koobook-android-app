@@ -1,7 +1,6 @@
 package fragments;
 
 
-import android.app.ActionBar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -61,7 +60,7 @@ public class BookReviewFragment extends Fragment implements RatingTabFragment.On
         button_like = getView().findViewById(R.id.button_like);
         button_reviewlater = getView().findViewById(R.id.button_reviewlater);
         button_dislike = getView().findViewById(R.id.button_dislike);
-        bookController.displayBookInformation(view,textview_toolbar_title);
+        bookController.displayBookInformationInBookReviewPage(view,textview_toolbar_title);
 
         //Initialise tab layout
         tabLayout = getView().findViewById(R.id.tablayout);
