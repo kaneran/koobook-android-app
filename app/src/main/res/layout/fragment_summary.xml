@@ -9,230 +9,279 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:orientation="vertical"
-        android:layout_marginTop="5dp">
-
-        <TextView
-            android:id="@+id/textview_authors_liked_main_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="My preferences"
-            android:gravity="center"
-            android:fontFamily="@font/helvetic_neuva_condensed"
-            android:textSize="28dp"
-            android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
-
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:src="@drawable/summary_icon" />
+        android:orientation="vertical">
 
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background6"
-            android:gravity="left"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/helvetic_neuva_condensed"
-                android:padding="5dp"
-                android:text="Most liked genre"
-                android:textColor="@color/white"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_summary_most_liked_genre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/arial_regular"
-                android:gravity="right"
-                android:padding="5dp"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16dp" />
-
-        </LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+            android:layout_weight="0.25">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background2"
-            android:gravity="left"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/helvetic_neuva_condensed"
-                android:padding="5dp"
-                android:text="Most disliked genre"
-                android:textColor="@color/white"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_summary_most_disliked_genre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/arial_regular"
-                android:gravity="right"
-                android:padding="5dp"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background6"
-            android:gravity="left"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/helvetic_neuva_condensed"
-                android:padding="5dp"
-                android:text="Most liked author"
-                android:textColor="@color/white"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_summary_most_liked_author"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/arial_regular"
-                android:gravity="right"
-                android:padding="5dp"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background2"
-            android:gravity="left"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/helvetic_neuva_condensed"
-                android:padding="5dp"
-                android:text="Most disliked author"
-                android:textColor="@color/white"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_summary_most_disliked_author"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/arial_regular"
-                android:gravity="right"
-                android:padding="5dp"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16dp" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/background1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="#20CC04"
             android:gravity="left"
             android:orientation="vertical">
 
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/helvetic_neuva_condensed"
                 android:padding="5dp"
-                android:text="Positive things said about the books you liked:"
+                android:text="Your favourite author is"
                 android:textColor="@color/white"
                 android:textSize="16dp"
-                android:textStyle="bold"
-                android:gravity="left"/>
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textview_summary_reviews"
-                android:layout_width="match_parent"
+                android:id="@+id/textview_favourite_author"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/arial_regular"
-                android:gravity="left"
+                android:fontFamily="@font/helvetic_neuva_condensed"
                 android:padding="5dp"
                 android:text=""
                 android:textColor="@color/white"
-                android:textSize="14dp" />
+                android:textSize="20dp"
+                android:textStyle="bold"/>
 
-            <Button
-                android:id="@+id/button_get_definition_of_book"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Click to get positive reviews"
-                android:textAllCaps="false"
-                android:layout_gravity="center"
-                android:textColor="@color/white"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="20dp"
-                android:fontFamily="@font/helvetic_neuva_condensed"
-                android:textStyle="bold"
-                android:textSize="16dp"
-                android:background="@drawable/get_positive_reviews_button"/>
+                android:background="#037D3B"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/thumbs_up_icon"
+                    android:tint="@color/white"
+                    android:padding="20dp"/>
+
+                <TextView
+                    android:id="@+id/textview_books_liked_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:gravity="right"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="24dp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:background="#29A10C"
+                android:gravity="left"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:padding="5dp"
+                    android:text="Your favourite genre is"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_favourite_genre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/arial_regular"
+                    android:gravity="right"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:background="@color/yellowOrange"
+        android:layout_weight="0.5">
+
+        <TextView
+
+            android:id="@+id/textview_summary_positive_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/helvetic_neuva_condensed"
+            android:gravity="left"
+            android:paddingTop="10dp"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:textStyle="italic"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/review_icon"
+            android:tint="@color/white"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="10dp"/>
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.25"
+            android:orientation="horizontal">
 
 
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#AE2424"
+                    android:gravity="left"
+                    android:orientation="horizontal">
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/thumbs_down_icon"
+                        android:tint="@color/white"
+                        android:padding="20dp"/>
+
+                    <TextView
+                        android:id="@+id/textview_books_disliked_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/helvetic_neuva_condensed"
+                        android:gravity="right"
+                        android:padding="5dp"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="24dp"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:background="#CE3911"
+                    android:gravity="left"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/helvetic_neuva_condensed"
+                        android:padding="5dp"
+                        android:text="Your least favourite genre is"
+                        android:textColor="@color/white"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textview_least_favourite_genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/helvetic_neuva_condensed"
+                        android:gravity="right"
+                        android:padding="5dp"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="#F40000"
+                android:gravity="left"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:padding="5dp"
+                    android:text="Your least favourite author is"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_least_favourite_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/helvetic_neuva_condensed"
+                    android:gravity="right"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
