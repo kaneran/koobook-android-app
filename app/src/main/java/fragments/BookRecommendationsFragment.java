@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.koobookandroidapp.R;
@@ -36,6 +37,7 @@ public class BookRecommendationsFragment extends Fragment {
     ContentBasedRecommender contentBasedRecommender;
     BookController bookController;
     FlexboxLayoutManager layoutManager;
+    TextView textview_no_books_recommended_msg;
     LayoutInflater inflater;
     View mView;
     public BookRecommendationsFragment() {
@@ -57,6 +59,8 @@ public class BookRecommendationsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerview_new_books);
         layoutManager = new FlexboxLayoutManager();
 
+        textview_no_books_recommended_msg = view.findViewById(R.id.textview_no_books_recommended_msg);
+
         //View
         inflater = getLayoutInflater();
         mView = inflater.inflate(R.layout.recommended_book_info_toast, null);
@@ -71,9 +75,15 @@ public class BookRecommendationsFragment extends Fragment {
         bookController = new BookController(getContext());
 
         books = contentBasedRecommender.recommendBooks(1);
-        newBooksAdapter = new NewBooksAdapter(books, getContext(), mView, recyclerView);
-        //newBooksAdapter.insertColour();
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(newBooksAdapter);
+        if(books.length > 0) {
+            newBooksAdapter = new NewBooksAdapter(books, getContext(), mView, recyclerView);
+            //newBooksAdapter.insertColour();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(newBooksAdapter);
+
+            //If there are no recommended books then display the message to inform the user of the situation
+        } else{
+            textview_no_books_recommended_msg.setVisibility(View.VISIBLE);
+        }
     }
 }

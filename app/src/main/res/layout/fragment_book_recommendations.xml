@@ -20,7 +20,17 @@
             android:textSize="28dp"
             android:textStyle="bold"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="8dp"/>
+        <TextView
+            android:id="@+id/textview_no_books_recommended_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="@string/no_books_msg"
+            android:textSize="18dp"
+            android:textColor="@color/charcoalBlack"
+            android:fontFamily="@font/helvetic_neuva_condensed"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginTop="10dp"

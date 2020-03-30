@@ -27,10 +27,6 @@ import android.widget.Toast;
 import com.example.koobookandroidapp.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import controllers.BookController;
@@ -38,22 +34,15 @@ import dataaccess.setup.AppDatabase;
 import entities.Book;
 import fragments.BookReviewFragment;
 
-import static android.content.ContentValues.TAG;
+
 
 public class NewBooksAdapter extends RecyclerView.Adapter<NewBooksAdapter.ViewHolder>{
     Object[] books;
-    List<Book> bookList;
     Book book;
     AppDatabase db;
     Context context;
     View view;
-    BookController bookController;
-    FragmentManager fragmentManager;
-    String isbn;
-    BookReviewFragment bookReviewFragment;
-    BottomNavigationView bottomNavigationView;
     RecyclerView recyclerView;
-    int colour;
 
     public NewBooksAdapter(Object[] books, Context context, View view, RecyclerView recyclerView) {
         this.books = books;
