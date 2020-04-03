@@ -1,5 +1,6 @@
 package activities;
 
+import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,8 +26,13 @@ import fragments.*;
 
 import fragments.MainSlider;
 import com.example.koobookandroidapp.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 //Tutorial followed- https://www.youtube.com/watch?v=oeKtwd1DBfg
@@ -61,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in,R.anim.fade_out).replace(R.id.container, mainSlider).commit();
+
+        //insertBookThumbnailUrlsInFirebase();
 
 
 
@@ -209,6 +217,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
         }
         return false;
+    }
+
+    public void insertBookThumbnailUrlsInFirebase(){
+        StorageReference storage;
+
+        storage = FirebaseStorage.getInstance().getReference();
+        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Book_thumbnail_urls");
+
+        List<String> thumbnail_urls =  db.bookDao().getThumbnailUrls();
+        HashMap<String, String> map = new HashMap<>();
+        for(int i=0; i<thumbnail_urls.size(); i++){
+            map.put(String.valueOf(i), thumbnail_urls.get(i));
+
+        }
+
+        dbr.push().setValue(map);
+
     }
 
 

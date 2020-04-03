@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import controllers.FeatureMatchingController;
+
 import static android.app.Activity.RESULT_OK;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 
@@ -44,6 +46,7 @@ public class CaptureBookThumbnailFragment extends Fragment {
     File photoFile = null;
     String path;
     Uri uri;
+    FeatureMatchingController featureMatchingController;
 
     public CaptureBookThumbnailFragment() {
         // Required empty public constructor
@@ -67,7 +70,7 @@ public class CaptureBookThumbnailFragment extends Fragment {
 
         progressDialog = new ProgressDialog(getContext());
 
-
+        featureMatchingController = new FeatureMatchingController(getContext());
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -119,6 +122,11 @@ public class CaptureBookThumbnailFragment extends Fragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
+                    String fileName = uri.toString();
+                    fileName = fileName.substring(71);
+                    fileName = fileName.replace("%40","@");
+                    featureMatchingController.storeUriDataString(getContext(), fileName);
+                    featureMatchingController.execute();
                 }
            });
         }

@@ -32,4 +32,7 @@ public interface BookDao {
 
     @Delete
     void deleteBook(Book book);
+
+    @Query("SELECT thumbnailUrl FROM Book")
+    List<String> getThumbnailUrls();
 }

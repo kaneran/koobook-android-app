@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1082052882115",
+    "firebase_url": "https://koobookandroidapp.firebaseio.com",
+    "project_id": "koobookandroidapp",
+    "storage_bucket": "koobookandroidapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082052882115:android:aa5b5ab567eb7950eafc76",
+        "android_client_info": {
+          "package_name": "com.example.koobookandroidapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1082052882115-55fbsop96met8ob9a3nevuq4gsak5abg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.koobookandroidapp",
+            "certificate_hash": "070f8f0cce5f5c1595d2a7d371e64151482528cc"
+          }
+        },
+        {
+          "client_id": "1082052882115-sk65c54ced5obfaphbnid16qt72756fn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqWB4uouTwm6zry09AEFCn4FLH7mXMvGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082052882115-sk65c54ced5obfaphbnid16qt72756fn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
